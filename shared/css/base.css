@@ -1,0 +1,13 @@
+body {
+  font-size: 18px;
+  color: black;
+}
+
+a {
+  color: black;
+  font-weight: bold;
+}
+
+.container {
+  padding: 1rem;
+}
