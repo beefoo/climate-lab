@@ -6,8 +6,62 @@
   <title>Climate Lab / Data in time</title>
   <link rel="stylesheet" href="../shared/css/normalize.css">
   <link rel="stylesheet" href="../shared/css/base.css">
+  <link rel="stylesheet" href="css/app.css">
 </head>
 <body>
-
+  <div class="app">
+    <div class="panes">
+      <div id="annual" class="pane"></div>
+      <div id="trend" class="pane"></div>
+    </div>
+    <div id="controls" class="controls">
+      <div class="control-group">
+        <h2>Choose a time scale</h2>
+        <div class="radio-group">
+          <label for="time-day">
+            <input class="radio" type="radio" id="time-day" name="time" checked>
+            <span class="radio-text">Day</span>
+          </label>
+          <label for="time-temperature">
+            <input class="radio" type="radio" id="time-temperature" name="time">
+            <span class="radio-text">Month</span>
+          </label>
+          <label for="time-year">
+            <input class="radio" type="radio" id="time-year" name="time">
+            <span class="radio-text">Year</span>
+          </label>
+          <label for="time-decade">
+            <input class="radio" type="radio" id="time-decade" name="time">
+            <span class="radio-text">Decade</span>
+          </label>
+        </div>
+      </div>
+      <div class="control-group">
+        <h2>Choose a data source</h2>
+        <div class="radio-group">
+          <label for="data-co2">
+            <input class="radio" type="radio" id="data-co2" name="data" checked>
+            <span class="radio-text">Carbon dioxide</span>
+          </label>
+          <label for="data-temperature">
+            <input class="radio" type="radio" id="data-temperature" name="data">
+            <span class="radio-text">Temperature</span>
+          </label>
+          <label for="data-sea-ice">
+            <input class="radio" type="radio" id="data-sea-ice" name="data">
+            <span class="radio-text">Arctic sea ice minumum</span>
+          </label>
+          <label for="data-land-ice">
+            <input class="radio" type="radio" id="data-land-ice" name="data">
+            <span class="radio-text">Land ice</span>
+          </label>
+          <label for="data-sea-level">
+            <input class="radio" type="radio" id="data-sea-level" name="data">
+            <span class="radio-text">Sea level</span>
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
 </body>
 </html>

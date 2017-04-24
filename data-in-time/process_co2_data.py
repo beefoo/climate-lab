@@ -71,7 +71,12 @@ jsonHeader = ["date", "value", "trend"]
 jsonRows = [[d["date"], d["value"], d["trend"]] for d in data]
 jsonData = {
     "header": jsonHeader,
-    "rows": jsonRows
+    "rows": jsonRows,
+    "meta": {
+        "title": "Atmospheric Carbon Dioxide",
+        "source": "National Oceanic and Atmospheric Administration",
+        "sourceURL": "https://www.esrl.noaa.gov/gmd/ccgg/trends/"
+    }
 }
 
 # Write to file
