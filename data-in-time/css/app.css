@@ -1,5 +1,9 @@
+body {
+  overflow: hidden;
+}
+
 .app {
-  background: #00897b;
+  background: #212121;
   color: #fff;
   letter-spacing: 0.08rem;
   display: table;
@@ -7,7 +11,7 @@
   height: 100vh;
 }
 
-.panes,
+.viz,
 .controls {
   display: table-row;
   height: auto;
@@ -19,14 +23,12 @@ h2 {
   color: #80CBC4;
 }
 
-.panes {
-  background: #212121;
-}
-.pane {
-  width: 50%;
+.viz {
+  position: relative;
 }
 
 .controls {
+  background: #00897b;
   height: 1px;
 }
 .controls:after {

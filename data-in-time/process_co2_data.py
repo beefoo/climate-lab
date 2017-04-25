@@ -12,7 +12,7 @@ DATA_FILES = [
     {"file": "data/co2_mm_mlo.txt", "header": ["year", "month", "decimal", "average", "interpolated", "trend", "days"]},
     {"file": "data/co2_mm_gl.txt", "header": ["year", "month", "decimal", "average", "trend"]}
 ]
-OUTPUT_FILE = "data/co2.json"
+OUTPUT_FILE = "data/processed_data.json"
 START_YEAR = 1959
 END_YEAR = 2016
 
@@ -65,6 +65,7 @@ for df in DATA_FILES:
 
 # Sort by date
 data = sorted(data, key=lambda k: k["date"])
+values = [d["value"] for d in data]
 
 # Put data into rows to make data smaller
 jsonHeader = ["date", "value", "trend"]
@@ -75,11 +76,13 @@ jsonData = {
     "meta": {
         "title": "Atmospheric Carbon Dioxide",
         "source": "National Oceanic and Atmospheric Administration",
-        "sourceURL": "https://www.esrl.noaa.gov/gmd/ccgg/trends/"
+        "sourceURL": "https://www.esrl.noaa.gov/gmd/ccgg/trends/",
+        "dateRange": [data[0]["date"], data[-1]["date"]],
+        "valueRange": [min(values), max(values)]
     }
 }
 
 # Write to file
 with open(OUTPUT_FILE, 'w') as f:
-    json.dump(jsonData, f)
+    json.dump({"co2": jsonData}, f)
     print "Wrote %s rows to %s" % (len(jsonRows), OUTPUT_FILE)

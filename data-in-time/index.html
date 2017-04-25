@@ -10,29 +10,24 @@
 </head>
 <body>
   <div class="app">
-    <div class="panes">
-      <div id="annual" class="pane"></div>
-      <div id="trend" class="pane"></div>
+    <div id="main" class="viz">
+
     </div>
     <div id="controls" class="controls">
       <div class="control-group">
         <h2>Choose a time scale</h2>
         <div class="radio-group">
-          <label for="time-day">
-            <input class="radio" type="radio" id="time-day" name="time" checked>
-            <span class="radio-text">Day</span>
-          </label>
-          <label for="time-temperature">
-            <input class="radio" type="radio" id="time-temperature" name="time">
-            <span class="radio-text">Month</span>
-          </label>
           <label for="time-year">
-            <input class="radio" type="radio" id="time-year" name="time">
+            <input class="radio" type="radio" id="time-year" value="year" name="time" checked>
             <span class="radio-text">Year</span>
           </label>
           <label for="time-decade">
-            <input class="radio" type="radio" id="time-decade" name="time">
+            <input class="radio" type="radio" id="time-decade" value="decade" name="time">
             <span class="radio-text">Decade</span>
+          </label>
+          <label for="time-century">
+            <input class="radio" type="radio" id="time-century" value="century" name="time">
+            <span class="radio-text">Century</span>
           </label>
         </div>
       </div>
@@ -40,28 +35,38 @@
         <h2>Choose a data source</h2>
         <div class="radio-group">
           <label for="data-co2">
-            <input class="radio" type="radio" id="data-co2" name="data" checked>
+            <input class="radio" type="radio" id="data-co2" value="co2" name="data" checked>
             <span class="radio-text">Carbon dioxide</span>
           </label>
           <label for="data-temperature">
-            <input class="radio" type="radio" id="data-temperature" name="data">
+            <input class="radio" type="radio" id="data-temperature" value="temperature" name="data">
             <span class="radio-text">Temperature</span>
           </label>
           <label for="data-sea-ice">
-            <input class="radio" type="radio" id="data-sea-ice" name="data">
+            <input class="radio" type="radio" id="data-sea-ice" value="sea-ice" name="data">
             <span class="radio-text">Arctic sea ice minumum</span>
           </label>
           <label for="data-land-ice">
-            <input class="radio" type="radio" id="data-land-ice" name="data">
+            <input class="radio" type="radio" id="data-land-ice" value="land-ice" name="data">
             <span class="radio-text">Land ice</span>
           </label>
           <label for="data-sea-level">
-            <input class="radio" type="radio" id="data-sea-level" name="data">
+            <input class="radio" type="radio" id="data-sea-level" value="sea-level" name="data">
             <span class="radio-text">Sea level</span>
           </label>
         </div>
       </div>
     </div>
   </div>
+
+  <script src="../shared/js/jquery-3.2.1.min.js"></script>
+  <script src="../shared/js/ba-tiny-pubsub.min.js"></script>
+  <script src="../shared/js/pixi.min.js"></script>
+  <script src="../shared/js/Tone.min.js"></script>
+
+  <script src="js/dataviz.js"></script>
+  <script src="js/controls.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/app.js"></script>
 </body>
 </html>
