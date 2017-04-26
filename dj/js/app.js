@@ -8,8 +8,10 @@ var App = (function() {
   }
 
   App.prototype.init = function(){
-    var controls = new Controls(this.opt);
-    var viz = new DataViz(this.opt);
+    var controls = new Controls({});
+    var vizLeft = new DataViz({el: "#pane-left"});
+    var vizRight = new DataViz({el: "#pane-right"});
+    
     this.loadData();
   };
 

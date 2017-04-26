@@ -1,0 +1,175 @@
+body {
+  overflow: hidden;
+}
+
+.app {
+  background: #212121;
+  color: #fff;
+  letter-spacing: 0.08rem;
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+}
+
+.panes,
+.controls,
+.pane,
+.tt-left,
+.tt-right,
+.tt-center,
+.tt-disc,
+.tt-disc button,
+.tt-crossfade,
+.tt-speed,
+.tt-zoom {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+h2 {
+  font-size: 1.2rem;
+  margin: 0 0 1.5rem;
+  color: #80CBC4;
+}
+
+.panes {
+  height: calc(100% - 240px);
+}
+.pane {
+  width: 50%;
+}
+.pane:last-child {
+  left: 50%;
+}
+
+.controls {
+  background: #00897b;
+  height: 240px;
+  top: auto;
+  bottom: 0;
+}
+
+.tt-left,
+.tt-right {
+  width: 50%;
+}
+.tt-right {
+  left: 50%;
+}
+.tt-disc {
+  width: 220px;
+  height: 220px;
+  left: 50%;
+  top: 50%;
+  margin-left: -110px;
+  margin-top: -110px;
+}
+.tt-disc button {
+  display: block;
+  width: 80%;
+  height: 80%;
+  left: 50%;
+  top: 50%;
+  margin-left: -40%;
+  margin-top: -40%;
+  border-radius: 50%;
+  border: none;
+  background: #00695C;
+  color: #fff;
+  outline-color: #009688;
+  letter-spacing: 1px;
+  cursor: pointer;
+}
+
+.tt-center {
+  width: 80px;
+  height: 220px;
+  left: 50%;
+  top: 50%;
+  margin-left: -40px;
+  margin-top: -110px;
+}
+.tt-crossfade {
+  width: 200px;
+  height: 10px;
+  left: 50%;
+  top: 20px;
+  margin-left: -100px;
+}
+.tt-speed,
+.tt-zoom {
+  width: 10px;
+  height: 140px;
+  bottom: 10px;
+  top: auto;
+}
+.tt-zoom {
+  left: auto;
+  right: 0;
+}
+
+.ui-slider {
+  background: #004D40;
+}
+.ui-slider .ui-slider-handle {
+  background: #80CBC4;
+  position: absolute;
+  cursor: move;
+  cursor: grab;
+  cursor: -moz-grab;
+  cursor: -webkit-grab;
+}
+.ui-slider .ui-slider-handle:active {
+  cursor: grabbing;
+  cursor: -moz-grabbing;
+  cursor: -webkit-grabbing;
+}
+.ui-slider-horizontal .ui-slider-handle {
+  top: 50%;
+  height: 30px;
+  width: 20px;
+  margin-top: -15px;
+}
+.ui-slider-vertical .ui-slider-handle {
+  left: 50%;
+  height: 20px;
+  width: 30px;
+  margin-left: -15px;
+}
+
+
+.tt-labels {
+  font-size: 0.8rem;
+  color: #80CBC4;
+}
+.tt-labels span {
+  display: block;
+  position: absolute;
+  width: 40px;
+  height: 20px;
+  line-height: 20px;
+  text-align: center;
+}
+.tt-labels span:first-child {
+  left: 50%;
+  margin-left: -20px;
+  top: -5px;
+}
+.tt-labels span:nth-child(2) {
+  top: 50%;
+  margin-top: -10px;
+  right: -20px;
+}
+.tt-labels span:nth-child(3) {
+  left: 50%;
+  margin-left: -20px;
+  bottom: -5px;
+}
+.tt-labels span:nth-child(4) {
+  top: 50%;
+  margin-top: -10px;
+  left: -20px;
+}
