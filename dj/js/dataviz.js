@@ -30,7 +30,7 @@ var DataViz = (function() {
   };
 
   DataViz.prototype.loadView = function(){
-    this.app = new PIXI.Application(this.$el.width(), this.$el.height(), {backgroundColor : 0x212121});
+    this.app = new PIXI.Application(this.$el.width(), this.$el.height(), {transparent : true});
     this.$el.append(this.app.view);
   };
 

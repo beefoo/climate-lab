@@ -9,9 +9,14 @@ var App = (function() {
 
   App.prototype.init = function(){
     var controls = new Controls({});
-    var vizLeft = new DataViz({el: "#pane-left"});
-    var vizRight = new DataViz({el: "#pane-right"});
-    
+    this.vizLeft = new DataViz({el: "#pane-left"});
+    this.vizRight = new DataViz({el: "#pane-right"});
+    this.spinnerLeft = new Spinner({el: "#spinner-left"});
+    this.spinnerRight = new Spinner({el: "#spinner-right"});
+
+    // this.spinnerLeft.render(0);
+    // this.spinnerRight.render(0);
+
     this.loadData();
   };
 

@@ -19,6 +19,7 @@ body {
 .tt-center,
 .tt-disc,
 .tt-disc button,
+.tt-spinner,
 .tt-crossfade,
 .tt-speed,
 .tt-zoom {
@@ -69,12 +70,12 @@ h2 {
 }
 .tt-disc button {
   display: block;
-  width: 80%;
-  height: 80%;
+  width: 90%;
+  height: 90%;
   left: 50%;
   top: 50%;
-  margin-left: -40%;
-  margin-top: -40%;
+  margin-left: -45%;
+  margin-top: -45%;
   border-radius: 50%;
   border: none;
   background: #00695C;
@@ -117,6 +118,7 @@ h2 {
 .ui-slider .ui-slider-handle {
   background: #80CBC4;
   position: absolute;
+  outline-color: #009688;
   cursor: move;
   cursor: grab;
   cursor: -moz-grab;
