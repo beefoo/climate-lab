@@ -74,6 +74,7 @@ jsonData = {
     "header": jsonHeader,
     "rows": jsonRows,
     "meta": {
+        "label": "Carbon Dioxide",
         "title": "Atmospheric Carbon Dioxide",
         "source": "National Oceanic and Atmospheric Administration",
         "sourceURL": "https://www.esrl.noaa.gov/gmd/ccgg/trends/",
@@ -82,7 +83,14 @@ jsonData = {
     }
 }
 
+# Retrieve existing data if exists
+jsonOut = {}
+if os.path.isfile(OUTPUT_FILE):
+    with open(OUTPUT_FILE) as f:
+        jsonOut = json.load(f)
+jsonOut["co2"] = jsonData
+
 # Write to file
 with open(OUTPUT_FILE, 'w') as f:
-    json.dump({"co2": jsonData}, f)
+    json.dump(jsonOut, f)
     print "Wrote %s rows to %s" % (len(jsonRows), OUTPUT_FILE)
