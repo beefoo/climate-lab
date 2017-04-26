@@ -42,6 +42,10 @@ var DataViz = (function() {
     this.app.renderer.resize(this.$el.width(), this.$el.height());
   };
 
+  DataViz.prototype.render = function(progress){
+
+  };
+
   return DataViz;
 
 })();

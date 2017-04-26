@@ -23,7 +23,7 @@ var Spinner = (function() {
     var pi = Math.PI;
 
     this.spinner = new PIXI.Graphics();
-    this.spinner.beginFill(0x80CBC4);
+    this.spinner.beginFill(0x26A69A);
     this.spinner.moveTo(0, 0);
     this.spinner.arc(0, 0, cx, -pi/2-pi/12, pi/6-pi/2-pi/12);
     this.spinner.lineTo(0, 0);

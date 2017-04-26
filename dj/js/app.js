@@ -21,10 +21,29 @@ var App = (function() {
   };
 
   App.prototype.loadData = function(){
+    var _this = this;
+
     $.getJSON(this.opt.dataURL, function(data) {
       console.log('Data loaded.')
       $.publish('data.loaded', data);
+
+      _this.startDate = Date.now();
+      // _this.render();
     });
+  };
+
+  App.prototype.render = function(){
+    var _this = this;
+
+    var d = Date.now();
+    var elapsed = d - this.startDate;
+    var progress = 0;
+
+    this.vizLeft.render(progress);
+    this.vizRight.render(progress);
+    this.spinnerLeft.render(progress);
+    this.spinnerRight.render(progress);
+  	requestAnimationFrame(function(){ _this.render(); });
   };
 
   return App;

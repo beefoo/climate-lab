@@ -1,3 +1,4 @@
 var CONFIG = {
-  dataURL: 'data/processed_data.json'
+  dataURL: 'data/processed_data.json',
+  msPerYear: [6000, 600]
 }
