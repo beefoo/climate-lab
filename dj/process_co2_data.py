@@ -5,8 +5,10 @@
 #   - Full Mauna Loa CO2 record (1958-2017): ftp://aftp.cmdl.noaa.gov/products/trends/co2/co2_mm_mlo.txt
 #   - Global monthly mean CO2 (1980-2017): ftp://aftp.cmdl.noaa.gov/products/trends/co2/co2_mm_gl.txt
 
+from datetime import datetime
 import json
 import os
+from shared import *
 
 DATA_FILES = [
     {"file": "data/co2_mm_mlo.txt", "header": ["year", "month", "decimal", "average", "interpolated", "trend", "days"]},
@@ -15,15 +17,6 @@ DATA_FILES = [
 OUTPUT_FILE = "data/processed_data.json"
 START_YEAR = 1959
 END_YEAR = 2016
-
-def parseNumber(string):
-    try:
-        num = float(string)
-        if "." not in string:
-            num = int(string)
-        return num
-    except ValueError:
-        return string
 
 def readFile(filename, header):
     rows = []
@@ -43,6 +36,7 @@ for df in DATA_FILES:
             continue
 
         date = "%s-%s-01" % (d["year"], str(d["month"]).zfill(2))
+        # date = datetime(d["year"], d["month"], 1)
 
         # Use interpolated value if average not available
         value = d["average"]
@@ -57,28 +51,35 @@ for df in DATA_FILES:
         if len(found):
             index = found[0]
             data[index]["value"] = value
-            data[index]["trend"] = trend
 
         # Otherwise, add it
         else:
-            data.append({"date": date, "value": value, "trend": trend})
+            data.append({"date": date, "value": value})
 
 # Sort by date
 data = sorted(data, key=lambda k: k["date"])
-values = [d["value"] for d in data]
 
-# Put data into rows to make data smaller
-jsonHeader = ["date", "value", "trend"]
-jsonRows = [[d["date"], d["value"], d["trend"]] for d in data]
+# Normalize dates
+years = END_YEAR - START_YEAR + 1
+months = years * 12
+if months != len(data):
+    print "Warning: missing month values"
+
+# Normalize values
+values = [d["value"] for d in data]
+startDate = data[0]["date"]
+endDate = data[-1]["date"]
+
+# Build JSON data
 jsonData = {
-    "header": jsonHeader,
-    "rows": jsonRows,
+    "values": values,
+    "unit": "month",
     "meta": {
         "label": "Carbon Dioxide",
         "title": "Atmospheric Carbon Dioxide",
         "source": "National Oceanic and Atmospheric Administration",
         "sourceURL": "https://www.esrl.noaa.gov/gmd/ccgg/trends/",
-        "dateRange": [data[0]["date"], data[-1]["date"]],
+        "dateRange": [startDate, endDate],
         "valueRange": [min(values), max(values)]
     }
 }
@@ -93,4 +94,4 @@ jsonOut["co2"] = jsonData
 # Write to file
 with open(OUTPUT_FILE, 'w') as f:
     json.dump(jsonOut, f)
-    print "Wrote %s rows to %s" % (len(jsonRows), OUTPUT_FILE)
+    print "Wrote %s values to %s" % (len(values), OUTPUT_FILE)

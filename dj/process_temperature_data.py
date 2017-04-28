@@ -30,20 +30,28 @@ with open(INPUT_FILE, 'rb') as f:
 
 # Sort by date
 data = sorted(data, key=lambda k: k["date"])
-values = [d["value"] for d in data]
 
-# Put data into rows to make data smaller
-jsonHeader = ["date", "value"]
-jsonRows = [[d["date"], d["value"]] for d in data]
+# Normalize dates
+years = END_YEAR - START_YEAR + 1
+months = years * 12
+if months != len(data):
+    print "Warning: missing month values"
+
+# Normalize values
+values = [d["value"] for d in data]
+startDate = data[0]["date"]
+endDate = data[-1]["date"]
+
+# Build JSON data
 jsonData = {
-    "header": jsonHeader,
-    "rows": jsonRows,
+    "values": values,
+    "unit": "month",
     "meta": {
         "label": "Temperature",
         "title": "Global Temperature Anomalies",
         "source": "National Oceanic and Atmospheric Administration",
         "sourceURL": "https://www.ncdc.noaa.gov/climate-monitoring/",
-        "dateRange": [data[0]["date"], data[-1]["date"]],
+        "dateRange": [startDate, endDate],
         "valueRange": [min(values), max(values)]
     }
 }
@@ -58,4 +66,4 @@ jsonOut["temperature"] = jsonData
 # Write to file
 with open(OUTPUT_FILE, 'w') as f:
     json.dump(jsonOut, f)
-    print "Wrote %s rows to %s" % (len(jsonRows), OUTPUT_FILE)
+    print "Wrote %s values to %s" % (len(values), OUTPUT_FILE)
