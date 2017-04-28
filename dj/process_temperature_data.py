@@ -25,7 +25,7 @@ with open(INPUT_FILE, 'rb') as f:
         month = int(_year[4:])
         if year >= START_YEAR and year <= END_YEAR:
             value = float(_value)
-            date = "%s-%s-01" % (year, str(month).zfill(2))
+            date = "%s-%s-01T00:00:00Z" % (year, str(month).zfill(2))
             data.append({"date": date, "value": value})
 
 # Sort by date
@@ -46,13 +46,13 @@ endDate = data[-1]["date"]
 jsonData = {
     "values": values,
     "unit": "month",
+    "dateRange": [startDate, endDate],
+    "valueRange": [min(values), max(values)],
     "meta": {
         "label": "Temperature",
         "title": "Global Temperature Anomalies",
         "source": "National Oceanic and Atmospheric Administration",
-        "sourceURL": "https://www.ncdc.noaa.gov/climate-monitoring/",
-        "dateRange": [startDate, endDate],
-        "valueRange": [min(values), max(values)]
+        "sourceURL": "https://www.ncdc.noaa.gov/climate-monitoring/"
     }
 }
 

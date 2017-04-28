@@ -35,7 +35,7 @@ for df in DATA_FILES:
         if d["year"] < START_YEAR or d["year"] > END_YEAR:
             continue
 
-        date = "%s-%s-01" % (d["year"], str(d["month"]).zfill(2))
+        date = "%s-%s-01T00:00:00Z" % (d["year"], str(d["month"]).zfill(2))
         # date = datetime(d["year"], d["month"], 1)
 
         # Use interpolated value if average not available
@@ -74,6 +74,8 @@ endDate = data[-1]["date"]
 jsonData = {
     "values": values,
     "unit": "month",
+    "dateRange": [startDate, endDate],
+    "valueRange": [min(values), max(values)],
     "meta": {
         "label": "Carbon Dioxide",
         "title": "Atmospheric Carbon Dioxide",

@@ -24,12 +24,20 @@ var App = (function() {
     var _this = this;
 
     $.getJSON(this.opt.dataURL, function(data) {
-      console.log('Data loaded.')
-      $.publish('data.loaded', data);
-
+      console.log('Data loaded.');
+      _this.parseData(data);
       _this.startDate = Date.now();
       // _this.render();
     });
+  };
+
+  App.prototype.parseData = function(d){
+
+
+    $.each(d, function(key, data){
+
+    });
+    $.publish('data.loaded', data);
   };
 
   App.prototype.render = function(){
