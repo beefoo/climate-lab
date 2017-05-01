@@ -19,9 +19,16 @@ def interpolateCubic(y0, y1, y2, y3, mu):
 # String to number
 def parseNumber(string):
     try:
+        string = string.replace(",","")
         num = float(string)
         if "." not in string:
             num = int(string)
         return num
     except ValueError:
         return string
+
+def roundDownToNearest(value, nearest=10):
+    return int(math.floor(1.0 * value / nearest)) * nearest
+
+def roundUpToNearest(value, nearest=10):
+    return int(math.ceil(1.0 * value / nearest)) * nearest
