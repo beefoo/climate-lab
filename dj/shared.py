@@ -16,6 +16,11 @@ def interpolateCubic(y0, y1, y2, y3, mu):
     a3 = y1
     return (a0 * mu * mu2 + a1 * mu2 + a2 * mu + a3)
 
+def norm(value, r):
+    a = r[0]
+    b = r[1]
+    return 1.0 * (value - a) / (b - a)
+
 # String to number
 def parseNumber(string):
     try:

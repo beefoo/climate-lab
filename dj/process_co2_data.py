@@ -162,8 +162,13 @@ def interpolateNumbers(start, end):
 
     return numbers
 
-def normalizeData(data):
-    return data
+def getPoints(data, yRange, xRange):
+    points = []
+    for d in data:
+        y = norm(d["value"], yRange)
+        x = norm(d["date"], (dateToNumber(xRange[0]), dateToNumber(xRange[1])))
+        points.append((x,y))
+    return points
 
 def readDataFromFile(filename, header, dates):
     rows = []
@@ -209,11 +214,11 @@ for g in DATA_GROUPS:
     yAxis = interpolateNumbers(yAxisMin, yAxisMax)
     xAxis = interpolateDates(g["dates"][0], g["dates"][1], g["unit"])
 
-    data = normalizeData(data)
+    points = getPoints(data, (yAxisMin, yAxisMax), g["dates"])
 
     dataGroups.append({
         "label": g["label"],
-        "data": data,
+        "data": points,
         "xAxis": xAxis,
         "yAxis": yAxis
     })
