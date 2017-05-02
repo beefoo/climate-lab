@@ -8,7 +8,25 @@ var App = (function() {
   }
 
   App.prototype.init = function(){
-    var controls = new Controls({});
+    var sliders = {
+      "#tt-speed": {
+        orientation: "vertical", min: 0, max: 1, step: 0.01, value: 0,
+        slide: function(e, ui){},
+        stop: function(e, ui){}
+      },
+      "#tt-scale": {
+        orientation: "vertical", min: 0, max: 1, step: 0.01, value: 0,
+        slide: function(e, ui){},
+        stop: function(e, ui){}
+      },
+      "#tt-crossfade": {
+        orientation: "horizontal", min: 0, max: 1, step: 0.01, value: 0.5,
+        slide: function(e, ui){},
+        stop: function(e, ui){}
+      }
+    };
+
+    var controls = new Controls({sliders: sliders});
     this.vizLeft = new DataViz({el: "#pane-left"});
     this.vizRight = new DataViz({el: "#pane-right"});
     this.spinnerLeft = new Spinner({el: "#spinner-left"});
@@ -25,17 +43,10 @@ var App = (function() {
 
     $.getJSON(this.opt.dataURL, function(data) {
       console.log('Data loaded.');
-      _this.parseData(data);
+      $.publish('data.loaded', data);
       _this.startDate = Date.now();
       // _this.render();
     });
-  };
-
-  App.prototype.parseData = function(d){
-    $.each(d, function(key, data){
-
-    });
-    $.publish('data.loaded', d);
   };
 
   App.prototype.render = function(){

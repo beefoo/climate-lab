@@ -10,6 +10,7 @@ from dateutil.relativedelta import relativedelta
 import json
 import os
 from shared import *
+import time
 
 # Define data sources
 FILES = {
@@ -52,11 +53,16 @@ DATA_GROUPS = [
     {"unit": "year", "label": "Since 13 C.E.", "file": "ice_core", "dates": [(13,1,1,0), (2015,12,31,23)]}
 ]
 OUTPUT_FILE = "data/processed_data.json"
-AXIS_ROUND_TO_NEAREST = 10
+AXIS_ROUND_TO_NEAREST = 1
 
 def dateToNumber(date):
     (year, month, day, hour) = date
     return 10000 * year + 100 * month + day + hour / 24.0
+
+def dateToSeconds(date):
+    (year, month, day, hour) = date
+    t = datetime(year, month, day, hour)
+    return time.mktime(t.timetuple())
 
 def interpolateHours(start, end):
     dates = []
@@ -70,7 +76,10 @@ def interpolateHours(start, end):
                 dates.append("{d:%b} {d.day}".format(d=date))
             day = date.day
         else:
-            dates.append("{d:%l}{d:%p}".format(d=date))
+            if date.hour % 6 == 0:
+                dates.append("{d:%l}{d:%p}".format(d=date))
+            else:
+                dates.append("-")
         date += timedelta(hours=1)
     return dates
 
@@ -101,7 +110,10 @@ def interpolateDays(start, end):
                 dates.append("{d:%b}".format(d=date))
             month = date.month
         else:
-            dates.append("{d.day}".format(d=date))
+            if date.day % 5 == 0:
+                dates.append("{d.day}".format(d=date))
+            else:
+                dates.append("-")
         date += timedelta(days=1)
     return dates
 
@@ -109,20 +121,30 @@ def interpolateMonths(start, end):
     dates = []
     date = start
     year = None
+    diff = (end.year - start.year) * 12 + end.month - start.month
     while date <= end:
         if year != date.year:
             dates.append("{d.year}".format(d=date))
             year = date.year
         else:
-            dates.append("{d:%b}".format(d=date))
+            if diff > 12 and date.month % 7 == 0 or diff <= 12 and date.month % 3 == 0:
+                dates.append("{d:%b}".format(d=date))
+            else:
+                dates.append("-")
         date += relativedelta(months=1)
     return dates
 
 def interpolateYears(start, end):
-    diff = end - start
-    years = [start]
+    diff = end - start + 1
+    years = []
     for y in range(diff):
-        years.append(start + y + 1)
+        year = start + y
+        if year % 5 == 0 and diff <= 20 or year % 10 == 0 and 20 < diff <= 60 or year % 25 == 0 and 60 < diff <= 100 or year % 500 == 0 or diff > 100 and y == 0:
+            years.append(str(year))
+        elif diff <= 100 or year % 100 == 0:
+            years.append("-")
+        else:
+            years.append("")
     return years
 
 def interpolateDates(start, end, unit):
@@ -152,6 +174,9 @@ def interpolateNumbers(start, end):
     if step % 1 <= 0:
         step = int(step)
 
+    if diff > 3:
+        step = max(step, 1)
+
     # make a list of numbers
     numbers = [start]
     n = start + step
@@ -166,7 +191,14 @@ def getPoints(data, yRange, xRange):
     points = []
     for d in data:
         y = norm(d["value"], yRange)
-        x = norm(d["date"], (dateToNumber(xRange[0]), dateToNumber(xRange[1])))
+        date = dateToNumber(d["date"])
+        a = dateToNumber(xRange[0])
+        b = dateToNumber(xRange[1])
+        if xRange[0][0] >= 1970:
+            date = dateToSeconds(d["date"])
+            a = dateToSeconds(xRange[0])
+            b = dateToSeconds(xRange[1])
+        x = norm(date, (a, b))
         points.append((x,y))
     return points
 
@@ -179,13 +211,14 @@ def readDataFromFile(filename, header, dates):
             row = dict(zip(header, values))
 
             # Retrieve date
-            date = dateToNumber((row["year"], 1, 1, 0))
+            date = (row["year"], 1, 1, 0)
             if "hour" in row:
-                date = dateToNumber((row["year"], row["month"], row["day"], row["hour"]))
+                date = (row["year"], row["month"], row["day"], row["hour"])
             elif "day" in row:
-                date = dateToNumber((row["year"], row["month"], row["day"], 0))
+                date = (row["year"], row["month"], row["day"], 0)
             elif "month" in row:
-                date = dateToNumber((row["year"], row["month"], 1, 0))
+                date = (row["year"], row["month"], 1, 0)
+            dateNumber = dateToNumber(date)
 
             # Retrieve value
             value = row["value"]
@@ -193,7 +226,7 @@ def readDataFromFile(filename, header, dates):
                 value = row["interpolated"]
 
             # Add if date is valid
-            if dateToNumber(dates[0]) <= date <= dateToNumber(dates[1]) and value >= 0:
+            if dateToNumber(dates[0]) <= dateNumber <= dateToNumber(dates[1]) and value >= 0:
                 rows.append({
                     "value": value,
                     "date": date
@@ -224,7 +257,9 @@ for g in DATA_GROUPS:
     })
 
 # Build JSON data
-jsonData = dataGroups
+jsonData = {
+    "scales": dataGroups
+}
 
 # Retrieve existing data if exists
 jsonOut = {}

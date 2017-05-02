@@ -8,38 +8,13 @@ var Controls = (function() {
   }
 
   Controls.prototype.init = function(){
-    this.loadListeners();
+    this.loadSliders(this.opt.sliders);
   };
 
-  Controls.prototype.loadListeners = function(){
-    var _this = this;
-
-    this.loadSlider("#tt-crossfade", "horizontal", 0.5, function(event, ui){
-      // console.log(ui.value);
-    });
-
-    this.loadSlider("#tt-speed", "vertical", 0, function(event, ui){
-      // console.log(ui.value);
-    });
-
-    this.loadSlider("#tt-scale", "vertical", 0, function(event, ui){
-      // console.log(ui.value);
-    });
-
-  };
-
-  Controls.prototype.loadSlider = function(el, orientation, value, onSlide){
-    if (!$(el).length) return false;
-    
-    $(el).slider({
-      orientation: orientation,
-      min: 0,
-      max: 1,
-      step: 0.01,
-      value: value,
-      slide: onSlide
-    });
-
+  Controls.prototype.loadSliders = function(sliders){
+    $.each(sliders, function(el, options){
+      $(el).slider(options);
+    })
   };
 
   return Controls;
