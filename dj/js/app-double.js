@@ -9,8 +9,10 @@ var App = (function() {
 
   App.prototype.init = function(){
     var controls = new Controls({});
-    this.viz = new DataViz({el: "#pane"});
-    this.spinner = new Spinner({el: "#spinner"});
+    this.vizLeft = new DataViz({el: "#pane-left"});
+    this.vizRight = new DataViz({el: "#pane-right"});
+    this.spinnerLeft = new Spinner({el: "#spinner-left"});
+    this.spinnerRight = new Spinner({el: "#spinner-right"});
 
     // this.spinnerLeft.render(0);
     // this.spinnerRight.render(0);
@@ -43,8 +45,10 @@ var App = (function() {
     var elapsed = d - this.startDate;
     var progress = 0;
 
-    this.viz.render(progress);
-    this.spinner.render(progress);
+    this.vizLeft.render(progress);
+    this.vizRight.render(progress);
+    this.spinnerLeft.render(progress);
+    this.spinnerRight.render(progress);
   	requestAnimationFrame(function(){ _this.render(); });
   };
 

@@ -1,0 +1,37 @@
+.tt-left,
+.tt-right,
+.tt-center {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.pane {
+  width: 50%;
+}
+.pane:last-child {
+  left: 50%;
+}
+
+.tt-left,
+.tt-right {
+  width: 50%;
+}
+.tt-right {
+  left: 50%;
+}
+.tt-center {
+  width: 80px;
+  height: 220px;
+  left: 50%;
+  top: 50%;
+  margin-left: -40px;
+  margin-top: -110px;
+}
+.tt-slider-vert {
+  bottom: 10px;
+  top: auto;
+  margin: 0;
+}

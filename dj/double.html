@@ -7,27 +7,45 @@
   <link rel="stylesheet" href="../shared/css/normalize.css">
   <link rel="stylesheet" href="../shared/css/base.css">
   <link rel="stylesheet" href="css/app.css">
-  <link rel="stylesheet" href="css/single.css">
+  <link rel="stylesheet" href="css/double.css">
 </head>
 <body>
   <div class="app">
     <div id="main" class="panes">
-      <div id="pane" class="pane"></div>
+      <div id="pane-left" class="pane"></div>
+      <div id="pane-right" class="pane"></div>
     </div>
     <div id="controls" class="controls">
       <div class="tt">
-        <div class="tt-disc">
-          <div id="spinner" class="tt-spinner"></div>
-          <!-- <div class="tt-labels">
-            <span>Jan</span>
-            <span>Apr</span>
-            <span>Jul</span>
-            <span>Oct</span>
-          </div> -->
-          <button>Carbon Dioxide</button>
+        <div class="tt-discs">
+          <div class="tt-left">
+            <div class="tt-disc">
+              <div id="spinner-left" class="tt-spinner"></div>
+              <!-- <div class="tt-labels">
+                <span>Jan</span>
+                <span>Apr</span>
+                <span>Jul</span>
+                <span>Oct</span>
+              </div> -->
+              <button>Carbon Dioxide</button>
+            </div>
+          </div>
+          <div class="tt-right">
+            <div class="tt-disc">
+              <div id="spinner-right" class="tt-spinner"></div>
+              <!-- <div class="tt-labels">
+                <span>Jan</span>
+                <span>Apr</span>
+                <span>Jul</span>
+                <span>Oct</span>
+              </div> -->
+              <button>Temperature</button>
+            </div>
+          </div>
         </div>
 
-        <div class="tt-sliders">
+        <div class="tt-center">
+          <div id="tt-crossfade" class="tt-slider-horz tt-crossfade"></div>
           <div id="tt-scale" class="tt-slider-vert tt-scale"></div>
           <div id="tt-speed" class="tt-slider-vert tt-speed"></div>
         </div>
@@ -47,6 +65,6 @@
   <script src="js/dataviz.js"></script>
   <script src="js/controls.js"></script>
   <script src="js/config.js"></script>
-  <script src="js/app.js"></script>
+  <script src="js/app-double.js"></script>
 </body>
 </html>

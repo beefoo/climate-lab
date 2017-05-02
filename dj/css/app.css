@@ -14,15 +14,12 @@ body {
 .panes,
 .controls,
 .pane,
-.tt-left,
-.tt-right,
-.tt-center,
+.tt-sliders,
 .tt-disc,
 .tt-disc button,
 .tt-spinner,
-.tt-crossfade,
-.tt-speed,
-.tt-zoom {
+.tt-slider-vert,
+.tt-slider-horz {
   position: absolute;
   top: 0;
   left: 0;
@@ -39,13 +36,6 @@ h2 {
 .panes {
   height: calc(100% - 240px);
 }
-.pane {
-  width: 50%;
-}
-.pane:last-child {
-  left: 50%;
-}
-
 .controls {
   background: #00897b;
   height: 240px;
@@ -53,13 +43,6 @@ h2 {
   bottom: 0;
 }
 
-.tt-left,
-.tt-right {
-  width: 50%;
-}
-.tt-right {
-  left: 50%;
-}
 .tt-disc {
   width: 220px;
   height: 220px;
@@ -85,29 +68,28 @@ h2 {
   cursor: pointer;
 }
 
-.tt-center {
-  width: 80px;
+.tt-sliders {
+  width: 70px;
   height: 220px;
   left: 50%;
   top: 50%;
   margin-left: -40px;
   margin-top: -110px;
 }
-.tt-crossfade {
+.tt-slider-horz {
   width: 200px;
   height: 10px;
   left: 50%;
   top: 20px;
   margin-left: -100px;
 }
-.tt-speed,
-.tt-zoom {
+.tt-slider-vert {
   width: 10px;
   height: 140px;
-  bottom: 10px;
-  top: auto;
+  top: 50%;
+  margin-top: -70px;
 }
-.tt-zoom {
+.tt-slider-vert:last-child {
   left: auto;
   right: 0;
 }
@@ -141,7 +123,6 @@ h2 {
   width: 30px;
   margin-left: -15px;
 }
-
 
 .tt-labels {
   font-size: 0.8rem;

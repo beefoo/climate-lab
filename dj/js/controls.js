@@ -22,13 +22,15 @@ var Controls = (function() {
       // console.log(ui.value);
     });
 
-    this.loadSlider("#tt-zoom", "vertical", 0, function(event, ui){
+    this.loadSlider("#tt-scale", "vertical", 0, function(event, ui){
       // console.log(ui.value);
     });
 
   };
 
   Controls.prototype.loadSlider = function(el, orientation, value, onSlide){
+    if (!$(el).length) return false;
+    
     $(el).slider({
       orientation: orientation,
       min: 0,
