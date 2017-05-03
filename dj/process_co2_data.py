@@ -253,7 +253,9 @@ for g in DATA_GROUPS:
         "label": g["label"],
         "data": points,
         "xAxis": xAxis,
-        "yAxis": yAxis
+        "yAxis": yAxis,
+        "domain": g["dates"],
+        "range": (yAxisMin, yAxisMax)
     })
 
 # Build JSON data
