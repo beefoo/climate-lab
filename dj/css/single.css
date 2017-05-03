@@ -1,6 +1,17 @@
 .tt-disc {
-  margin-left: -150px;
+  margin-left: -285px;
 }
 .tt-sliders {
-  margin-left: 110px;
+  margin-left: -55px;
+}
+.tt-slider-horz {
+  width: 100%;
+  height: 10px;
+  top: 0;
+  left: 0;
+  margin: 0;
+}
+.tt-slider-horz:last-child {
+  top: auto;
+  bottom: 0;
 }

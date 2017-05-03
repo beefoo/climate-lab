@@ -9,15 +9,15 @@ var App = (function() {
 
   App.prototype.init = function(){
     var _this = this;
-    
+
     // Initialize controls
     var sliders = {
       "#tt-speed": {
-        orientation: "vertical", min: 0, max: 1, step: 0.01, value: 0,
+        orientation: "horizontal", min: 0, max: 1, step: 0.001, value: 0,
         slide: function(e, ui){ _this.onSpeed(ui.value); }
       },
       "#tt-scale": {
-        orientation: "vertical", min: 0, max: 8, step: 1, value: 0,
+        orientation: "horizontal", min: 0, max: 1, step: 0.001, value: 0,
         slide: function(e, ui){ _this.onScale(ui.value); }
       }
     };
@@ -47,14 +47,45 @@ var App = (function() {
 
   App.prototype.onDataLoaded = function(data){
     this.data = data;
+    this.currentData = data[this.dataKey];
+    this.scaleCount = this.currentData.scales.length;
+
     this.onScale(this.scale);
     // this.startDate = Date.now();
     // this.render();
   };
 
   App.prototype.onScale = function(value) {
-    var dataScale = this.data[this.dataKey]["scales"][value];
-    this.viz.loadData(dataScale);
+    var percentPerScale = 1.0 / this.scaleCount;
+    var tp = this.opt.transitionPercent * percentPerScale;
+    var halfTp = tp / 2;
+
+    // determine current and closest index
+    var scaleIndex = Math.min(Math.floor(value * this.scaleCount), this.scaleCount-1);
+    var closestIndex = Math.round(value * this.scaleCount);
+    var d1 = this.currentData["scales"][scaleIndex];
+    var d2 = false;
+
+    // determine if we are transitioning between two scales
+    var transitionAmount = 0;
+    var closestValue = closestIndex * percentPerScale;
+    var diff = Math.abs(value - closestValue);
+    if (closestIndex > 0 && closestIndex < this.scaleCount && diff < halfTp) {
+      transitionAmount = (value - closestValue + halfTp) / tp;
+
+      // determine the other scope we are transitioning to
+      if (value > closestValue) {
+        d2 = d1;
+        d1 = this.currentData["scales"][scaleIndex-1];
+      } else {
+        d2 = this.currentData["scales"][scaleIndex+1];
+      }
+      this.viz.transitionData(d1, d2, transitionAmount);
+
+    // we are showing one scale
+    } else {
+      this.viz.loadData(d1);
+    }
   };
 
   App.prototype.onSpeed = function(value) {

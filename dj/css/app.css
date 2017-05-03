@@ -69,12 +69,12 @@ h2 {
 }
 
 .tt-sliders {
-  width: 70px;
-  height: 220px;
+  width: 400px;
+  height: 80px;
   left: 50%;
   top: 50%;
-  margin-left: -40px;
-  margin-top: -110px;
+  margin-left: -200px;
+  margin-top: -40px;
 }
 .tt-slider-horz {
   width: 200px;

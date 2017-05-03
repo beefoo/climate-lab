@@ -156,6 +156,10 @@ var DataViz = (function() {
     });
   };
 
+  DataViz.prototype.transitionData = function(d1, d2, percent) {
+    console.log(percent);
+  }
+
   return DataViz;
 
 })();
