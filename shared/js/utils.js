@@ -25,4 +25,10 @@
     return value.toFixed(precision);
   };
 
+  UTIL.within = function(num, min, max) {
+    if (num < min) return false;
+    if (num > max) return false;
+    return true;
+  };
+
 })();
