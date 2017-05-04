@@ -29,6 +29,7 @@ var DataViz = (function() {
     this.data = false;
     this.domain = false;
     this.range = false;
+    this.sound = new Sound({});
 
     this.loadView();
     this.loadListeners();
@@ -101,6 +102,12 @@ var DataViz = (function() {
     this.plotProgress.clear();
     this.plotProgress.beginFill(0xFFFFFF);
 
+    if (progress <= 0) {
+      this.sound.end();
+    } else {
+      this.sound.start();
+    }
+
     // draw points
     $.each(points, function(i, p){
       var px = UTIL.norm(p[0], domain[0], domain[1]);
@@ -111,6 +118,7 @@ var DataViz = (function() {
         var percent = px / progress;
         var r = UTIL.lerp(rad[0], rad[1], percent);
         _this.plotProgress.drawCircle(x, y, r);
+        _this.sound.change(py);
       }
     });
   };
