@@ -149,7 +149,7 @@ var DataViz = (function() {
     this.labels.addChild(label);
   };
 
-  DataViz.prototype.renderPlot = function(dataPoints, alpha, clear){
+  DataViz.prototype.renderPlot = function(dataPoints, percent, clear){
     var _this = this;
     var points = dataPoints || this.data.data;
     var w = this.app.renderer.width;
@@ -158,19 +158,19 @@ var DataViz = (function() {
     var cw = w - margin * 2;
     var ch = h - margin * 2;
     var rad = this.opt.pointRadius;
-    alpha = alpha || 1.0;
+    percent = percent || 1.0;
 
     // clear plot
     if (clear !== false) {
       this.plot.clear();
     }
-    this.plot.beginFill(0x595454, alpha);
+    this.plot.beginFill(0x595454);
 
     // draw points
     $.each(points, function(i, p){
       var x = p[0] * cw + margin;
       var y = h - margin - (p[1] * ch);
-      _this.plot.drawCircle(x, y, rad);
+      _this.plot.drawCircle(x, y, rad*percent);
     });
   };
 
@@ -264,8 +264,9 @@ var DataViz = (function() {
     var data1 = this.transformData(d1.data, p1);
     var data2 = this.transformData(d2.data, p2);
 
+    // percent = Math.min(percent*2, 1);
     this.renderPlot(data1, 1-percent);
-    this.renderPlot(data2, 1, false);
+    this.renderPlot(data2, percent, false);
   };
 
   return DataViz;
