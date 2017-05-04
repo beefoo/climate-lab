@@ -23,14 +23,30 @@ var DataViz = (function() {
 
   DataViz.prototype.init = function(){
     this.$el = $(this.opt.el);
+    this.scale = false;
     this.data = false;
 
     this.loadView();
     this.loadListeners();
   };
 
-  DataViz.prototype.loadData = function(data){
-    this.data = data;
+  DataViz.prototype.filterData = function(data, domain, range) {
+    var filtered = [];
+    $.each(data, function(i, t){
+      var d = t[0]; // date
+      var v = t[1]; // value
+      if (d >= domain[0] && d <= domain[1] && (!range || v >= range[0] && v <= range[1])) {
+        filtered.push([d,v]);
+      }
+    });
+    return filtered;
+  }
+
+  DataViz.prototype.loadData = function(scale, data){
+    this.scale = scale;
+    var scaleData = data[scale.unit];
+    scaleData = this.filterData(scaleData, scale.domain);
+    this.data = scaleData;
 
     this.renderAxes();
     this.renderPlot();
@@ -67,8 +83,8 @@ var DataViz = (function() {
 
   DataViz.prototype.renderAxes = function(xAxis, yAxis, alpha, clear){
     var _this = this;
-    var xs = xAxis || this.data.xAxis;
-    var ys = yAxis || this.data.yAxis;
+    var xs = xAxis || this.scale.xAxis;
+    var ys = yAxis || this.scale.yAxis;
     var xl = xs.length;
     var yl = ys.length;
     var w = this.app.renderer.width;
@@ -131,7 +147,7 @@ var DataViz = (function() {
     var w = this.app.renderer.width;
     var h = this.app.renderer.height;
     var margin = this.opt.margin;
-    var labelText = text || this.data.label;
+    var labelText = text || this.scale.label;
 
     // clear labels
     if (clear !== false) {
@@ -149,15 +165,18 @@ var DataViz = (function() {
     this.labels.addChild(label);
   };
 
-  DataViz.prototype.renderPlot = function(dataPoints, percent, clear){
+  DataViz.prototype.renderPlot = function(dataPoints, domain, range, percent, clear){
     var _this = this;
-    var points = dataPoints || this.data.data;
+    var points = dataPoints || this.data;
     var w = this.app.renderer.width;
     var h = this.app.renderer.height;
     var margin = this.opt.margin;
     var cw = w - margin * 2;
     var ch = h - margin * 2;
     var rad = this.opt.pointRadius;
+
+    domain = domain || this.scale.domain;
+    range = range || this.scale.range;
     percent = percent || 1.0;
 
     // clear plot
@@ -168,82 +187,25 @@ var DataViz = (function() {
 
     // draw points
     $.each(points, function(i, p){
-      var x = p[0] * cw + margin;
-      var y = h - margin - (p[1] * ch);
+      var px = UTIL.norm(p[0], domain[0], domain[1]);
+      var py = UTIL.norm(p[1], range[0], range[1]);
+      var x = px * cw + margin;
+      var y = h - margin - (py * ch);
       _this.plot.drawCircle(x, y, rad*percent);
     });
   };
 
-  DataViz.prototype.transformData = function(d, params) {
-    var tx = params[0];
-    var ty = params[1];
-    var tw = params[2];
-    var th = params[3];
-    var transformed = [];
-    $.each(d, function(i, xy){
-      var x = xy[0] * tw + tx;
-      var y = xy[1] * th - ty;
-      if (UTIL.within(x,0,1) && UTIL.within(y,0,1)) {
-        transformed.push([x,y]);
-      }
-    });
-    return transformed;
+  DataViz.prototype.transitionAxes = function(s1, s2, percent, data) {
+
   };
 
-  DataViz.prototype.transformParams = function(d1, d2, percent) {
-    // determine the amount of years each data scale covers
-    var domain1 = d1.domain[1][0] - d1.domain[0][0];
-    var domain2 = d2.domain[1][0] - d2.domain[0][0];
-    // use time if after 1970
-    if (d2.domain[0][0] >= 1970) {
-      domain1 = UTIL.dateTupleToInt(d1.domain[1]) - UTIL.dateTupleToInt(d1.domain[0]);
-      domain2 = UTIL.dateTupleToInt(d2.domain[1]) - UTIL.dateTupleToInt(d2.domain[0]);
-    }
-    // domain 1 ratio to domain 2
-    var domainRatio = domain1 / domain2;
-
-    // determine width/position of span1
-    var w1 = UTIL.lerp(1.0, domainRatio, percent);
-    var x1 = UTIL.lerp(0.0, 1.0-domainRatio, percent);
-
-    // determine width/position of span2
-    var w2 = UTIL.lerp(1.0/domainRatio, 1.0, percent);
-    var x2 = UTIL.lerp(1.0-1.0/domainRatio, 0.0, percent);
-
-    // get ranges
-    var rangeFrom = d1.range;
-    var rangeTo = d2.range;
-    var rangeMin = UTIL.lerp(rangeFrom[0], rangeTo[0], percent);
-    var rangeMax = UTIL.lerp(rangeFrom[1], rangeTo[1], percent);
-    var rangeTotal = rangeMax - rangeMin;
-
-    // determine height/position of range1
-    var h1 = (rangeFrom[1]-rangeFrom[0]) / rangeTotal;
-    var y1 = (rangeMin - rangeFrom[0]) / rangeTotal;
-
-    // determine height/position of range2
-    var h2 = (rangeTo[1]-rangeTo[0]) / rangeTotal;
-    var y2 = (rangeMin - rangeTo[0]) / rangeTotal;
-
-    return [
-      [x1, y1, w1, h1],
-      [x2, y2, w2, h2]
-    ];
+  DataViz.prototype.transitionData = function(s1, s2, percent, data) {
+    this.transitionAxes(s1, s2, percent, data);
+    this.transitionPlot(s1, s2, percent, data);
+    this.transitionLabel(s1, s2, percent);
   };
 
-  DataViz.prototype.transitionAxes = function(d1, d2, percent) {
-    var p = this.transformParams(d1, d2, percent);
-    var p1 = p[0];
-    var p2 = p[1];
-  };
-
-  DataViz.prototype.transitionData = function(d1, d2, percent) {
-    this.transitionAxes(d1, d2, percent);
-    this.transitionPlot(d1, d2, percent);
-    this.transitionLabel(d1, d2, percent);
-  };
-
-  DataViz.prototype.transitionLabel = function(d1, d2, percent) {
+  DataViz.prototype.transitionLabel = function(s1, s2, percent) {
     var w = this.app.renderer.width;
     var xc = w / 2;
     var xLeft = -200;
@@ -252,21 +214,26 @@ var DataViz = (function() {
     var x1 = UTIL.lerp(xc, xRight, percent);
     var x2 = UTIL.lerp(xLeft, xc, percent);
 
-    this.renderLabel(d1.label, x1);
-    this.renderLabel(d2.label, x2, undefined, false);
+    this.renderLabel(s1.label, x1);
+    this.renderLabel(s2.label, x2, undefined, false);
   };
 
-  DataViz.prototype.transitionPlot = function(d1, d2, percent) {
-    var p = this.transformParams(d1, d2, percent);
-    var p1 = p[0];
-    var p2 = p[1];
+  DataViz.prototype.transitionPlot = function(s1, s2, percent, data) {
+    var plotDomain = [UTIL.lerp(s1.domain[0], s2.domain[0], percent), UTIL.lerp(s1.domain[1], s2.domain[1], percent)];
+    var plotRange = [UTIL.lerp(s1.range[0], s2.range[0], percent), UTIL.lerp(s1.range[1], s2.range[1], percent)];
+    var plotData1 = this.filterData(data[s1.unit], plotDomain, plotRange);
 
-    var data1 = this.transformData(d1.data, p1);
-    var data2 = this.transformData(d2.data, p2);
 
-    // percent = Math.min(percent*2, 1);
-    this.renderPlot(data1, 1-percent);
-    this.renderPlot(data2, percent, false);
+
+    // different units of time; transition between them
+    if (s1.unit != s2.unit) {
+      var plotData2 = this.filterData(data[s2.unit], plotDomain, plotRange);
+      this.renderPlot(plotData1, plotDomain, plotRange, 1-percent);
+      this.renderPlot(plotData2, plotDomain, plotRange, percent, false);
+
+    } else {
+      this.renderPlot(plotData1, plotDomain, plotRange);
+    }
   };
 
   return DataViz;

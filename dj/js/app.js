@@ -63,8 +63,9 @@ var App = (function() {
     // determine current and closest index
     var scaleIndex = Math.min(Math.floor(value * this.scaleCount), this.scaleCount-1);
     var closestIndex = Math.round(value * this.scaleCount);
-    var d1 = this.currentData["scales"][scaleIndex];
-    var d2 = false;
+    var s1 = this.currentData.scales[scaleIndex];
+    var s2 = false;
+    var data = this.currentData.data;
 
     // determine if we are transitioning between two scales
     var transitionAmount = 0;
@@ -75,16 +76,16 @@ var App = (function() {
 
       // determine the other scope we are transitioning to
       if (value > closestValue) {
-        d2 = d1;
-        d1 = this.currentData["scales"][scaleIndex-1];
+        s2 = s1;
+        s1 = this.currentData["scales"][scaleIndex-1];
       } else {
-        d2 = this.currentData["scales"][scaleIndex+1];
+        s2 = this.currentData["scales"][scaleIndex+1];
       }
-      this.viz.transitionData(d1, d2, transitionAmount);
+      this.viz.transitionData(s1, s2, transitionAmount, data);
 
     // we are showing one scale
     } else {
-      this.viz.loadData(d1);
+      this.viz.loadData(s1, data);
     }
   };
 

@@ -11,49 +11,56 @@ import json
 import os
 from shared import *
 import time
+import sys
 
 # Define data sources
 FILES = {
     "hourly": {
         "filename": "data/co2_mlo_surface-insitu_1_ccgg_HourlyData.dat",
         "source": "https://www.esrl.noaa.gov/gmd/dv/data/?parameter_name=Carbon%2BDioxide&frequency=Hourly%2BAverages",
-        "header": ["site_code","year","month","day","hour","minute","second","value","value_unc","nvalue","latitude","longitude","altitude","elevation","intake_height","instrument","qcflag"]
+        "header": ["site_code","year","month","day","hour","minute","second","value","value_unc","nvalue","latitude","longitude","altitude","elevation","intake_height","instrument","qcflag"],
+        "unit": "hour"
     },
     "daily": {
         "filename": "data/co2_mlo_surface-insitu_1_ccgg_DailyData.dat",
         "source": "https://www.esrl.noaa.gov/gmd/dv/data/?parameter_name=Carbon%2BDioxide&frequency=Daily%2BAverages",
-        "header": ["site_code","year","month","day","hour","minute","second","value","value_unc","nvalue","latitude","longitude","altitude","elevation","intake_height","instrument","qcflag"]
+        "header": ["site_code","year","month","day","hour","minute","second","value","value_unc","nvalue","latitude","longitude","altitude","elevation","intake_height","instrument","qcflag"],
+        "unit": "day"
     },
     "monthly": {
         "filename": "data/co2_mm_mlo.txt",
         "source": "https://www.esrl.noaa.gov/gmd/ccgg/trends/data.html",
-        "header": ["year","month","decimal_date","value","interpolated","trend","days"]
+        "header": ["year","month","decimal_date","value","interpolated","trend","days"],
+        "unit": "month"
     },
     "annually": {
         "filename": "data/co2_annmean_mlo.txt",
         "source": "https://www.esrl.noaa.gov/gmd/ccgg/trends/data.html",
-        "header": ["year","value","uncertainty"]
+        "header": ["year","value","uncertainty"],
+        "unit": "year"
     },
     "ice_core": {
         "filename": "data/merged_ice_core_yearly.csv",
         "source": "http://scrippsco2.ucsd.edu/data/atmospheric_co2/icecore_merged_products",
-        "header": ["year","value"]
+        "header": ["year","value"],
+        "unit": "year"
     }
 }
 # Define data groups
 DATA_GROUPS = [
-    {"unit": "hour", "label": "Today", "file": "hourly", "dates": [(2015,12,31,0), (2015,12,31,23)]},
-    {"unit": "hour", "label": "Last 48 Hours", "file": "hourly", "dates": [(2015,12,30,0), (2015,12,31,23)]},
-    {"unit": "weekday", "label": "Last Week", "file": "hourly", "dates": [(2015,12,25,0), (2015,12,31,23)]},
-    {"unit": "day", "label": "Last Month", "file": "hourly", "dates": [(2015,12,1,0), (2015,12,31,23)]},
-    {"unit": "month", "label": "Last Year", "file": "daily", "dates": [(2015,1,1,0), (2015,12,31,23)]},
-    {"unit": "month", "label": "Last 2 Years", "file": "daily", "dates": [(2014,1,1,0), (2015,12,31,23)]},
-    {"unit": "year", "label": "Last Decade", "file": "monthly", "dates": [(2005,1,1,0), (2015,12,31,23)]},
-    {"unit": "year", "label": "Since 1959", "file": "annually", "dates": [(1959,1,1,0), (2015,12,31,23)]},
-    {"unit": "year", "label": "Since 13 C.E.", "file": "ice_core", "dates": [(13,1,1,0), (2015,12,31,23)]}
+    {"domainUnit": "hour", "label": "Today", "unit": "hour", "dates": [(2015,12,31,0), (2015,12,31,23)]},
+    {"domainUnit": "hour", "label": "Last 48 Hours", "unit": "hour", "dates": [(2015,12,30,0), (2015,12,31,23)]},
+    {"domainUnit": "weekday", "label": "Last Week", "unit": "hour", "dates": [(2015,12,25,0), (2015,12,31,23)]},
+    {"domainUnit": "day", "label": "Last Month", "unit": "hour", "dates": [(2015,12,1,0), (2015,12,31,23)]},
+    {"domainUnit": "month", "label": "Last Year", "unit": "day", "dates": [(2015,1,1,0), (2015,12,31,23)]},
+    {"domainUnit": "month", "label": "Last 2 Years", "unit": "day", "dates": [(2014,1,1,0), (2015,12,31,23)]},
+    {"domainUnit": "year", "label": "Last Decade", "unit": "month", "dates": [(2005,1,1,0), (2015,12,31,23)]},
+    {"domainUnit": "year", "label": "Since 1959", "unit": "year", "dates": [(1959,1,1,0), (2015,12,31,23)]},
+    {"domainUnit": "year", "label": "Since 13 C.E.", "unit": "year", "dates": [(13,1,1,0), (2015,12,31,23)]}
 ]
 OUTPUT_FILE = "data/processed_data.json"
 AXIS_ROUND_TO_NEAREST = 1
+UNITS = ["hour", "day", "month", "year"]
 
 def dateToNumber(date):
     (year, month, day, hour) = date
@@ -61,8 +68,9 @@ def dateToNumber(date):
 
 def dateToSeconds(date):
     (year, month, day, hour) = date
-    t = datetime(year, month, day, hour)
-    return time.mktime(t.timetuple())
+    dt = datetime(int(year), month, day, hour)
+    unix = datetime(1970,1,1)
+    return (dt - unix).total_seconds()
 
 def interpolateHours(start, end):
     dates = []
@@ -187,21 +195,6 @@ def interpolateNumbers(start, end):
 
     return numbers
 
-def getPoints(data, yRange, xRange):
-    points = []
-    for d in data:
-        y = norm(d["value"], yRange)
-        date = dateToNumber(d["date"])
-        a = dateToNumber(xRange[0])
-        b = dateToNumber(xRange[1])
-        if xRange[0][0] >= 1970:
-            date = dateToSeconds(d["date"])
-            a = dateToSeconds(xRange[0])
-            b = dateToSeconds(xRange[1])
-        x = norm(date, (a, b))
-        points.append((x,y))
-    return points
-
 def readDataFromFile(filename, header, dates):
     rows = []
     with open(filename, 'rb') as f:
@@ -233,33 +226,60 @@ def readDataFromFile(filename, header, dates):
                 })
     return rows
 
-# read data
+# Read the data into unit groups
+dataByUnits = {}
+for unit in UNITS:
+    # get the groups
+    unitGroups = [d for d in DATA_GROUPS if d["unit"]==unit]
+
+    # get the date range
+    dates = []
+    for ug in unitGroups:
+        dates += ug["dates"]
+    dates = sorted(dates)
+    dateRange = (dates[0], dates[-1])
+
+    # get the files
+    unitFiles = [f for key, f in FILES.iteritems() if f["unit"]==unit]
+    for uf in unitFiles:
+        # read data from file
+        print "Processing %s..." % uf["filename"]
+        uData = readDataFromFile(uf["filename"], uf["header"], dateRange)
+        # only add data if not already exists
+        if unit in dataByUnits:
+            for ud in uData:
+                found = [d for d in dataByUnits[unit] if d["date"]==ud["date"]]
+                if not len(found):
+                    dataByUnits[unit].append(ud)
+        else:
+            dataByUnits[unit] = uData
+
+# get axes for data groups
 dataGroups = []
 for g in DATA_GROUPS:
-    f = FILES[g["file"]]
-    print "Processing %s..." % f["filename"]
-    data = readDataFromFile(f["filename"], f["header"], g["dates"])
-
     # compute axes
-    values = [d["value"] for d in data]
+    values = [d["value"] for d in dataByUnits[g["unit"]] if g["dates"][0] <= d["date"] <= g["dates"][1]]
     yAxisMin = roundDownToNearest(min(values), AXIS_ROUND_TO_NEAREST)
     yAxisMax = roundUpToNearest(max(values), AXIS_ROUND_TO_NEAREST)
     yAxis = interpolateNumbers(yAxisMin, yAxisMax)
-    xAxis = interpolateDates(g["dates"][0], g["dates"][1], g["unit"])
-
-    points = getPoints(data, (yAxisMin, yAxisMax), g["dates"])
+    xAxis = interpolateDates(g["dates"][0], g["dates"][1], g["domainUnit"])
 
     dataGroups.append({
         "label": g["label"],
-        "data": points,
         "xAxis": xAxis,
         "yAxis": yAxis,
-        "domain": g["dates"],
-        "range": (yAxisMin, yAxisMax)
+        "domain": (dateToSeconds(g["dates"][0]), dateToSeconds(g["dates"][1])),
+        "range": (yAxisMin, yAxisMax),
+        "unit": g["unit"]
     })
+
+# turn into tuples
+for unit, data in dataByUnits.iteritems():
+    dataByUnits[unit] = [(dateToSeconds(d["date"]), d["value"]) for d in data]
 
 # Build JSON data
 jsonData = {
+    "data": dataByUnits,
     "scales": dataGroups
 }
 
