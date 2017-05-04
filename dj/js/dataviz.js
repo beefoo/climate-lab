@@ -105,6 +105,11 @@ var DataViz = (function() {
     this.plotProgress.clear();
     this.plotProgress.beginFill(0xFFFFFF);
 
+    var blurFilter = new PIXI.filters.BlurFilter();
+    blurFilter.blur = 3;
+    this.plotProgress.filters = [blurFilter];
+
+
     if (progress <= 0) {
       this.sound.end();
     } else {
