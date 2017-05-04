@@ -7,6 +7,7 @@ var DataViz = (function() {
       margin: 100,
       tickLength: 10,
       pointRadius: 4,
+      highlightPointRadius: [0.1, 10],
       axisTextStyle: {
         fill: "#ffffff",
         fontSize: 16
@@ -24,7 +25,10 @@ var DataViz = (function() {
   DataViz.prototype.init = function(){
     this.$el = $(this.opt.el);
     this.scale = false;
+
     this.data = false;
+    this.domain = false;
+    this.range = false;
 
     this.loadView();
     this.loadListeners();
@@ -46,7 +50,10 @@ var DataViz = (function() {
     this.scale = scale;
     var scaleData = data[scale.unit];
     scaleData = this.filterData(scaleData, scale.domain);
+
     this.data = scaleData;
+    this.domain = scale.domain;
+    this.range = scale.range;
 
     this.renderAxes();
     this.renderPlot();
@@ -77,8 +84,35 @@ var DataViz = (function() {
     this.app.renderer.resize(this.$el.width(), this.$el.height());
   };
 
-  DataViz.prototype.render = function(progress){
+  DataViz.prototype.renderProgress = function(progress){
+    if (!this.data || !this.domain || !this.range) return false;
+
+    var _this = this;
+    var points = this.data;
+    var domain = this.domain;
+    var range = this.range;
+    var w = this.app.renderer.width;
+    var h = this.app.renderer.height;
+    var margin = this.opt.margin;
+    var cw = w - margin * 2;
+    var ch = h - margin * 2;
+    var rad = this.opt.highlightPointRadius;
+
     this.plotProgress.clear();
+    this.plotProgress.beginFill(0xFFFFFF);
+
+    // draw points
+    $.each(points, function(i, p){
+      var px = UTIL.norm(p[0], domain[0], domain[1]);
+      if (px <= progress) {
+        var py = UTIL.norm(p[1], range[0], range[1]);
+        var x = px * cw + margin;
+        var y = h - margin - (py * ch);
+        var percent = px / progress;
+        var r = UTIL.lerp(rad[0], rad[1], percent);
+        _this.plotProgress.drawCircle(x, y, r);
+      }
+    });
   };
 
   DataViz.prototype.renderAxes = function(xAxis, yAxis, alpha, clear){
@@ -175,8 +209,8 @@ var DataViz = (function() {
     var ch = h - margin * 2;
     var rad = this.opt.pointRadius;
 
-    domain = domain || this.scale.domain;
-    range = range || this.scale.range;
+    domain = domain || this.domain;
+    range = range || this.range;
     percent = percent || 1.0;
 
     // clear plot
@@ -223,8 +257,6 @@ var DataViz = (function() {
     var plotRange = [UTIL.lerp(s1.range[0], s2.range[0], percent), UTIL.lerp(s1.range[1], s2.range[1], percent)];
     var plotData1 = this.filterData(data[s1.unit], plotDomain, plotRange);
 
-
-
     // different units of time; transition between them
     if (s1.unit != s2.unit) {
       var plotData2 = this.filterData(data[s2.unit], plotDomain, plotRange);
@@ -233,6 +265,15 @@ var DataViz = (function() {
 
     } else {
       this.renderPlot(plotData1, plotDomain, plotRange);
+    }
+
+    // update domain, range, and data
+    this.domain = plotDomain;
+    this.range = plotRange;
+    if (percent < 0.5 || s1.unit == s2.unit) {
+      this.data = plotData1;
+    } else {
+      this.data = plotData2;
     }
   };
 

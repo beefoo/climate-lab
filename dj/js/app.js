@@ -51,8 +51,7 @@ var App = (function() {
     this.scaleCount = this.currentData.scales.length;
 
     this.onScale(this.scale);
-    // this.startDate = Date.now();
-    // this.render();
+    this.render();
   };
 
   App.prototype.onScale = function(value) {
@@ -82,26 +81,38 @@ var App = (function() {
         s2 = this.currentData["scales"][scaleIndex+1];
       }
       this.viz.transitionData(s1, s2, transitionAmount, data);
+      this.startDate = Date.now();
+      this.transitioning = true;
 
     // we are showing one scale
     } else {
       this.viz.loadData(s1, data);
+      this.transitioning = false;
     }
   };
 
   App.prototype.onSpeed = function(value) {
     var r = this.opt.durationRange;
     this.duration = UTIL.lerp(r[0], r[1], value);
+    this.startDate = Date.now();
   };
 
   App.prototype.render = function(){
     var _this = this;
 
+    if (this.startDate==undefined) {
+      this.startDate = Date.now();
+    }
     var d = Date.now();
     var elapsed = d - this.startDate;
-    var progress = elapsed / this.duration % 1;
+    var progress = elapsed % this.duration / this.duration;
 
-    this.viz.render(progress);
+    if (this.transitioning) {
+      this.viz.renderProgress(0);
+    } else {
+      this.viz.renderProgress(progress);
+    }
+
     // this.spinner.render(progress);
   	requestAnimationFrame(function(){ _this.render(); });
   };
