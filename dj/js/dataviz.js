@@ -83,6 +83,9 @@ var DataViz = (function() {
 
   DataViz.prototype.onResize = function(){
     this.app.renderer.resize(this.$el.width(), this.$el.height());
+    this.renderAxes();
+    this.renderPlot();
+    this.renderLabel();
   };
 
   DataViz.prototype.renderProgress = function(progress){
