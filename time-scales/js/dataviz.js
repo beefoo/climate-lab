@@ -6,8 +6,8 @@ var DataViz = (function() {
       el: '#main',
       margin: 100,
       tickLength: 10,
-      pointRadius: 4,
-      highlightPointRadius: [0.1, 10],
+      pointRadius: 2,
+      highlightPointRadius: [0.1, 2],
       axisTextStyle: {
         fill: "#ffffff",
         fontSize: 16
@@ -26,7 +26,8 @@ var DataViz = (function() {
     this.$el = $(this.opt.el);
     this.scale = false;
 
-    this.data = false;
+    this.plotData = false;
+    this.plotTrend = false;
     this.domain = false;
     this.range = false;
     this.sound = new Sound({});
@@ -49,10 +50,14 @@ var DataViz = (function() {
 
   DataViz.prototype.loadData = function(scale, data){
     this.scale = scale;
-    var scaleData = data[scale.unit];
-    scaleData = this.filterData(scaleData, scale.domain);
+    var plot = data[scale.unit].plot;
+    var trend = data[scale.unit].trend;
 
-    this.data = scaleData;
+    plot = this.filterData(plot, scale.domain);
+    trend = this.filterData(trend, scale.domain);
+
+    this.plotData = plot;
+    this.plotTrend = trend;
     this.domain = scale.domain;
     this.range = scale.range;
 
@@ -74,9 +79,10 @@ var DataViz = (function() {
     this.axes = new PIXI.Graphics();
     this.plot = new PIXI.Graphics();
     this.plotProgress = new PIXI.Graphics();
+    this.plotProgressTrend = new PIXI.Graphics();
     this.labels = new PIXI.Graphics();
 
-    this.app.stage.addChild(this.axes, this.plot, this.plotProgress, this.labels);
+    this.app.stage.addChild(this.axes, this.plot, this.plotProgress, this.plotProgressTrend, this.labels);
 
     this.$el.append(this.app.view);
   };
@@ -89,10 +95,11 @@ var DataViz = (function() {
   };
 
   DataViz.prototype.renderProgress = function(progress){
-    if (!this.data || !this.domain || !this.range) return false;
+    if (!this.plotData || !this.domain || !this.range) return false;
 
     var _this = this;
-    var points = this.data;
+    var points = this.plotData;
+    var trend = this.plotTrend;
     var domain = this.domain;
     var range = this.range;
     var w = this.app.renderer.width;
@@ -103,13 +110,9 @@ var DataViz = (function() {
     var rad = this.opt.highlightPointRadius;
 
     this.plotProgress.clear();
-    this.plotProgress.beginFill(0xFFFFFF);
+    this.plotProgress.beginFill(0x686363);
 
-    var blurFilter = new PIXI.filters.BlurFilter();
-    blurFilter.blur = 3;
-    this.plotProgress.filters = [blurFilter];
-
-
+    // start/stop sound
     if (progress <= 0) {
       this.sound.end();
     } else {
@@ -126,9 +129,44 @@ var DataViz = (function() {
         var percent = px / progress;
         var r = UTIL.lerp(rad[0], rad[1], percent);
         _this.plotProgress.drawCircle(x, y, r);
-        _this.sound.change(py);
       }
     });
+
+    // draw trend line
+    this.plotProgressTrend.clear();
+    if (!trend) return false;
+
+    // add blur filter
+    var blurFilter = new PIXI.filters.BlurFilter();
+    blurFilter.blur = 2;
+    this.plotProgressTrend.filters = [blurFilter];
+    var prev = false;
+    var lastPy = false;
+
+    // draw trend line
+    $.each(trend, function(i, p){
+      var px = UTIL.norm(p[0], domain[0], domain[1]);
+      var py = UTIL.norm(p[1], range[0], range[1]);
+      if (px <= progress) {
+        var x = px * cw + margin;
+        var y = h - margin - (py * ch);
+        var percent = px / progress;
+        if (!prev) {
+          prev = [x, y];
+        } else {
+          _this.plotProgressTrend.lineStyle(10, 0xFFFFFF, percent);
+          _this.plotProgressTrend.moveTo(prev[0], prev[1]);
+          _this.plotProgressTrend.lineTo(x, y);
+          prev = [x, y];
+        }
+        lastPy = py;
+      }
+    });
+
+    if (lastPy !== false) {
+      this.sound.change(lastPy);
+    }
+
   };
 
   DataViz.prototype.renderAxes = function(xAxis, yAxis, alpha, clear){
@@ -217,7 +255,7 @@ var DataViz = (function() {
 
   DataViz.prototype.renderPlot = function(dataPoints, domain, range, percent, clear){
     var _this = this;
-    var points = dataPoints || this.data;
+    var points = dataPoints || this.plotData;
     var w = this.app.renderer.width;
     var h = this.app.renderer.height;
     var margin = this.opt.margin;
@@ -271,25 +309,26 @@ var DataViz = (function() {
   DataViz.prototype.transitionPlot = function(s1, s2, percent, data) {
     var plotDomain = [UTIL.lerp(s1.domain[0], s2.domain[0], percent), UTIL.lerp(s1.domain[1], s2.domain[1], percent)];
     var plotRange = [UTIL.lerp(s1.range[0], s2.range[0], percent), UTIL.lerp(s1.range[1], s2.range[1], percent)];
-    var plotData1 = this.filterData(data[s1.unit], plotDomain, plotRange);
+
+    var plot1 = this.filterData(data[s1.unit].plot, plotDomain, plotRange);
 
     // different units of time; transition between them
     if (s1.unit != s2.unit) {
-      var plotData2 = this.filterData(data[s2.unit], plotDomain, plotRange);
-      this.renderPlot(plotData1, plotDomain, plotRange, 1-percent);
-      this.renderPlot(plotData2, plotDomain, plotRange, percent, false);
+      var plot2 = this.filterData(data[s2.unit].plot, plotDomain, plotRange);
+      this.renderPlot(plot1, plotDomain, plotRange, 1-percent);
+      this.renderPlot(plot2, plotDomain, plotRange, percent, false);
 
     } else {
-      this.renderPlot(plotData1, plotDomain, plotRange);
+      this.renderPlot(plot1, plotDomain, plotRange);
     }
 
     // update domain, range, and data
     this.domain = plotDomain;
     this.range = plotRange;
     if (percent < 0.5 || s1.unit == s2.unit) {
-      this.data = plotData1;
+      this.plotData = plot1;
     } else {
-      this.data = plotData2;
+      this.plotData = plot2;
     }
   };
 

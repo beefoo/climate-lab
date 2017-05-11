@@ -48,15 +48,15 @@ FILES = {
 }
 # Define data groups
 DATA_GROUPS = [
-    {"domainUnit": "hour", "label": "Today", "unit": "hour", "dates": [(2015,12,31,0), (2015,12,31,23)]},
-    {"domainUnit": "hour", "label": "Last 48 Hours", "unit": "hour", "dates": [(2015,12,30,0), (2015,12,31,23)]},
-    {"domainUnit": "weekday", "label": "Last Week", "unit": "hour", "dates": [(2015,12,25,0), (2015,12,31,23)]},
+    # {"domainUnit": "hour", "label": "Today", "unit": "hour", "dates": [(2015,12,31,0), (2015,12,31,23)]},
+    # {"domainUnit": "hour", "label": "Last 48 Hours", "unit": "hour", "dates": [(2015,12,30,0), (2015,12,31,23)]},
+    # {"domainUnit": "weekday", "label": "Last Week", "unit": "hour", "dates": [(2015,12,25,0), (2015,12,31,23)]},
     {"domainUnit": "day", "label": "Last Month", "unit": "hour", "dates": [(2015,12,1,0), (2015,12,31,23)]},
     {"domainUnit": "month", "label": "Last Year", "unit": "day", "dates": [(2015,1,1,0), (2015,12,31,23)]},
-    {"domainUnit": "month", "label": "Last 2 Years", "unit": "day", "dates": [(2014,1,1,0), (2015,12,31,23)]},
+    # {"domainUnit": "month", "label": "Last 2 Years", "unit": "day", "dates": [(2014,1,1,0), (2015,12,31,23)]},
     {"domainUnit": "year", "label": "Last Decade", "unit": "month", "dates": [(2005,1,1,0), (2015,12,31,23)]},
-    {"domainUnit": "year", "label": "Since 1959", "unit": "year", "dates": [(1959,1,1,0), (2015,12,31,23)]},
-    {"domainUnit": "year", "label": "Since 13 C.E.", "unit": "year", "dates": [(13,1,1,0), (2015,12,31,23)]}
+    {"domainUnit": "year", "label": "Since 1959", "unit": "month", "dates": [(1959,1,1,0), (2015,12,31,23)]},
+    # {"domainUnit": "year", "label": "Since 13 C.E.", "unit": "year", "dates": [(13,1,1,0), (2015,12,31,23)]}
 ]
 OUTPUT_FILE = "data/processed_data.json"
 AXIS_ROUND_TO_NEAREST = 1
@@ -71,6 +71,16 @@ def dateToSeconds(date):
     dt = datetime(int(year), month, day, hour)
     unix = datetime(1970,1,1)
     return (dt - unix).total_seconds()
+
+def getTrend(points, windows):
+    xs = [xy[0] for xy in points]
+    ys = [xy[1] for xy in points]
+    windows = max(2, windows)
+    window_size = min(51, len(xs)/windows)
+    if window_size % 2 == 0:
+        window_size += 1
+    ysTrend = savitzky_golay(ys, window_size)
+    return zip(xs, ysTrend)
 
 def interpolateHours(start, end):
     dates = []
@@ -232,6 +242,9 @@ for unit in UNITS:
     # get the groups
     unitGroups = [d for d in DATA_GROUPS if d["unit"]==unit]
 
+    if len(unitGroups) <= 0:
+        continue
+
     # get the date range
     dates = []
     for ug in unitGroups:
@@ -254,6 +267,10 @@ for unit in UNITS:
         else:
             dataByUnits[unit] = uData
 
+# sort data
+for unit, data in dataByUnits.iteritems():
+    dataByUnits[unit] = sorted(data, key=lambda k: k["date"])
+
 # get axes for data groups
 dataGroups = []
 for g in DATA_GROUPS:
@@ -275,7 +292,14 @@ for g in DATA_GROUPS:
 
 # turn into tuples
 for unit, data in dataByUnits.iteritems():
-    dataByUnits[unit] = [(dateToSeconds(d["date"]), d["value"]) for d in data]
+    tuples = [(dateToSeconds(d["date"]), d["value"]) for d in data]
+    yearsDiff = data[-1]["date"][0] - data[0]["date"][0]
+    dataByUnits[unit] = {
+        "plot": tuples,
+        "trend": getTrend(tuples, yearsDiff*2)
+    }
+
+sys.exit(1)
 
 # Build JSON data
 jsonData = {

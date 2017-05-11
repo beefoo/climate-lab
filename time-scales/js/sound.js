@@ -3,7 +3,7 @@
 var Sound = (function() {
   function Sound(options) {
     var defaults = {
-      frequency: [60, 2000]
+      frequency: [40, 1000]
     };
     this.opt = $.extend({}, defaults, options);
     this.init();

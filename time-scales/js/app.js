@@ -74,7 +74,7 @@ var App = (function() {
       transitionAmount = (value - closestValue + halfTp) / tp;
 
       // determine the other scope we are transitioning to
-      if (value > closestValue) {
+      if (value >= closestValue) {
         s2 = s1;
         s1 = this.currentData["scales"][scaleIndex-1];
       } else {
