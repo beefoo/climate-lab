@@ -105,7 +105,17 @@ var App = (function() {
     }
     var d = Date.now();
     var elapsed = d - this.startDate;
-    var progress = elapsed % this.duration / this.duration;
+    var hold = this.opt.durationHold;
+    var dur = this.duration + hold;
+    var nonHold = this.duration / dur;
+    var progress = elapsed % dur / dur;
+
+    // logic for determining if we should hold the last note
+    if (progress >= nonHold) {
+      progress = 1.0;
+    } else {
+      progress = UTIL.norm(progress, 0, nonHold);
+    }
 
     if (this.transitioning) {
       this.viz.renderProgress(0);
