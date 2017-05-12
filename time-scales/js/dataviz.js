@@ -46,7 +46,62 @@ var DataViz = (function() {
       }
     });
     return filtered;
-  }
+  };
+
+  DataViz.prototype.getXAxis = function(domain){
+    var d0 = new Date(domain[0]*1000);
+    var d1 = new Date(domain[1]*1000);
+    var days = (domain[1] - domain[0]) / 60 / 60 / 24;
+    var year0 = d0.getUTCFullYear();
+    var year1 = d1.getUTCFullYear();
+    var years = year1 - year0;
+    var axis = [];
+    var value = domain[0];
+    var d = d0;
+    var label = year0;
+    var monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"];
+
+    // Mode: years
+    if (years > 2) {
+      while (d < d1) {
+        axis.push({value: value, label: label});
+        d.setUTCFullYear(d.getUTCFullYear() + 1);
+        value = d.getTime() / 1000;
+        label = d.getUTCFullYear();
+      }
+      axis.push({value: domain[1], label: "Today"});
+
+    // Mode: months
+    } else if (days > 60) {
+
+      while (d < d1) {
+        axis.push({value: value, label: label});
+        d.setUTCMonth(d.getUTCMonth() + 1);
+        value = d.getTime() / 1000;
+        label = monthNames[d.getUTCMonth()];
+        if (label=="Jan") label = d.getUTCFullYear();
+      }
+      axis.push({value: domain[1], label: "Today"});
+
+    // Mode: days
+    } else if (days > 2) {
+      label = monthNames[d.getUTCMonth()] + " " + d.getUTCFullYear();
+      while (d < d1) {
+        axis.push({value: value, label: label});
+        d.setUTCDate(d.getUTCDate() + 1);
+        value = d.getTime() / 1000;
+        label = d.getUTCDate();
+        if (label===1) label = monthNames[d.getUTCMonth()] + " " + d.getUTCFullYear();
+      }
+      axis.push({value: domain[1], label: "Today"});
+
+    // Mode: hours
+    } else {
+
+    }
+
+    return axis;
+  };
 
   DataViz.prototype.loadData = function(scale, data){
     this.scale = scale;
@@ -169,11 +224,10 @@ var DataViz = (function() {
 
   };
 
-  DataViz.prototype.renderAxes = function(xAxis, range, alpha, clear){
+  DataViz.prototype.renderAxes = function(domain, range, alpha, clear){
     var _this = this;
-    var xs = xAxis || this.scale.xAxis;
+    var domain = domain || this.domain;
     var range = range || this.range;
-    var xl = xs.length;
     var w = this.app.renderer.width;
     var h = this.app.renderer.height;
     var margin = this.opt.margin;
@@ -196,17 +250,20 @@ var DataViz = (function() {
     // draw x ticks/labels
     var y = h - margin;
     var x = margin;
+    var x0 = domain[0];
+    var x1 = domain[1];
+    var xs = this.getXAxis(domain);
+
     $.each(xs, function(i, value){
-      x = margin + (i / (xl-1)) * cw;
+      var px = UTIL.norm(value.value, x0, x1);
+      x = margin + px * cw;
 
       // draw tick
-      if (value.length) {
-        _this.axes.moveTo(x, y).lineTo(x, y+len);
-      }
+      _this.axes.moveTo(x, y).lineTo(x, y+len);
 
       // draw label
-      if (value.length && value != "-") {
-        var label = new PIXI.Text(value, textStyle);
+      if (value.label !== "") {
+        var label = new PIXI.Text(value.label, textStyle);
         label.x = x;
         label.y = y+len+20;
         label.anchor.set(0.5, 0.0);
@@ -292,7 +349,6 @@ var DataViz = (function() {
     var plotDomain = [UTIL.lerp(s1.domain[0], s2.domain[0], percent), UTIL.lerp(s1.domain[1], s2.domain[1], percent)];
     var plotRange = [UTIL.lerp(s1.range[0], s2.range[0], percent), UTIL.lerp(s1.range[1], s2.range[1], percent)];
 
-    plotDomain = false;
     this.renderAxes(plotDomain, plotRange);
   };
 
