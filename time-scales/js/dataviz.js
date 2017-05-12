@@ -169,12 +169,11 @@ var DataViz = (function() {
 
   };
 
-  DataViz.prototype.renderAxes = function(xAxis, yAxis, alpha, clear){
+  DataViz.prototype.renderAxes = function(xAxis, range, alpha, clear){
     var _this = this;
     var xs = xAxis || this.scale.xAxis;
-    var ys = yAxis || this.scale.yAxis;
+    var range = range || this.range;
     var xl = xs.length;
-    var yl = ys.length;
     var w = this.app.renderer.width;
     var h = this.app.renderer.height;
     var margin = this.opt.margin;
@@ -216,19 +215,25 @@ var DataViz = (function() {
     });
 
     // draw y ticks/labels
-    x = margin
-    $.each(ys, function(i, value){
-      y = h - margin - ((i / (yl-1)) * ch);
-      _this.axes.moveTo(x, y).lineTo(x-len, y);
+    var y0 = range[0];
+    var y1 = range[1];
+    var value = Math.ceil(y0);
+    var tickEvery = 10;
+    x = margin;
 
-      if (i==0 || i >= yl-1) {
+    while(value <= y1) {
+      var py = UTIL.norm(value, y0, y1);
+      y = h - margin - (py * ch);
+      _this.axes.moveTo(x, y).lineTo(x-len, y);
+      if (value % tickEvery === 0 || value==y0 || value==y1) {
         var label = new PIXI.Text(value, textStyle);
         label.x = x-len-20;
         label.y = y;
         label.anchor.set(1.0, 0.5);
         _this.axes.addChild(label);
       }
-    });
+      value += 1;
+    }
   };
 
   DataViz.prototype.renderLabel = function(text, x, y, clear){
@@ -284,7 +289,11 @@ var DataViz = (function() {
   };
 
   DataViz.prototype.transitionAxes = function(s1, s2, percent, data) {
+    var plotDomain = [UTIL.lerp(s1.domain[0], s2.domain[0], percent), UTIL.lerp(s1.domain[1], s2.domain[1], percent)];
+    var plotRange = [UTIL.lerp(s1.range[0], s2.range[0], percent), UTIL.lerp(s1.range[1], s2.range[1], percent)];
 
+    plotDomain = false;
+    this.renderAxes(plotDomain, plotRange);
   };
 
   DataViz.prototype.transitionData = function(s1, s2, percent, data) {

@@ -284,7 +284,7 @@ for g in DATA_GROUPS:
     dataGroups.append({
         "label": g["label"],
         "xAxis": xAxis,
-        "yAxis": yAxis,
+        # "yAxis": yAxis,
         "domain": (dateToSeconds(g["dates"][0]), dateToSeconds(g["dates"][1])),
         "range": (yAxisMin, yAxisMax),
         "unit": g["unit"]
