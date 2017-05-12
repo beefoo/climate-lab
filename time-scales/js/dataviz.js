@@ -56,49 +56,47 @@ var DataViz = (function() {
     var year1 = d1.getUTCFullYear();
     var years = year1 - year0;
     var axis = [];
-    var value = domain[0];
     var d = d0;
-    var label = year0;
+    var value, label;
     var monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"];
 
     // Mode: years
     if (years > 2) {
       while (d < d1) {
-        axis.push({value: value, label: label});
-        d.setUTCFullYear(d.getUTCFullYear() + 1);
         value = d.getTime() / 1000;
         label = d.getUTCFullYear();
+        if (label % 5 > 0 && axis.length) label = "";
+        axis.push({value: value, label: label});
+        d.setUTCFullYear(d.getUTCFullYear() + 1);
       }
-      axis.push({value: domain[1], label: "Today"});
 
     // Mode: months
     } else if (days > 60) {
-
       while (d < d1) {
-        axis.push({value: value, label: label});
-        d.setUTCMonth(d.getUTCMonth() + 1);
         value = d.getTime() / 1000;
         label = monthNames[d.getUTCMonth()];
         if (label=="Jan") label = d.getUTCFullYear();
+        else if (d.getUTCMonth() % 6 > 0) label = "";
+        axis.push({value: value, label: label});
+        d.setUTCMonth(d.getUTCMonth() + 1);
       }
-      axis.push({value: domain[1], label: "Today"});
 
     // Mode: days
     } else if (days > 2) {
-      label = monthNames[d.getUTCMonth()] + " " + d.getUTCFullYear();
       while (d < d1) {
+        value = d.getTime() / 1000;
+        label = "";
+        if (d.getUTCDate()===1) label = monthNames[d.getUTCMonth()] + " " + d.getUTCFullYear();
         axis.push({value: value, label: label});
         d.setUTCDate(d.getUTCDate() + 1);
-        value = d.getTime() / 1000;
-        label = d.getUTCDate();
-        if (label===1) label = monthNames[d.getUTCMonth()] + " " + d.getUTCFullYear();
       }
-      axis.push({value: domain[1], label: "Today"});
 
     // Mode: hours
     } else {
 
     }
+
+    axis.push({value: domain[1], label: "Today"});
 
     return axis;
   };
