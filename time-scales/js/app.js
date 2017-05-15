@@ -2,7 +2,9 @@
 
 var App = (function() {
   function App(options) {
-    var defaults = {};
+    var defaults = {
+      enableSound: true
+    };
     this.opt = $.extend({}, defaults, options);
     this.init();
   }
@@ -30,7 +32,7 @@ var App = (function() {
     this.onSpeed(this.speed);
 
     // Initialize viz and spinners
-    this.viz = new DataViz({el: "#pane"});
+    this.viz = new DataViz({el: "#pane", enableSound: this.opt.enableSound});
     this.spinner = new Spinner({el: "#spinner"});
 
     this.loadData();

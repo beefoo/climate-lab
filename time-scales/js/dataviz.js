@@ -16,7 +16,8 @@ var DataViz = (function() {
         fill: "#ffffff",
         fontSize: 24,
         fontWeight: "bold"
-      }
+      },
+      enableSound: true
     };
     this.opt = $.extend({}, defaults, options);
     this.init();
@@ -30,7 +31,10 @@ var DataViz = (function() {
     this.plotTrend = false;
     this.domain = false;
     this.range = false;
-    this.sound = new Sound({});
+    this.sound = false;
+
+    console.log(this.opt.enableSound)
+    if (this.opt.enableSound) this.sound = new Sound({});
 
     this.loadView();
     this.loadListeners();
