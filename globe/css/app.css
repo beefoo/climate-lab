@@ -1,0 +1,12 @@
+body {
+  overflow: hidden;
+}
+
+.canvas-wrapper {
+  background: #212121;
+  color: #fff;
+  letter-spacing: 0.08rem;
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+}

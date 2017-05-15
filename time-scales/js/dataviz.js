@@ -33,7 +33,6 @@ var DataViz = (function() {
     this.range = false;
     this.sound = false;
 
-    console.log(this.opt.enableSound)
     if (this.opt.enableSound) this.sound = new Sound({});
 
     this.loadView();
