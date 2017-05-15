@@ -57,23 +57,32 @@ var Globe = (function() {
 
     // init globe
     var geometry = new THREE.SphereGeometry(0.5, 32, 32);
-    this.material = new THREE.MeshPhongMaterial();
-    this.earth = new THREE.Mesh(geometry, this.material);
+    var material = new THREE.MeshPhongMaterial();
+    this.earth = new THREE.Mesh(geometry, material);
     this.scene.add(this.earth);
 
     // init controls
     this.controls = new THREE.OrbitControls(this.camera, this.renderer.domElement);
 
-    // load texture
+    // load base texture
     var loader = new THREE.TextureLoader();
     loader.load(
-    	'img/earthmap1k.jpg',
+    	'img/earthmap4k.jpg',
     	function (texture) {
-        _this.material.map = texture;
+        material.map = texture;
         _this.render();
       },
     	function (xhr) { /* console.log( (xhr.loaded / xhr.total * 100) + '% loaded' ); */ }
     );
+
+    // var material  = new THREE.MeshPhongMaterial({
+    //   map     : new THREE.Texture(canvasCloud),
+    //   side        : THREE.DoubleSide,
+    //   opacity     : 0.8,
+    //   transparent : true,
+    //   depthWrite  : false,
+    // })
+    // var cloudMesh = new THREE.Mesh(geometry, material)
   };
 
   Globe.prototype.onResize = function(){
