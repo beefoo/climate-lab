@@ -17,9 +17,7 @@ body {
 .tt-sliders,
 .tt-disc,
 .tt-disc button,
-.tt-spinner,
-.tt-slider-vert,
-.tt-slider-horz {
+.tt-spinner {
   position: absolute;
   top: 0;
   left: 0;
@@ -70,32 +68,29 @@ h2 {
 
 .tt-sliders {
   width: 400px;
-  height: 80px;
+  height: 160px;
   left: 50%;
   top: 50%;
   margin-left: -200px;
-  margin-top: -40px;
+  margin-top: -80px;
+}
+.tt-sliders label {
+
 }
 .tt-slider-horz {
   width: 200px;
   height: 10px;
-  left: 50%;
-  top: 20px;
-  margin-left: -100px;
+  position: relative;
 }
 .tt-slider-vert {
   width: 10px;
   height: 140px;
-  top: 50%;
-  margin-top: -70px;
-}
-.tt-slider-vert:last-child {
-  left: auto;
-  right: 0;
+  position: relative;
 }
 
 .ui-slider {
   background: #004D40;
+  margin: 20px 0 40px;
 }
 .ui-slider .ui-slider-handle {
   background: #80CBC4;

@@ -65,7 +65,8 @@ var DataViz = (function() {
       while (d < d1) {
         value = d.getTime() / 1000;
         label = d.getUTCFullYear();
-        if (label % 5 > 0 && axis.length) label = "";
+        // if (label % 5 > 0 && axis.length) label = "";
+        if (axis.length) label = "";
         axis.push({value: value, label: label});
         d.setUTCFullYear(d.getUTCFullYear() + 1);
       }
@@ -74,9 +75,11 @@ var DataViz = (function() {
     } else if (days > 60) {
       while (d < d1) {
         value = d.getTime() / 1000;
-        label = monthNames[d.getUTCMonth()];
-        if (label=="Jan") label = d.getUTCFullYear();
-        else if (d.getUTCMonth() % 6 > 0) label = "";
+        // label = monthNames[d.getUTCMonth()];
+        // if (label=="Jan") label = d.getUTCFullYear();
+        // else if (d.getUTCMonth() % 6 > 0) label = "";
+        label = d.getUTCFullYear();
+        if (axis.length) label = "";
         axis.push({value: value, label: label});
         d.setUTCMonth(d.getUTCMonth() + 1);
       }
@@ -86,7 +89,8 @@ var DataViz = (function() {
       while (d < d1) {
         value = d.getTime() / 1000;
         label = "";
-        if (d.getUTCDate()===1) label = monthNames[d.getUTCMonth()] + " " + d.getUTCFullYear();
+        // if (d.getUTCDate()===1) label = monthNames[d.getUTCMonth()] + " " + d.getUTCFullYear();
+        if (d.getUTCDate()===1) label = monthNames[d.getUTCMonth()] + " 1";
         axis.push({value: value, label: label});
         d.setUTCDate(d.getUTCDate() + 1);
       }
@@ -167,9 +171,9 @@ var DataViz = (function() {
 
     // start/stop sound
     if (progress <= 0) {
-      this.sound.end();
+      this.sound && this.sound.end();
     } else {
-      this.sound.start();
+      this.sound && this.sound.start();
     }
 
     // draw points
@@ -217,7 +221,7 @@ var DataViz = (function() {
     });
 
     if (lastPy !== false) {
-      this.sound.change(lastPy);
+      this.sound && this.sound.change(lastPy);
     }
 
   };
