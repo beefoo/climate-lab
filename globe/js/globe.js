@@ -13,10 +13,15 @@ var Globe = (function() {
   }
 
   Globe.prototype.init = function(){
+    var _this = this;
     this.$el = $(this.opt.el);
+    this.video = document.getElementById('video-co2');
 
-    this.loadView();
-    this.loadListeners();
+    this.video.addEventListener('loadeddata', function() {
+      console.log('Video loaded');
+      _this.loadView();
+      _this.loadListeners();
+    }, false);
   };
 
   Globe.prototype.loadListeners = function(){
@@ -24,7 +29,7 @@ var Globe = (function() {
 
     $(window).on('resize', function(e){
       _this.onResize();
-    })
+    });
   };
 
   Globe.prototype.loadView = function(){
@@ -46,7 +51,7 @@ var Globe = (function() {
     var near = this.opt.near;
     var far = this.opt.far;
     this.camera = new THREE.PerspectiveCamera(viewAngle, w / h, near, far);
-	  this.camera.position.z = 1.5;
+	  this.camera.position.z = 2.0;
 
     // init lights
     var aLight = new THREE.AmbientLight(0x888888);
@@ -55,34 +60,33 @@ var Globe = (function() {
     this.scene.add(aLight);
   	this.scene.add(dLight);
 
-    // init globe
-    var geometry = new THREE.SphereGeometry(0.5, 32, 32);
-    var material = new THREE.MeshPhongMaterial();
-    this.earth = new THREE.Mesh(geometry, material);
-    this.scene.add(this.earth);
-
     // init controls
     this.controls = new THREE.OrbitControls(this.camera, this.renderer.domElement);
 
-    // load base texture
-    var loader = new THREE.TextureLoader();
-    loader.load(
-    	'img/earthmap4k.jpg',
-    	function (texture) {
-        material.map = texture;
-        _this.render();
-      },
-    	function (xhr) { /* console.log( (xhr.loaded / xhr.total * 100) + '% loaded' ); */ }
-    );
+    // load video texture
+    // var video = document.getElementById('video-co2');
+    var video = this.video;
+    var vTexture = new THREE.VideoTexture(video);
+		vTexture.minFilter = THREE.LinearFilter;
+		vTexture.magFilter = THREE.LinearFilter;
+		vTexture.format = THREE.RGBFormat;
 
-    // var material  = new THREE.MeshPhongMaterial({
-    //   map     : new THREE.Texture(canvasCloud),
-    //   side        : THREE.DoubleSide,
-    //   opacity     : 0.8,
-    //   transparent : true,
-    //   depthWrite  : false,
-    // })
-    // var cloudMesh = new THREE.Mesh(geometry, material)
+    // init globe
+    var geometry = new THREE.SphereGeometry(0.5, 32, 32);
+    var material = new THREE.MeshPhongMaterial({map: vTexture, overdraw: true});
+    this.earth = new THREE.Mesh(geometry, material);
+    this.scene.add(this.earth);
+    this.render();
+
+    // var loader = new THREE.TextureLoader();
+    // loader.load(
+    // 	'img/earthmap4k.jpg',
+    // 	function (texture) {
+    //     material.map = texture;
+    //     _this.render();
+    //   },
+    // 	function (xhr) { /* console.log( (xhr.loaded / xhr.total * 100) + '% loaded' ); */ }
+    // );
   };
 
   Globe.prototype.onResize = function(){
