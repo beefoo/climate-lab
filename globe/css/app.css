@@ -3,7 +3,7 @@ body {
 }
 
 .app {
-  background: #212121;
+  background: #000;
   color: #fff;
   letter-spacing: 0.08rem;
   width: 100vw;
@@ -11,7 +11,8 @@ body {
   position: relative;
 }
 
-.canvas-wrapper,
+.globe,
+.orbit,
 .controls,
 .pane,
 .tt-sliders,
@@ -31,8 +32,13 @@ h2 {
   color: #80CBC4;
 }
 
-.canvas-wrapper {
+.globe {
   height: calc(100% - 240px);
+  width: 80%;
+  left: 20%;
+}
+.orbit {
+  width: 20%;
 }
 .controls {
   background: #00897b;

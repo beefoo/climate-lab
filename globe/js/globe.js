@@ -16,12 +16,22 @@ var Globe = (function() {
     var _this = this;
     this.$el = $(this.opt.el);
     this.video = document.getElementById('video-co2');
+    this.ready = false;
 
     this.video.addEventListener('loadeddata', function() {
       console.log('Video loaded');
       _this.loadView();
       _this.loadListeners();
     }, false);
+  };
+
+  Globe.prototype.getProgress = function(){
+    var progress = 0;
+    var video = this.video;
+    if (video && video.duration) {
+      progress = video.currentTime / video.duration;
+    }
+    return progress;
   };
 
   Globe.prototype.loadListeners = function(){
@@ -76,7 +86,8 @@ var Globe = (function() {
     var material = new THREE.MeshPhongMaterial({map: vTexture, overdraw: true});
     this.earth = new THREE.Mesh(geometry, material);
     this.scene.add(this.earth);
-    this.render();
+
+    this.ready = true;
   };
 
   Globe.prototype.onResize = function(){
@@ -91,16 +102,14 @@ var Globe = (function() {
   Globe.prototype.render = function(){
     var _this = this;
 
+    if (!this.ready) return false;
+
     this.renderer.render(this.scene, this.camera);
     this.controls.update();
-
-    requestAnimationFrame(function(){
-      _this.render();
-    });
   };
 
   Globe.prototype.setSpeed = function(speed){
-    this.video.playbackRate = speed;
+    if (this.video) this.video.playbackRate = speed;
   };
 
   return Globe;

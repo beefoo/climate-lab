@@ -13,6 +13,7 @@ var App = (function() {
     var _this = this;
 
     this.globe = new Globe({el: "#globe"});
+    this.orbit = new Orbit({el: "#orbit"});
 
     // Initialize controls
     var sliders = {
@@ -22,6 +23,8 @@ var App = (function() {
       }
     };
     var controls = new Controls({sliders: sliders});
+
+    this.render();
   };
 
   App.prototype.onSpeed = function(value) {
@@ -29,6 +32,18 @@ var App = (function() {
     this.speed = UTIL.lerp(r[0], r[1], value);
     this.globe.setSpeed(this.speed);
   };
+
+  App.prototype.render = function(){
+    var _this = this;
+    var progress = this.globe.getProgress();
+
+    this.globe.render();
+    this.orbit.render(progress);
+
+    requestAnimationFrame(function(){
+      _this.render();
+    });
+  }
 
   return App;
 
