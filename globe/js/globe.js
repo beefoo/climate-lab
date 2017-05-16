@@ -77,16 +77,6 @@ var Globe = (function() {
     this.earth = new THREE.Mesh(geometry, material);
     this.scene.add(this.earth);
     this.render();
-
-    // var loader = new THREE.TextureLoader();
-    // loader.load(
-    // 	'img/earthmap4k.jpg',
-    // 	function (texture) {
-    //     material.map = texture;
-    //     _this.render();
-    //   },
-    // 	function (xhr) { /* console.log( (xhr.loaded / xhr.total * 100) + '% loaded' ); */ }
-    // );
   };
 
   Globe.prototype.onResize = function(){
@@ -107,6 +97,10 @@ var Globe = (function() {
     requestAnimationFrame(function(){
       _this.render();
     });
+  };
+
+  Globe.prototype.setSpeed = function(speed){
+    this.video.playbackRate = speed;
   };
 
   return Globe;
