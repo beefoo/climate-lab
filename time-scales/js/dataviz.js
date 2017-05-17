@@ -7,7 +7,7 @@ var DataViz = (function() {
       margin: 100,
       tickLength: 10,
       pointRadius: 2,
-      highlightPointRadius: [0.1, 2],
+      highlightPointRadius: [0.5, 4],
       axisTextStyle: {
         fill: "#ffffff",
         fontSize: 16
@@ -25,10 +25,9 @@ var DataViz = (function() {
 
   DataViz.prototype.init = function(){
     this.$el = $(this.opt.el);
-    this.scale = false;
 
     this.plotData = false;
-    this.plotTrend = false;
+    this.plotPlay = false;
     this.domain = false;
     this.range = false;
     this.sound = false;
@@ -39,91 +38,16 @@ var DataViz = (function() {
     this.loadListeners();
   };
 
-  DataViz.prototype.filterData = function(data, domain, range) {
-    var filtered = [];
-    $.each(data, function(i, t){
-      var d = t[0]; // date
-      var v = t[1]; // value
-      if (d >= domain[0] && d <= domain[1] && (!range || v >= range[0] && v <= range[1])) {
-        filtered.push([d,v]);
-      }
-    });
-    return filtered;
-  };
-
   DataViz.prototype.getXAxis = function(domain){
+    var axis = [];
     var d0 = new Date(domain[0]*1000);
     var d1 = new Date(domain[1]*1000);
-    var days = (domain[1] - domain[0]) / 60 / 60 / 24;
-    var year0 = d0.getUTCFullYear();
-    var year1 = d1.getUTCFullYear();
-    var years = year1 - year0;
-    var axis = [];
-    var d = d0;
-    var value, label;
-    var monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"];
+    var label = UTIL.dateDiff(d0, d1);
 
-    // Mode: years
-    if (years > 2) {
-      while (d < d1) {
-        value = d.getTime() / 1000;
-        label = d.getUTCFullYear();
-        // if (label % 5 > 0 && axis.length) label = "";
-        if (axis.length) label = "";
-        axis.push({value: value, label: label});
-        d.setUTCFullYear(d.getUTCFullYear() + 1);
-      }
-
-    // Mode: months
-    } else if (days > 60) {
-      while (d < d1) {
-        value = d.getTime() / 1000;
-        // label = monthNames[d.getUTCMonth()];
-        // if (label=="Jan") label = d.getUTCFullYear();
-        // else if (d.getUTCMonth() % 6 > 0) label = "";
-        label = d.getUTCFullYear();
-        if (axis.length) label = "";
-        axis.push({value: value, label: label});
-        d.setUTCMonth(d.getUTCMonth() + 1);
-      }
-
-    // Mode: days
-    } else if (days > 2) {
-      while (d < d1) {
-        value = d.getTime() / 1000;
-        label = "";
-        // if (d.getUTCDate()===1) label = monthNames[d.getUTCMonth()] + " " + d.getUTCFullYear();
-        if (d.getUTCDate()===1) label = monthNames[d.getUTCMonth()] + " 1";
-        axis.push({value: value, label: label});
-        d.setUTCDate(d.getUTCDate() + 1);
-      }
-
-    // Mode: hours
-    } else {
-
-    }
-
-    axis.push({value: domain[1], label: "Today"});
+    axis.push({label: label, value: 0.0, anchor: 0.0});
+    axis.push({label: "Today", value: 1.0, anchor: 1.0});
 
     return axis;
-  };
-
-  DataViz.prototype.loadData = function(scale, data){
-    this.scale = scale;
-    var plot = data[scale.unit].plot;
-    var trend = data[scale.unit].trend;
-
-    plot = this.filterData(plot, scale.domain);
-    trend = this.filterData(trend, scale.domain);
-
-    this.plotData = plot;
-    this.plotTrend = trend;
-    this.domain = scale.domain;
-    this.range = scale.range;
-
-    this.renderAxes();
-    this.renderPlot();
-    this.renderLabel();
   };
 
   DataViz.prototype.loadListeners = function(){
@@ -139,10 +63,8 @@ var DataViz = (function() {
     this.axes = new PIXI.Graphics();
     this.plot = new PIXI.Graphics();
     this.plotProgress = new PIXI.Graphics();
-    this.plotProgressTrend = new PIXI.Graphics();
-    this.labels = new PIXI.Graphics();
 
-    this.app.stage.addChild(this.axes, this.plot, this.plotProgress, this.plotProgressTrend, this.labels);
+    this.app.stage.addChild(this.axes, this.plot, this.plotProgress,);
 
     this.$el.append(this.app.view);
   };
@@ -151,7 +73,6 @@ var DataViz = (function() {
     this.app.renderer.resize(this.$el.width(), this.$el.height());
     this.renderAxes();
     this.renderPlot();
-    this.renderLabel();
   };
 
   DataViz.prototype.renderProgress = function(progress){
@@ -159,7 +80,6 @@ var DataViz = (function() {
 
     var _this = this;
     var points = this.plotData;
-    var trend = this.plotTrend;
     var domain = this.domain;
     var range = this.range;
     var w = this.app.renderer.width;
@@ -170,7 +90,7 @@ var DataViz = (function() {
     var rad = this.opt.highlightPointRadius;
 
     this.plotProgress.clear();
-    this.plotProgress.beginFill(0x686363);
+    this.plotProgress.beginFill(0xFFFFFF);
 
     // start/stop sound
     if (progress <= 0) {
@@ -180,45 +100,16 @@ var DataViz = (function() {
     }
 
     // draw points
+    var lastPy = false;
     $.each(points, function(i, p){
-      var px = UTIL.norm(p[0], domain[0], domain[1]);
+      var px = UTIL.norm(p.x, domain[0], domain[1]);
       if (px <= progress) {
-        var py = UTIL.norm(p[1], range[0], range[1]);
+        var py = UTIL.norm(p.y, range[0], range[1]);
         var x = px * cw + margin;
         var y = h - margin - (py * ch);
         var percent = px / progress;
         var r = UTIL.lerp(rad[0], rad[1], percent);
         _this.plotProgress.drawCircle(x, y, r);
-      }
-    });
-
-    // draw trend line
-    this.plotProgressTrend.clear();
-    if (!trend) return false;
-
-    // add blur filter
-    var blurFilter = new PIXI.filters.BlurFilter();
-    blurFilter.blur = 2;
-    this.plotProgressTrend.filters = [blurFilter];
-    var prev = false;
-    var lastPy = false;
-
-    // draw trend line
-    $.each(trend, function(i, p){
-      var px = UTIL.norm(p[0], domain[0], domain[1]);
-      var py = UTIL.norm(p[1], range[0], range[1]);
-      if (px <= progress) {
-        var x = px * cw + margin;
-        var y = h - margin - (py * ch);
-        var percent = px / progress;
-        if (!prev) {
-          prev = [x, y];
-        } else {
-          _this.plotProgressTrend.lineStyle(10, 0xFFFFFF, percent);
-          _this.plotProgressTrend.moveTo(prev[0], prev[1]);
-          _this.plotProgressTrend.lineTo(x, y);
-          prev = [x, y];
-        }
         lastPy = py;
       }
     });
@@ -260,7 +151,7 @@ var DataViz = (function() {
     var xs = this.getXAxis(domain);
 
     $.each(xs, function(i, value){
-      var px = UTIL.norm(value.value, x0, x1);
+      var px = value.value;
       x = margin + px * cw;
 
       // draw tick
@@ -271,20 +162,21 @@ var DataViz = (function() {
         var label = new PIXI.Text(value.label, textStyle);
         label.x = x;
         label.y = y+len+20;
-        label.anchor.set(0.5, 0.0);
+        label.anchor.set(value.anchor, 0.0);
         _this.axes.addChild(label);
       }
     });
 
     // draw y ticks/labels
-    var y0 = range[0];
-    var y1 = range[1];
-    var value = Math.ceil(y0);
+    var y0 = Math.ceil(range[0]);
+    var y1 = Math.floor(range[1]);
+    var value = y0;
     var tickEvery = 10;
     x = margin;
 
     while(value <= y1) {
       var py = UTIL.norm(value, y0, y1);
+      py = UTIL.lim(py, 0, 1);
       y = h - margin - (py * ch);
       _this.axes.moveTo(x, y).lineTo(x-len, y);
       if (value % tickEvery === 0 || value==y0 || value==y1) {
@@ -296,28 +188,6 @@ var DataViz = (function() {
       }
       value += 1;
     }
-  };
-
-  DataViz.prototype.renderLabel = function(text, x, y, clear){
-    var w = this.app.renderer.width;
-    var h = this.app.renderer.height;
-    var margin = this.opt.margin;
-    var labelText = text || this.scale.label;
-
-    // clear labels
-    if (clear !== false) {
-      this.labels.clear();
-      while(this.labels.children[0]) {
-        this.labels.removeChild(this.labels.children[0]);
-      }
-    }
-
-    var textStyle = new PIXI.TextStyle(this.opt.labelTextStyle);
-    var label = new PIXI.Text(labelText, textStyle);
-    label.x = x==undefined ? w / 2 : x;
-    label.y = y==undefined ? margin / 2 : y;
-    label.anchor.set(0.5, 0.5);
-    this.labels.addChild(label);
   };
 
   DataViz.prototype.renderPlot = function(dataPoints, domain, range, percent, clear){
@@ -338,68 +208,33 @@ var DataViz = (function() {
     if (clear !== false) {
       this.plot.clear();
     }
-    this.plot.beginFill(0x595454);
+    // this.plot.beginFill(0x595454);
+    this.plot.lineStyle(2, 0x595454);
 
     // draw points
     $.each(points, function(i, p){
-      var px = UTIL.norm(p[0], domain[0], domain[1]);
-      var py = UTIL.norm(p[1], range[0], range[1]);
+      var px = UTIL.norm(p.x, domain[0], domain[1]);
+      var py = UTIL.norm(p.y, range[0], range[1]);
+      px = UTIL.lim(px, 0, 1);
+      py = UTIL.lim(py, 0, 1);
       var x = px * cw + margin;
       var y = h - margin - (py * ch);
-      _this.plot.drawCircle(x, y, rad*percent);
+      if (i <= 0) {
+        _this.plot.moveTo(x, y);
+      } else {
+        _this.plot.lineTo(x, y);
+      }
+      // _this.plot.drawCircle(x, y, rad*percent);
     });
   };
 
-  DataViz.prototype.transitionAxes = function(s1, s2, percent, data) {
-    var plotDomain = [UTIL.lerp(s1.domain[0], s2.domain[0], percent), UTIL.lerp(s1.domain[1], s2.domain[1], percent)];
-    var plotRange = [UTIL.lerp(s1.range[0], s2.range[0], percent), UTIL.lerp(s1.range[1], s2.range[1], percent)];
+  DataViz.prototype.update = function(data, domain, range){
+    this.plotData = data;
+    this.domain = domain;
+    this.range = range;
 
-    this.renderAxes(plotDomain, plotRange);
-  };
-
-  DataViz.prototype.transitionData = function(s1, s2, percent, data) {
-    this.transitionAxes(s1, s2, percent, data);
-    this.transitionPlot(s1, s2, percent, data);
-    this.transitionLabel(s1, s2, percent);
-  };
-
-  DataViz.prototype.transitionLabel = function(s1, s2, percent) {
-    var w = this.app.renderer.width;
-    var xc = w / 2;
-    var xLeft = -200;
-    var xRight = w + 200;
-
-    var x1 = UTIL.lerp(xc, xRight, percent);
-    var x2 = UTIL.lerp(xLeft, xc, percent);
-
-    this.renderLabel(s1.label, x1);
-    this.renderLabel(s2.label, x2, undefined, false);
-  };
-
-  DataViz.prototype.transitionPlot = function(s1, s2, percent, data) {
-    var plotDomain = [UTIL.lerp(s1.domain[0], s2.domain[0], percent), UTIL.lerp(s1.domain[1], s2.domain[1], percent)];
-    var plotRange = [UTIL.lerp(s1.range[0], s2.range[0], percent), UTIL.lerp(s1.range[1], s2.range[1], percent)];
-
-    var plot1 = this.filterData(data[s1.unit].plot, plotDomain, plotRange);
-
-    // different units of time; transition between them
-    if (s1.unit != s2.unit) {
-      var plot2 = this.filterData(data[s2.unit].plot, plotDomain, plotRange);
-      this.renderPlot(plot1, plotDomain, plotRange, 1-percent);
-      this.renderPlot(plot2, plotDomain, plotRange, percent, false);
-
-    } else {
-      this.renderPlot(plot1, plotDomain, plotRange);
-    }
-
-    // update domain, range, and data
-    this.domain = plotDomain;
-    this.range = plotRange;
-    if (percent < 0.5 || s1.unit == s2.unit) {
-      this.plotData = plot1;
-    } else {
-      this.plotData = plot2;
-    }
+    this.renderAxes();
+    this.renderPlot();
   };
 
   return DataViz;

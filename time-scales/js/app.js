@@ -3,7 +3,8 @@
 var App = (function() {
   function App(options) {
     var defaults = {
-      enableSound: true
+      enableSound: true,
+      simplifyTolerance: 1
     };
     this.opt = $.extend({}, defaults, options);
     this.init();
@@ -16,18 +17,22 @@ var App = (function() {
     var sliders = {
       "#tt-speed": {
         orientation: "horizontal", min: 0, max: 1, step: 0.001, value: 0,
-        slide: function(e, ui){ _this.onSpeed(ui.value); }
+        start: function( event, ui ) { _this.transitioning = true; },
+        slide: function(e, ui){ _this.onSpeed(ui.value); },
+        stop: function( event, ui ) { _this.transitioning = false; }
       },
       "#tt-scale": {
-        orientation: "horizontal", min: 0, max: 1, step: 0.001, value: 0,
-        slide: function(e, ui){ _this.onScale(ui.value); }
+        orientation: "horizontal", min: 0, max: 1, step: 0.001, value: 1,
+        start: function( event, ui ) { _this.transitioning = true; },
+        slide: function(e, ui){ _this.onScale(ui.value); },
+        stop: function( event, ui ) { _this.transitioning = false; }
       }
     };
     var controls = new Controls({sliders: sliders});
 
     // Set initial speed and scale
     this.speed = 0;
-    this.scale = 0;
+    this.scale = 1.0;
     this.dataKey = "co2";
     this.onSpeed(this.speed);
 
@@ -48,49 +53,30 @@ var App = (function() {
   };
 
   App.prototype.onDataLoaded = function(data){
-    this.data = data;
-    this.currentData = data[this.dataKey];
-    this.scaleCount = this.currentData.scales.length;
+    var d = data[this.dataKey];
+
+    this.data = d.data;
+    this.minDomain = d.minDomain;
+    this.maxDomain = d.maxDomain;
 
     this.onScale(this.scale);
     this.render();
   };
 
   App.prototype.onScale = function(value) {
-    var percentPerScale = 1.0 / this.scaleCount;
-    var tp = this.opt.transitionPercent * percentPerScale;
-    var halfTp = tp / 2;
+    var d0 = UTIL.lerp(this.maxDomain[0], this.minDomain[0], value);
+    var d1 = UTIL.lerp(this.maxDomain[1], this.minDomain[1], value);
+    var domain = [d0, d1];
 
-    // determine current and closest index
-    var scaleIndex = Math.min(Math.floor(value * this.scaleCount), this.scaleCount-1);
-    var closestIndex = Math.round(value * this.scaleCount);
-    var s1 = this.currentData.scales[scaleIndex];
-    var s2 = false;
-    var data = this.currentData.data;
+    var filtered = _.filter(this.data, function(d){ return d[0] >= d0 && d[1] <= d1; });
+    var mapped = _.map(filtered, function(d){ return {x: d[0], y: d[1]}; });
+    var simplified = mapped;
+    if (mapped.length > 365) simplified = simplify(mapped, this.opt.simplifyTolerance);
+    var values = _.pluck(simplified, 'y');
+    var range = [_.min(values), _.max(values)];
 
-    // determine if we are transitioning between two scales
-    var transitionAmount = 0;
-    var closestValue = closestIndex * percentPerScale;
-    var diff = Math.abs(value - closestValue);
-    if (closestIndex > 0 && closestIndex < this.scaleCount && diff < halfTp) {
-      transitionAmount = (value - closestValue + halfTp) / tp;
-
-      // determine the other scope we are transitioning to
-      if (value >= closestValue) {
-        s2 = s1;
-        s1 = this.currentData["scales"][scaleIndex-1];
-      } else {
-        s2 = this.currentData["scales"][scaleIndex+1];
-      }
-      this.viz.transitionData(s1, s2, transitionAmount, data);
-      this.startDate = Date.now();
-      this.transitioning = true;
-
-    // we are showing one scale
-    } else {
-      this.viz.loadData(s1, data);
-      this.transitioning = false;
-    }
+    this.startDate = Date.now();
+    this.viz.update(simplified, domain, range);
   };
 
   App.prototype.onSpeed = function(value) {
