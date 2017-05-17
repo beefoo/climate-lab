@@ -64,7 +64,7 @@ var DataViz = (function() {
     this.plot = new PIXI.Graphics();
     this.plotProgress = new PIXI.Graphics();
 
-    this.app.stage.addChild(this.axes, this.plot, this.plotProgress,);
+    this.app.stage.addChild(this.axes, this.plot, this.plotProgress);
 
     this.$el.append(this.app.view);
   };
