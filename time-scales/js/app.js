@@ -64,6 +64,7 @@ var App = (function() {
   };
 
   App.prototype.onScale = function(value) {
+    value = UTIL.easeInOutCubic(value);
     var d0 = UTIL.lerp(this.maxDomain[0], this.minDomain[0], value);
     var d1 = UTIL.lerp(this.maxDomain[1], this.minDomain[1], value);
     var domain = [d0, d1];
