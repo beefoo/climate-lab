@@ -92,7 +92,10 @@ data = readDataFromFile(DATA_SOURCE["filename"], DATA_SOURCE["header"])
 data = sorted(data, key=lambda k: k["date"])
 dateRange = (data[0]["date"], data[-1]["date"])
 d1 = dateRange[-1]
-maxStartDate = dateToSeconds((d1[0], d1[1], 1, 0))
+maxStartDateTuple = (d1[0], d1[1], 1, 0)
+maxStartDate = dateToSeconds(maxStartDateTuple)
+values = [d["value"] for d in data]
+minRangeValues = [d["value"] for d in data if d["date"] >= maxStartDateTuple]
 
 # turn into tuples
 tuples = [(dateToSeconds(d["date"]), d["value"]) for d in data]
@@ -101,7 +104,9 @@ tuples = [(dateToSeconds(d["date"]), d["value"]) for d in data]
 jsonData = {
     "data": tuples,
     "minDomain": (maxStartDate, dateToSeconds(dateRange[1])),
-    "maxDomain": (dateToSeconds(dateRange[0]), dateToSeconds(dateRange[1]))
+    "maxDomain": (dateToSeconds(dateRange[0]), dateToSeconds(dateRange[1])),
+    "minRange": (min(minRangeValues),  max(minRangeValues)),
+    "maxRange": (min(values), max(values))
 }
 
 # Retrieve existing data if exists

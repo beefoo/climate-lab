@@ -59,6 +59,10 @@ var App = (function() {
     this.minDomain = d.minDomain;
     this.maxDomain = d.maxDomain;
 
+    var minRange = d.minRange[1] - d.minRange[0];
+    var maxRange = d.maxRange[1] - d.maxRange[0];
+    this.viz.setRangeMinMax(minRange, maxRange);
+
     this.onScale(this.scale);
     this.render();
   };

@@ -6,7 +6,7 @@ var DataViz = (function() {
       el: '#main',
       margin: 100,
       tickLength: 10,
-      pointRadius: 2,
+      pointRadius: [4, 1],
       highlightPointRadius: [0.5, 4],
       axisTextStyle: {
         fill: "#ffffff",
@@ -190,7 +190,7 @@ var DataViz = (function() {
     }
   };
 
-  DataViz.prototype.renderPlot = function(dataPoints, domain, range, percent, clear){
+  DataViz.prototype.renderPlot = function(dataPoints, domain, range, clear){
     var _this = this;
     var points = dataPoints || this.plotData;
     var w = this.app.renderer.width;
@@ -198,18 +198,18 @@ var DataViz = (function() {
     var margin = this.opt.margin;
     var cw = w - margin * 2;
     var ch = h - margin * 2;
-    var rad = this.opt.pointRadius;
 
     domain = domain || this.domain;
     range = range || this.range;
-    percent = percent || 1.0;
+    var percent = UTIL.norm(range[1]-range[0], this.minRange, this.maxRange);
+    var rad = UTIL.lerp(this.opt.pointRadius[0], this.opt.pointRadius[1], percent);
 
     // clear plot
     if (clear !== false) {
       this.plot.clear();
     }
-    // this.plot.beginFill(0x595454);
-    this.plot.lineStyle(2, 0x595454);
+    this.plot.beginFill(0x595454);
+    // this.plot.lineStyle(2, 0x595454);
 
     // draw points
     $.each(points, function(i, p){
@@ -219,13 +219,18 @@ var DataViz = (function() {
       py = UTIL.lim(py, 0, 1);
       var x = px * cw + margin;
       var y = h - margin - (py * ch);
-      if (i <= 0) {
-        _this.plot.moveTo(x, y);
-      } else {
-        _this.plot.lineTo(x, y);
-      }
-      // _this.plot.drawCircle(x, y, rad*percent);
+      // if (i <= 0) {
+      //   _this.plot.moveTo(x, y);
+      // } else {
+      //   _this.plot.lineTo(x, y);
+      // }
+      _this.plot.drawCircle(x, y, rad);
     });
+  };
+
+  DataViz.prototype.setRangeMinMax = function(minRange, maxRange) {
+    this.minRange = minRange;
+    this.maxRange = maxRange;
   };
 
   DataViz.prototype.update = function(data, domain, range){
