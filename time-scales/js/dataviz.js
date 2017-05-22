@@ -7,7 +7,7 @@ var DataViz = (function() {
       margin: 100,
       tickLength: 10,
       pointRadius: [4, 1],
-      highlightPointRadius: [0.5, 4],
+      highlightPointRadius: [0.2, 1],
       axisTextStyle: {
         fill: "#ffffff",
         fontSize: 16
@@ -87,7 +87,9 @@ var DataViz = (function() {
     var margin = this.opt.margin;
     var cw = w - margin * 2;
     var ch = h - margin * 2;
-    var rad = this.opt.highlightPointRadius;
+    var percent = UTIL.norm(range[1]-range[0], this.minRange, this.maxRange);
+    var rad = UTIL.lerp(this.opt.pointRadius[0], this.opt.pointRadius[1], percent);
+    var hPercent = this.opt.highlightPointRadius;
 
     this.plotProgress.clear();
     this.plotProgress.beginFill(0xFFFFFF);
@@ -107,8 +109,8 @@ var DataViz = (function() {
         var py = UTIL.norm(p.y, range[0], range[1]);
         var x = px * cw + margin;
         var y = h - margin - (py * ch);
-        var percent = px / progress;
-        var r = UTIL.lerp(rad[0], rad[1], percent);
+        var xPercent = px / progress;
+        var r = UTIL.lerp(hPercent[0], hPercent[1], xPercent) * rad;
         _this.plotProgress.drawCircle(x, y, r);
         lastPy = py;
       }
