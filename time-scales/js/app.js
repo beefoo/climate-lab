@@ -75,8 +75,7 @@ var App = (function() {
 
     var filtered = _.filter(this.data, function(d){ return d[0] >= d0 && d[1] <= d1; });
     var mapped = _.map(filtered, function(d){ return {x: d[0], y: d[1]}; });
-    var simplified = mapped;
-    if (mapped.length > 365) simplified = simplify(mapped, this.opt.simplifyTolerance);
+    var simplified = this.simplify(mapped);
     var values = _.pluck(simplified, 'y');
     var range = [_.min(values), _.max(values)];
 
@@ -118,6 +117,14 @@ var App = (function() {
 
     // this.spinner.render(progress);
   	requestAnimationFrame(function(){ _this.render(); });
+  };
+
+  App.prototype.simplify = function(data){
+    var simplified = data;
+    var tolerance = data.length / 365.0 / 2.0;
+    tolerance = UTIL.lim(tolerance, 0, 1.1);
+    simplified = simplify(data, tolerance);
+    return simplified;
   };
 
   return App;
