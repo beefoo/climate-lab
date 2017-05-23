@@ -1,4 +1,4 @@
-boolean captureFrames = false;
+boolean captureFrames = true;
 String outputMovieFile = "frames/frames-#####.png";
 int fps = 30;
 
@@ -53,11 +53,17 @@ void draw() {
   int frame = floor(percent * float(frames-1)) + 1;
   String deflectImageFile = deflectImageDir + nf(frame, 4) + ".png";
   PImage deflectImage = loadImage(deflectImageFile);
-  image(deflectImage, 0, 0);
+  
+  // Uncomment to show deflector image
+  // image(deflectImage, 0, 0);
   
   // set deflector and run
   ps.setDeflector(deflectImage);
   ps.run();
+  
+  if (captureFrames) {
+    saveFrame(outputMovieFile); 
+  }
   
   // increment time
   elapsedMs += frameMs;
@@ -117,15 +123,26 @@ class Particle {
   float lifespan;
   float radius;
   float angle;
-  PVector force;
+  String label;
+  
+  PVector opposingVelocity;
+  PVector opposingAcceleration;
 
   Particle() {
     radius = 8;
+    // slowly decelerate
     acceleration = new PVector(1.0, random(0.99, 1.0));
-    velocity = new PVector(random(-1, 1), random(-3, -1));
+    // x can go left or right, y only up
+    velocity = new PVector(random(-1, 1), random(-3, -2));
+    // start randomly on the bottom
     position = new PVector(random(0, width), height);
-    force = new PVector(0.0, 0.0);
+    
+    // initialize velocity/accel for deflectors
+    opposingVelocity = new PVector(0.0, 0.0);
+    opposingAcceleration = new PVector(1.0, 1.0);
+    
     lifespan = 255.0;
+    label = "";
   }
 
   void run(color[] deflector) {
@@ -138,11 +155,16 @@ class Particle {
     
     float px = position.x;
     float py = position.y;
-    float vx = velocity.x * acceleration.x;
-    float vy = velocity.y * acceleration.y;
+    float vx = velocity.x;
+    float vy = velocity.y;
+    
+    // apply opposing force
+    PVector v = velocity.copy();
+    v.add(opposingVelocity);
+    opposingVelocity.x = opposingVelocity.x * opposingAcceleration.x;
+    opposingVelocity.y = opposingVelocity.y * opposingAcceleration.y;
 
-    //velocity.add(force);
-    position.add(velocity);
+    position.add(v);
     
     // check for left bounds
     if (position.x < radius/2) {
@@ -155,62 +177,81 @@ class Particle {
       vx = -vx;
     }
     
-    
-    
-    // check of we hit a deflector
-    float tlx = position.x - radius/2;
-    float tly = position.y - radius/2;
-    float brx = position.x + radius/2;
-    float bry = position.y + radius/2;
-    FloatList xs = new FloatList();
-    FloatList ys = new FloatList();
-    for (int y=0; y<height; y++) {
-      for (int x=0; x<width; x++) {
-        if (x > tlx && x < brx && y > tly && y < bry) {
-          int loc = x + y * width;
-          color c = deflector[loc];
-          if (brightness(c) > 0.1) {
-             xs.append(float(x));
-             ys.append(float(y));
-          }
-        }
-      }
-    }
-    
-    // deflector hit, calculate avg
-    if (xs.size() > 0 && ys.size() > 0) {
-      float mx = mean(xs);
-      float my = mean(ys);
-      float angle = angleBetweenPoints(position.x, position.y, mx, my);
-      
-      position.x = px;
-      position.y = py;
-
-      vy = -vy;
-      acceleration = new PVector(1.0, random(0.8, 0.9));
-      
     // check for top bounds
-    } else if (position.y < radius/2) {
+    if (position.y < radius/2) {
       position.y = radius/2;
       vy = -vy;
       acceleration = new PVector(1.0, random(0.9, 1.0));
-    
-    // reverse if really slow
-    } else if (abs(vy) < 0.01) {
-       vy = -vy * 10;
+      
+    // check for deflector
+    } else {
+      int tlx = round(position.x - radius/2);
+      int tly = round(position.y - radius/2);
+      int brx = round(position.x + radius/2);
+      int bry = round(position.y + radius/2);
+      FloatList xs = new FloatList();
+      FloatList ys = new FloatList();
+      
+      for (int y=tly; y<=bry; y++) {
+        for (int x=tlx; x<=brx; x++) {
+          if (isBetween(y, 0, height-1) && isBetween(x, 0, width-1)) {
+            int loc = x + y * width;
+            color c = deflector[loc];
+            if (brightness(c) > 0.1) {
+               xs.append(float(x));
+               ys.append(float(y));
+            }
+          }
+        }
+      }
+      
+      // deflector hit, calculate avg
+      if (xs.size() > 0 && ys.size() > 0) {
+        float mx = mean(xs);
+        float my = mean(ys);
+        float angle = angleBetweenPoints(position.x, position.y, mx, my);
+        
+        // Uncomment to show angle
+        // label = ""+int(angle);
+        
+        position.x = px;
+        position.y = py;
+        
+        float opposingDirection = (-1.0 * vy) / abs(vy);
+        opposingVelocity = new PVector(0.0, opposingDirection * abs(vy*2));
+        opposingAcceleration = new PVector(1.0, random(0.95, 0.99));
+        
+        // hit left/right
+        if (!(isBetweenF(angle, 270.0-45, 270.+45) || isBetweenF(angle, 90.0-45, 90.+45))) {
+          vx = -vx;
+        }
+        
+        
+      }
     }
+    
+    // (de)accelerate
+    vx = vx * acceleration.x;
+    vy = vy * acceleration.y;
     
     // update velocity
     velocity = new PVector(vx, vy);
-      
-    //lifespan -= 1.0;
+    
+    // Uncomment to let particles die
+    // lifespan -= 1.0;
   }
 
   // Method to display
   void display() {
-    //stroke(255, lifespan);
     fill(255, lifespan);
-    ellipse(position.x, position.y, radius, radius);
+    
+    if (!label.equals("")) {
+      text(label, position.x, position.y);
+      
+    } else {
+      ellipse(position.x, position.y, radius, radius);
+    }
+    
   }
 
   // Is the particle still useful?
@@ -227,7 +268,20 @@ class Particle {
 float angleBetweenPoints(float x1, float y1, float x2, float y2){
   float deltaX = x2 - x1,
         deltaY = y2 - y1;  
-  return atan2(deltaY, deltaX) * 180 / PI;
+  float angle = atan2(deltaY, deltaX) * 180 / PI;
+  angle = angle % 360;    
+  if (angle <= 0) {
+    angle += 360;
+  }
+  return angle;
+}
+
+boolean isBetween(int value, int low, int high) {
+  return (value >= low && value <= high);
+}
+
+boolean isBetweenF(float value, float low, float high) {
+  return (value >= low && value <= high);
 }
 
 float mean(FloatList fl) {
