@@ -34,11 +34,11 @@ h2 {
 
 .globe {
   height: calc(100% - 240px);
-  width: 80%;
-  left: 20%;
+  width: 60%;
+  left: 40%;
 }
 .orbit {
-  width: 20%;
+  width: 40%;
 }
 .controls {
   background: #00897b;

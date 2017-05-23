@@ -21,7 +21,6 @@ var Globe = (function() {
     this.video.addEventListener('loadeddata', function() {
       console.log('Video loaded');
       _this.loadView();
-      _this.loadListeners();
     }, false);
   };
 
@@ -32,14 +31,6 @@ var Globe = (function() {
       progress = video.currentTime / video.duration;
     }
     return progress;
-  };
-
-  Globe.prototype.loadListeners = function(){
-    var _this = this;
-
-    $(window).on('resize', function(e){
-      _this.onResize();
-    });
   };
 
   Globe.prototype.loadView = function(){
@@ -85,6 +76,7 @@ var Globe = (function() {
     var geometry = new THREE.SphereGeometry(0.5, 32, 32);
     var material = new THREE.MeshPhongMaterial({map: vTexture, overdraw: true});
     this.earth = new THREE.Mesh(geometry, material);
+    this.earth.add(new THREE.AxisHelper(3));
     this.scene.add(this.earth);
 
     this.ready = true;

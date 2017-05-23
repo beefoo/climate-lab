@@ -25,6 +25,16 @@ var App = (function() {
     var controls = new Controls({sliders: sliders});
 
     this.render();
+    this.loadListeners();
+  };
+
+  App.prototype.loadListeners = function(){
+    var _this = this;
+
+    $(window).on('resize', function(e){
+      _this.globe.onResize();
+      _this.orbit.onResize();
+    });
   };
 
   App.prototype.onSpeed = function(value) {
