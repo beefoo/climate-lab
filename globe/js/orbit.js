@@ -8,7 +8,8 @@ var Orbit = (function() {
       near: 0.01,
       far: 1000,
       orbitRadius: 5,
-      earthTilt: 23.43703
+      earthTilt: 23.43703,
+      controls: false
     };
     this.opt = $.extend({}, defaults, options);
     this.init();
@@ -112,7 +113,9 @@ var Orbit = (function() {
     this.scene.add(pLight);
 
     // init controls
-    // this.controls = new THREE.OrbitControls(this.camera, this.renderer.domElement);
+    if (this.opt.controls) {
+      this.controls = new THREE.OrbitControls(this.camera, this.renderer.domElement);
+    }
 
     // init sun
     var sunGeo = new THREE.SphereGeometry(1.0, 32, 32);
@@ -125,7 +128,21 @@ var Orbit = (function() {
     var earthMat = new THREE.MeshPhongMaterial();
     this.earth = new THREE.Mesh(earthGeo, earthMat);
     // this.earth.material.color.setHex(0x1e6eaa);
-    this.earth.add(new THREE.AxisHelper(3));
+    // this.earth.add(new THREE.AxisHelper(3));
+
+    // add north arrow
+    var dir = new THREE.Vector3(0, 1, 0);
+    var origin = new THREE.Vector3(0, 0, 0);
+    var length = 4;
+    var hex = 0x00ff00;
+    var northArrow = new THREE.ArrowHelper(dir, origin, length, hex);
+    this.earth.add(northArrow);
+
+    // add south arrow
+    dir = new THREE.Vector3(0, -1, 0);
+    hex = 0xff0000;
+    var southArrow = new THREE.ArrowHelper(dir, origin, length, hex);
+    this.earth.add(southArrow);
 
     // create earth helper
     this.earthHelper = new THREE.Object3D();
@@ -193,11 +210,7 @@ var Orbit = (function() {
     this.composer.render();
     this.finalComposer.render();
 
-    // this.controls.update();
-
-    // requestAnimationFrame(function(){
-    //   _this.render();
-    // });
+    this.opt.controls && this.controls.update();
   };
 
   return Orbit;

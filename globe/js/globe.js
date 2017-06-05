@@ -80,9 +80,25 @@ var Globe = (function() {
     var geometry = new THREE.SphereGeometry(0.5, 32, 32);
     var material = new THREE.MeshPhongMaterial({map: vTexture, overdraw: true});
     this.earth = new THREE.Mesh(geometry, material);
-    this.earth.add(new THREE.AxisHelper(1));
-    this.scene.add(this.earth);
 
+    // add arrow helpers
+    // this.earth.add(new THREE.AxisHelper(1));
+
+    // add north arrow
+    var dir = new THREE.Vector3(0, 1, 0);
+    var origin = new THREE.Vector3(0, 0, 0);
+    var length = 0.8;
+    var hex = 0x00ff00;
+    var northArrow = new THREE.ArrowHelper(dir, origin, length, hex);
+    this.earth.add(northArrow);
+
+    // add south arrow
+    dir = new THREE.Vector3(0, -1, 0);
+    hex = 0xff0000;
+    var southArrow = new THREE.ArrowHelper(dir, origin, length, hex);
+    this.earth.add(southArrow);
+
+    this.scene.add(this.earth);
     this.ready = true;
   };
 
