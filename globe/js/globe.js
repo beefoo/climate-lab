@@ -6,7 +6,8 @@ var Globe = (function() {
       el: '#main',
       viewAngle: 45,
       near: 0.01,
-      far: 1000
+      far: 1000,
+      orbitRadius: 4
     };
     this.opt = $.extend({}, defaults, options);
     this.init();
@@ -58,12 +59,19 @@ var Globe = (function() {
     this.camera = new THREE.PerspectiveCamera(viewAngle, w / h, near, far);
 	  this.camera.position.z = 2.0;
 
-    // init lights
+    // ambient light
     var aLight = new THREE.AmbientLight(0x888888);
-    var dLight = new THREE.DirectionalLight(0xcccccc, 1);
-  	dLight.position.set(5,3,5);
     this.scene.add(aLight);
-  	this.scene.add(dLight);
+
+    // directional light
+    // this.dLight = new THREE.DirectionalLight(0xcccccc, 1);
+    // var xy = UTIL.translatePoint([0,0], 0, this.opt.orbitRadius);
+  	// this.dLight.position.set(xy[0],xy[1],0);
+  	// this.scene.add(this.dLight);
+
+    // light helper
+    // var lightHelper = new THREE.DirectionalLightHelper(this.dLight, 1);
+    // this.scene.add(lightHelper);
 
     // init controls
     this.controls = new THREE.OrbitControls(this.camera, this.renderer.domElement);
@@ -78,7 +86,7 @@ var Globe = (function() {
 
     // init globe
     var geometry = new THREE.SphereGeometry(0.5, 32, 32);
-    var material = new THREE.MeshPhongMaterial({map: vTexture, overdraw: true});
+    var material = new THREE.MeshBasicMaterial({map: vTexture, overdraw: true});
     this.earth = new THREE.Mesh(geometry, material);
 
     // add arrow helpers
@@ -111,10 +119,21 @@ var Globe = (function() {
 		this.camera.updateProjectionMatrix();
   };
 
-  Globe.prototype.render = function(){
+  Globe.prototype.render = function(progress){
     var _this = this;
 
     if (!this.ready) return false;
+
+    // earth orbits
+    // var degrees = 360 - (progress * 360 - 90);
+    // var xy = UTIL.translatePoint([0,0], degrees, this.opt.orbitRadius);
+
+    // earth rotates
+    // var days = progress / (1.0 / 365.25);
+    // var dayProgress = days - Math.floor(days);
+    // var xz = UTIL.translatePoint([0,0], dayProgress*360, this.opt.orbitRadius);
+    // this.dLight.position.set(xz[0], 0, xz[1]);
+    // this.dLight.lookAt(new THREE.Vector3(0,0,0));
 
     this.renderer.render(this.scene, this.camera);
     this.controls.update();

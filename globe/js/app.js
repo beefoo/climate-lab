@@ -14,6 +14,7 @@ var App = (function() {
 
     this.globe = new Globe({el: "#globe"});
     this.orbit = new Orbit({el: "#orbit"});
+    this.label = new Label({el: "#label"});
 
     // Initialize controls
     var sliders = {
@@ -47,8 +48,9 @@ var App = (function() {
     var _this = this;
     var progress = this.globe.getProgress();
 
-    this.globe.isLoaded() && this.globe.render();
+    this.globe.isLoaded() && this.globe.render(progress);
     this.orbit.isLoaded() && this.orbit.render(progress);
+    this.label.render(progress);
 
     requestAnimationFrame(function(){
       _this.render();
