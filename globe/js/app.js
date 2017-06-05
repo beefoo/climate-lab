@@ -47,8 +47,8 @@ var App = (function() {
     var _this = this;
     var progress = this.globe.getProgress();
 
-    this.globe.render();
-    this.orbit.render(progress);
+    this.globe.isLoaded() && this.globe.render();
+    this.orbit.isLoaded() && this.orbit.render(progress);
 
     requestAnimationFrame(function(){
       _this.render();

@@ -16,8 +16,69 @@ var Orbit = (function() {
 
   Orbit.prototype.init = function(){
     this.$el = $(this.opt.el);
+    this.loaded = false;
 
     this.loadView();
+  };
+
+  Orbit.prototype.isLoaded = function(){
+    return this.loaded;
+  };
+
+  Orbit.prototype.loadGlow = function(){
+    var w = this.$el.width();
+    var h = w;
+    var viewAngle = this.opt.viewAngle;
+    var aspect = w / h;
+    var near = this.opt.near;
+    var far = this.opt.far;
+    var glowGeo = new THREE.SphereGeometry(1.0, 32, 32);
+    // create glow effect
+    var glowMat = new THREE.ShaderMaterial({
+      uniforms: {
+      	"c":   { type: "f", value: 0.5 },
+      	"p":   { type: "f", value: 4.0 }
+      },
+      vertexShader:   document.getElementById('vertexShaderGlow').textContent,
+      fragmentShader: document.getElementById('fragmentShaderGlow').textContent
+    });
+
+    // glow scene
+    this.glowScene = new THREE.Scene();
+  	this.glowCamera = new THREE.PerspectiveCamera(viewAngle, w / h, near, far);
+  	this.glowCamera.position.z = this.camera.position.z;
+  	this.glowScene.add(this.glowCamera);
+
+  	var glow = new THREE.Mesh(glowGeo, glowMat);
+  	glow.scale.x = glow.scale.y = glow.scale.z = 1.5;
+  	// glow should provide light from behind the sphere, so only render the back side
+  	glow.material.side = THREE.BackSide;
+  	this.glowScene.add(glow);
+
+    // final composer will blend composer2.render() results with the scene
+    // prepare secondary composer
+  	var renderTargetParameters =  {minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter, format: THREE.RGBFormat, stencilBuffer: false};
+  	var renderTarget = new THREE.WebGLRenderTarget(w, h, renderTargetParameters);
+  	var composer = new THREE.EffectComposer(this.renderer, renderTarget);
+
+  	// prepare the secondary render's passes
+  	var render2Pass = new THREE.RenderPass(this.glowScene, this.glowCamera);
+  	composer.addPass(render2Pass);
+
+  	// prepare final composer
+  	var finalComposer = new THREE.EffectComposer(this.renderer, renderTarget);
+
+  	// prepare the final render's passes
+  	var renderModel = new THREE.RenderPass(this.scene, this.camera);
+  	finalComposer.addPass(renderModel);
+
+  	var effectBlend = new THREE.ShaderPass(THREE.AdditiveBlendShader, "tDiffuse1");
+  	effectBlend.uniforms['tDiffuse2'].value = composer.renderTarget2;
+  	effectBlend.renderToScreen = true;
+  	finalComposer.addPass(effectBlend);
+
+    this.composer = composer;
+    this.finalComposer = finalComposer;
   };
 
   Orbit.prototype.loadView = function(){
@@ -53,80 +114,56 @@ var Orbit = (function() {
     // init controls
     // this.controls = new THREE.OrbitControls(this.camera, this.renderer.domElement);
 
+    // init sun
+    var sunGeo = new THREE.SphereGeometry(1.0, 32, 32);
+    var sunMat = new THREE.MeshBasicMaterial();
+    this.sun = new THREE.Mesh(sunGeo, sunMat);
+    this.scene.add(this.sun);
+
     // init earth
     var earthGeo = new THREE.SphereGeometry(1.0, 32, 32);
     var earthMat = new THREE.MeshPhongMaterial();
     this.earth = new THREE.Mesh(earthGeo, earthMat);
-    this.earth.material.color.setHex(0x1e6eaa);
+    // this.earth.material.color.setHex(0x1e6eaa);
     this.earth.add(new THREE.AxisHelper(3));
 
-    // create a helper
+    // create earth helper
     this.earthHelper = new THREE.Object3D();
     this.earthHelper.position.set(0, this.opt.orbitRadius, 0);
     this.earthHelper.scale.set(0.4, 0.4, 0.4);
     this.earthHelper.rotation.z = this.opt.earthTilt * Math.PI / 180;
     this.earthHelper.add(this.earth);
-
     this.scene.add(this.earthHelper);
 
-    // init sun
-    var loader = new THREE.TextureLoader();
-    loader.load('img/sunmap.jpg', function (texture) {
-      var geometry = new THREE.SphereGeometry(1.0, 32, 32);
-      var material = new THREE.MeshBasicMaterial({map: texture});
-      _this.sun = new THREE.Mesh(geometry, material);
-      _this.scene.add(_this.sun);
-      _this.render(0);
+    // load textures asynchronously
+    var sunPromise = $.Deferred();
+    var earthPromise = $.Deferred();
+
+    // load sun texture
+    var sunTextureLoader = new THREE.TextureLoader();
+    sunTextureLoader.load('img/sunmap.jpg', function (texture) {
+      _this.sun.material.map = texture;
+      _this.sun.material.map.needsUpdate = true;
+      sunPromise.resolve();
+    });
+
+    // load earth texture
+    var earthTextureLoader = new THREE.TextureLoader();
+    earthTextureLoader.load('img/earthmap1k.jpg', function (texture) {
+      _this.earth.material.map = texture;
+      _this.earth.material.map.needsUpdate = true;
+      earthPromise.resolve();
+    });
+
+    // load glow
+    this.loadGlow();
+
+    // wait for textures to load
+    $.when(sunPromise, earthPromise).done(function() {
+      _this.loaded = true;
     });
 
     // this.scene.add(new THREE.AxisHelper(5));
-
-    // create glow effect
-    var materialGlow = new THREE.ShaderMaterial({
-      uniforms: {
-      	"c":   { type: "f", value: 0.5 },
-      	"p":   { type: "f", value: 4.0 }
-      },
-      vertexShader:   document.getElementById('vertexShaderGlow').textContent,
-      fragmentShader: document.getElementById('fragmentShaderGlow').textContent
-    });
-
-    // glow scene
-    this.glowScene = new THREE.Scene();
-  	this.glowCamera = new THREE.PerspectiveCamera(viewAngle, w / h, near, far);
-  	this.glowCamera.position.z = this.camera.position.z;
-  	this.glowScene.add(this.glowCamera);
-
-  	var glow = new THREE.Mesh(earthGeo.clone(), materialGlow);
-  	glow.scale.x = glow.scale.y = glow.scale.z = 1.5;
-  	// glow should provide light from behind the sphere, so only render the back side
-  	glow.material.side = THREE.BackSide;
-  	this.glowScene.add(glow);
-
-    // final composer will blend composer2.render() results with the scene
-    // prepare secondary composer
-  	var renderTargetParameters =  {minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter, format: THREE.RGBFormat, stencilBuffer: false};
-  	var renderTarget = new THREE.WebGLRenderTarget(w, h, renderTargetParameters);
-  	var composer = new THREE.EffectComposer(this.renderer, renderTarget);
-
-  	// prepare the secondary render's passes
-  	var render2Pass = new THREE.RenderPass(this.glowScene, this.glowCamera);
-  	composer.addPass(render2Pass);
-
-  	// prepare final composer
-  	var finalComposer = new THREE.EffectComposer(this.renderer, renderTarget);
-
-  	// prepare the final render's passes
-  	var renderModel = new THREE.RenderPass(this.scene, this.camera);
-  	finalComposer.addPass(renderModel);
-
-  	var effectBlend = new THREE.ShaderPass(THREE.AdditiveBlendShader, "tDiffuse1");
-  	effectBlend.uniforms['tDiffuse2'].value = composer.renderTarget2;
-  	effectBlend.renderToScreen = true;
-  	finalComposer.addPass(effectBlend);
-
-    this.composer = composer;
-    this.finalComposer = finalComposer;
   };
 
   Orbit.prototype.onResize = function(){

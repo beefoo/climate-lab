@@ -33,6 +33,10 @@ var Globe = (function() {
     return progress;
   };
 
+  Globe.prototype.isLoaded = function(){
+    return this.ready;
+  };
+
   Globe.prototype.loadView = function(){
     var _this = this;
     var w = this.$el.width();
@@ -76,7 +80,7 @@ var Globe = (function() {
     var geometry = new THREE.SphereGeometry(0.5, 32, 32);
     var material = new THREE.MeshPhongMaterial({map: vTexture, overdraw: true});
     this.earth = new THREE.Mesh(geometry, material);
-    this.earth.add(new THREE.AxisHelper(3));
+    this.earth.add(new THREE.AxisHelper(1));
     this.scene.add(this.earth);
 
     this.ready = true;
