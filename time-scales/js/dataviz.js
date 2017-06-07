@@ -100,8 +100,9 @@ var DataViz = (function() {
     this.annotations.addChild(label);
   };
 
-  DataViz.prototype.renderAnnotations = function(annoations){
+  DataViz.prototype.renderAnnotations = function(){
     var _this = this;
+    var annotations = this.plotAnnotations;
 
     // clear annotations
     this.annotations.clear();
@@ -109,7 +110,7 @@ var DataViz = (function() {
       this.annotations.removeChild(this.annotations.children[0]);
     }
 
-    $.each(annoations, function(i, ann){
+    $.each(annotations, function(i, ann){
       if (_.has(ann, "position")) {
         var pp = ann.position;
         var xy = _this._percentToPoint(pp[0], pp[1], [_this.opt.margin[0], 90]);
@@ -331,11 +332,12 @@ var DataViz = (function() {
     // this.renderAxes();
     this.renderPlot();
     this.renderLabels();
+    this.renderAnnotations();
 
   };
 
   DataViz.prototype.updateAnnotations = function(annotations){
-    this.renderAnnotations(annotations);
+    this.plotAnnotations = annotations;
   };
 
   DataViz.prototype._dataToPoint = function(dx, dy, domain, range){

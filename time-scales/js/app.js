@@ -34,7 +34,7 @@ var App = (function() {
     this.speed = 0;
     this.scale = 1.0;
     this.dataKey = "co2";
-    this.annoations = [];
+    this.annotations = [];
     this.onSpeed(this.speed);
 
     // Initialize viz and spinners
@@ -86,8 +86,8 @@ var App = (function() {
     var annotations = _.filter(this.annotations, function(a){ return d0 >= a.startDate && d0 <= a.endDate; });
 
     this.startDate = Date.now();
-    this.viz.update(simplified, domain, range);
     this.viz.updateAnnotations(annotations);
+    this.viz.update(simplified, domain, range);
   };
 
   App.prototype.onSpeed = function(value) {
