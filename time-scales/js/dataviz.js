@@ -4,18 +4,22 @@ var DataViz = (function() {
   function DataViz(options) {
     var defaults = {
       el: '#main',
-      margin: 100,
+      margin: [100, 200],
       tickLength: 10,
       pointRadius: [4, 1],
-      highlightPointRadius: [0.2, 1],
+      highlightPointRadius: [0.2, 2],
       axisTextStyle: {
         fill: "#ffffff",
-        fontSize: 16
+        fontSize: 18
       },
       labelTextStyle: {
         fill: "#ffffff",
-        fontSize: 24,
+        fontSize: 28,
         fontWeight: "bold"
+      },
+      labelSubtextStyle: {
+        fill: "#ffffff",
+        fontSize: 20
       },
       enableSound: true
     };
@@ -60,19 +64,91 @@ var DataViz = (function() {
 
   DataViz.prototype.loadView = function(){
     this.app = new PIXI.Application(this.$el.width(), this.$el.height(), {transparent : true});
-    this.axes = new PIXI.Graphics();
+    this.labels = new PIXI.Graphics();
+    // this.axes = new PIXI.Graphics();
     this.plot = new PIXI.Graphics();
     this.plotProgress = new PIXI.Graphics();
 
-    this.app.stage.addChild(this.axes, this.plot, this.plotProgress);
+    this.app.stage.addChild(this.plot, this.plotProgress, this.labels);
 
     this.$el.append(this.app.view);
   };
 
   DataViz.prototype.onResize = function(){
     this.app.renderer.resize(this.$el.width(), this.$el.height());
-    this.renderAxes();
+    // this.renderAxes();
     this.renderPlot();
+    this.renderLabels();
+    this.renderAnnotations();
+  };
+
+  DataViz.prototype.renderAnnotations = function(){
+
+  };
+
+  DataViz.prototype.renderLabel = function(labelPoint, line, text, subtext, anchor){
+    var textStyle = this.opt.labelTextStyle;
+    var label = new PIXI.Text(text, textStyle);
+    var x = labelPoint[0];
+    var y = labelPoint[1];
+
+    label.x = x;
+    label.y = y;
+    label.anchor.set(anchor[0], anchor[1]);
+    this.labels.addChild(label);
+
+    if (subtext) {
+      var subtextStyle = this.opt.labelSubtextStyle;
+      var sublabel = new PIXI.Text(subtext, subtextStyle);
+      sublabel.x = x;
+      sublabel.y = y + textStyle.fontSize + 10;
+      sublabel.anchor.set(anchor[0], anchor[1]);
+      this.labels.addChild(sublabel);
+    }
+
+    this.labels.lineStyle(2, 0x603636);
+    this.labels.moveTo(line[0][0], line[0][1]).lineTo(line[1][0], line[1][1]);
+
+    this.labels.beginFill(0x603636);
+    this.labels.drawCircle(line[1][0], line[1][1], 5);
+  };
+
+  DataViz.prototype.renderLabels = function(){
+    var w = this.app.renderer.width;
+    var h = this.app.renderer.height;
+    var marginX = this.opt.margin[0];
+    var marginY = this.opt.margin[1];
+    var domain = this.domain;
+    var range = this.range;
+
+    var ch = h - marginY * 2;
+    var points = this.plotData;
+    var first = points[0];
+    var last = points[points.length-1];
+
+    // clear labels
+    this.labels.clear();
+    while(this.labels.children[0]) {
+      this.labels.removeChild(this.labels.children[0]);
+    }
+
+    // first label
+    var text = Math.round(first.y) + " ppm";
+    var subtext = UTIL.dateDiff(new Date(first.x*1000), new Date(last.x*1000));
+    var line = [
+      [marginX, h - marginY * 0.55],
+      [marginX, h - marginY - UTIL.norm(first.y, range[0], range[1]) * ch]
+    ];
+    this.renderLabel([marginX, h - marginY*0.5], line, text, subtext, [0, 0]);
+
+    // second label
+    text = Math.round(last.y) + " ppm";
+    subtext = "Today";
+    line = [
+      [w - marginX, marginY*0.75],
+      [w - marginX, h - marginY - UTIL.norm(last.y, range[0], range[1]) * ch]
+    ];
+    this.renderLabel([w - marginX, marginY * 0.4], line, text, subtext, [1, 0]);
   };
 
   DataViz.prototype.renderProgress = function(progress){
@@ -84,9 +160,10 @@ var DataViz = (function() {
     var range = this.range;
     var w = this.app.renderer.width;
     var h = this.app.renderer.height;
-    var margin = this.opt.margin;
-    var cw = w - margin * 2;
-    var ch = h - margin * 2;
+    var marginX = this.opt.margin[0];
+    var marginY = this.opt.margin[1];
+    var cw = w - marginX * 2;
+    var ch = h - marginY * 2;
     var percent = UTIL.norm(range[1]-range[0], this.minRange, this.maxRange);
     var rad = UTIL.lerp(this.opt.pointRadius[0], this.opt.pointRadius[1], percent);
     var hPercent = this.opt.highlightPointRadius;
@@ -107,8 +184,8 @@ var DataViz = (function() {
       var px = UTIL.norm(p.x, domain[0], domain[1]);
       if (px <= progress) {
         var py = UTIL.norm(p.y, range[0], range[1]);
-        var x = px * cw + margin;
-        var y = h - margin - (py * ch);
+        var x = px * cw + marginX;
+        var y = h - marginY - (py * ch);
         var xPercent = px / progress;
         var r = UTIL.lerp(hPercent[0], hPercent[1], xPercent) * rad;
         _this.plotProgress.drawCircle(x, y, r);
@@ -128,9 +205,10 @@ var DataViz = (function() {
     var range = range || this.range;
     var w = this.app.renderer.width;
     var h = this.app.renderer.height;
-    var margin = this.opt.margin;
-    var cw = w - margin * 2;
-    var ch = h - margin * 2;
+    var marginX = this.opt.margin[0];
+    var marginY = this.opt.margin[1];
+    var cw = w - marginX * 2;
+    var ch = h - marginY * 2;
     var len = this.opt.tickLength;
     alpha = alpha || 1.0;
 
@@ -146,15 +224,15 @@ var DataViz = (function() {
     this.axes.lineStyle(2, 0x595454);
 
     // draw x ticks/labels
-    var y = h - margin;
-    var x = margin;
+    var y = h - marginY;
+    var x = marginX;
     var x0 = domain[0];
     var x1 = domain[1];
     var xs = this.getXAxis(domain);
 
     $.each(xs, function(i, value){
       var px = value.value;
-      x = margin + px * cw;
+      x = marginX + px * cw;
 
       // draw tick
       _this.axes.moveTo(x, y).lineTo(x, y+len);
@@ -174,12 +252,12 @@ var DataViz = (function() {
     var y1 = Math.floor(range[1]);
     var value = y0;
     var tickEvery = 10;
-    x = margin;
+    x = marginX;
 
     while(value <= y1) {
       var py = UTIL.norm(value, y0, y1);
       py = UTIL.lim(py, 0, 1);
-      y = h - margin - (py * ch);
+      y = h - marginY - (py * ch);
       _this.axes.moveTo(x, y).lineTo(x-len, y);
       if (value % tickEvery === 0 || value==y0 || value==y1) {
         var label = new PIXI.Text(value, textStyle);
@@ -197,9 +275,10 @@ var DataViz = (function() {
     var points = dataPoints || this.plotData;
     var w = this.app.renderer.width;
     var h = this.app.renderer.height;
-    var margin = this.opt.margin;
-    var cw = w - margin * 2;
-    var ch = h - margin * 2;
+    var marginX = this.opt.margin[0];
+    var marginY = this.opt.margin[1];
+    var cw = w - marginX * 2;
+    var ch = h - marginY * 2;
 
     domain = domain || this.domain;
     range = range || this.range;
@@ -219,8 +298,8 @@ var DataViz = (function() {
       var py = UTIL.norm(p.y, range[0], range[1]);
       px = UTIL.lim(px, 0, 1);
       py = UTIL.lim(py, 0, 1);
-      var x = px * cw + margin;
-      var y = h - margin - (py * ch);
+      var x = px * cw + marginX;
+      var y = h - marginY - (py * ch);
       // if (i <= 0) {
       //   _this.plot.moveTo(x, y);
       // } else {
@@ -240,8 +319,10 @@ var DataViz = (function() {
     this.domain = domain;
     this.range = range;
 
-    this.renderAxes();
+    // this.renderAxes();
     this.renderPlot();
+    this.renderLabels();
+    this.renderAnnotations();
   };
 
   return DataViz;

@@ -67,11 +67,11 @@ h2 {
 }
 
 .tt-sliders {
-  width: 400px;
+  width: 600px;
   height: 160px;
   left: 50%;
   top: 50%;
-  margin-left: -200px;
+  margin-left: -300px;
   margin-top: -80px;
 }
 .tt-sliders label {

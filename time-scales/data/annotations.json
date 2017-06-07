@@ -1,0 +1,11 @@
+{
+  "co2": [
+    {"startDate": "2015-11-01", "endDate": "2015-12-31", "position": [0.01, 0.01], "text": "Just looking at the last month, CO₂ levels may look erratic"},
+    {"startDate": "2013-01-01", "endDate": "2015-04-01", "position": [0.01, 0.01], "text": "When looking at the last couple years, you can see the seasonal rhythm of CO₂"},
+    {"startDate": "2013-04-01", "endDate": "2015-03-01", "datePosition": "2015-05-01", "direction": 0, "anchor": [0.5, 1.0], "text": "CO₂ peaks in the spring after plants decay in the winter"},
+    {"startDate": "2013-03-01", "endDate": "2015-02-01", "datePosition": "2015-10-01", "direction": 180, "anchor": [0.5, 0], "text": "and sinks in the fall when plant regrowth removes CO₂ from the air"},
+    {"startDate": "1974-01-01", "endDate": "2005-12-31", "position": [0.01, 0.01], "text": "When looking at the last decade, you can see average CO₂ levels are rising..."},
+    {"startDate": "1974-01-01", "endDate": "1994-12-31", "datePosition": "1994-12-31", "direction": 315, "anchor": [1.0, 1.0], "text": "...and rising..."},
+    {"startDate": "1974-01-01", "endDate": "1984-12-31", "datePosition": "1984-12-31", "direction": 315, "anchor": [1.0, 1.0], "text": "...and rising..."}
+  ]
+}

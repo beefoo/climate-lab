@@ -1,7 +1,18 @@
 # -*- coding: utf-8 -*-
 
+from datetime import datetime
 import math
 import numpy as np
+
+def dateToSeconds(date):
+    (year, month, day, hour) = date
+    dt = datetime(int(year), month, day, hour)
+    unix = datetime(1970,1,1)
+    return (dt - unix).total_seconds()
+
+def dateStringToSeconds(string):
+    parts = [int(p) for p in string.split("-")]
+    return dateToSeconds((parts[0], parts[1], parts[2], 0))
 
 # Interpolation if only two points available
 def interpolateCosine(y1, y2, mu):

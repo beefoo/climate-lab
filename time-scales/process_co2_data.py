@@ -49,12 +49,6 @@ DATA_SOURCES = {
 DATA_SOURCE = DATA_SOURCES["daily"]
 OUTPUT_FILE = "data/processed_data.json"
 
-def dateToSeconds(date):
-    (year, month, day, hour) = date
-    dt = datetime(int(year), month, day, hour)
-    unix = datetime(1970,1,1)
-    return (dt - unix).total_seconds()
-
 def readDataFromFile(filename, header):
     rows = []
     with open(filename, 'rb') as f:
