@@ -3,7 +3,7 @@
 var App = (function() {
   function App(options) {
     var defaults = {
-      speedRange: [0.0, 4.0]
+      speedRange: [0.0, 1.0]
     };
     this.opt = $.extend({}, defaults, options);
     this.init();
@@ -25,6 +25,7 @@ var App = (function() {
     };
     var controls = new Controls({sliders: sliders});
 
+    this.onSpeed(0.25);
     this.render();
     this.loadListeners();
   };

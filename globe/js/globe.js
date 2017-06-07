@@ -16,7 +16,7 @@ var Globe = (function() {
   Globe.prototype.init = function(){
     var _this = this;
     this.$el = $(this.opt.el);
-    this.video = document.getElementById('video-co2');
+    this.video = document.getElementById('video-net-radiation');
     this.ready = false;
 
     this.video.addEventListener('loadeddata', function() {

@@ -14,14 +14,15 @@
     <div id="globe" class="globe"></div>
     <div id="controls" class="controls">
       <div class="tt">
-        <div class="tt-disc">
-          <div id="spinner" class="tt-spinner"></div>
-          <button>Carbon Dioxide</button>
-        </div>
 
         <div class="tt-sliders">
           <label for="tt-speed">Change speed</label>
           <div id="tt-speed" class="tt-slider-horz tt-speed"></div>
+        </div>
+
+        <div class="tt-disc">
+          <div id="spinner" class="tt-spinner"></div>
+          <button>Trackball placeholder</button>
         </div>
 
       </div>
@@ -29,11 +30,13 @@
     <div id="label" class="label"></div>
   </div>
 
-  <video id="video-co2" autoplay loop webkit-playsinline crossorigin="anonymous" style="display: none">
-    <source src="https://s3.amazonaws.com/brianfoo-amnh/gmao_co2_cropped.mp4" type='video/mp4'>
-    <!-- <source src="video/gmao_co2_cropped.mp4" type='video/mp4'> -->
-		<!-- <source src="video/gmao_co2_cropped.ogv" type='video/ogg; codecs="theora, vorbis"'> -->
+  <video id="video-net-radiation" autoplay loop webkit-playsinline crossorigin="anonymous" style="display: none">
+    <source src="https://s3.amazonaws.com/brianfoo-amnh/net_radiation_12fps.mp4" type='video/mp4'>
   </video>
+
+  <!-- <video id="video-co2" autoplay loop webkit-playsinline crossorigin="anonymous" style="display: none">
+    <source src="https://s3.amazonaws.com/brianfoo-amnh/gmao_co2_cropped.mp4" type='video/mp4'>
+  </video> -->
 
   <!-- Custom Shader Code for atmospheric glow -->
   <script id="vertexShaderGlow" type="x-shader/x-vertex">

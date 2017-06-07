@@ -63,7 +63,7 @@ h2 {
   height: 220px;
   left: 50%;
   top: 50%;
-  margin-left: -285px;
+  margin-left: 160px;
   margin-top: -110px;
 }
 .tt-disc button {
@@ -80,7 +80,10 @@ h2 {
   color: #fff;
   outline-color: #009688;
   letter-spacing: 1px;
-  cursor: pointer;
+  cursor: move;
+  cursor: grab;
+  cursor: -moz-grab;
+  cursor: -webkit-grab;
 }
 
 .tt-sliders {
@@ -88,8 +91,9 @@ h2 {
   height: 80px;
   left: 50%;
   top: 50%;
-  margin-left: -55px;
+
   margin-top: -40px;
+  margin-left: -285px;
 }
 .tt-sliders label {
 
