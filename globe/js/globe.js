@@ -76,6 +76,10 @@ var Globe = (function() {
     // init controls
     this.controls = new THREE.OrbitControls(this.camera, this.renderer.domElement);
 
+    // load textures asynchronously
+    var earthPromise = $.Deferred();
+    var countryPromise = $.Deferred();
+
     // load video texture
     // var video = document.getElementById('video-co2');
     var video = this.video;
@@ -84,10 +88,23 @@ var Globe = (function() {
 		vTexture.magFilter = THREE.LinearFilter;
 		vTexture.format = THREE.RGBFormat;
 
-    // init globe
+    // init globe with video texture
     var geometry = new THREE.SphereGeometry(0.5, 32, 32);
     var material = new THREE.MeshBasicMaterial({map: vTexture, overdraw: true});
     this.earth = new THREE.Mesh(geometry, material);
+
+    // init country overlay
+
+    // load country texture
+    var cGeo = geometry.clone();
+    var cMat = new THREE.MeshPhongMaterial({transparent: true, opacity: 0.5});
+    this.countries = new THREE.Mesh(cGeo, cMat);
+    var cTextureLoader = new THREE.TextureLoader();
+    cTextureLoader.load('img/BlankMap-Equirectangular.png', function (texture) {
+      _this.countries.material.map = texture;
+      _this.countries.material.map.needsUpdate = true;
+      countryPromise.resolve();
+    });
 
     // add arrow helpers
     // this.earth.add(new THREE.AxisHelper(1));
@@ -107,7 +124,13 @@ var Globe = (function() {
     this.earth.add(southArrow);
 
     this.scene.add(this.earth);
-    this.ready = true;
+    this.scene.add(this.countries);
+    earthPromise.resolve();
+
+    // wait for textures to load
+    $.when(earthPromise, countryPromise).done(function() {
+      _this.ready = true;
+    });
   };
 
   Globe.prototype.onResize = function(){
@@ -123,17 +146,6 @@ var Globe = (function() {
     var _this = this;
 
     if (!this.ready) return false;
-
-    // earth orbits
-    // var degrees = 360 - (progress * 360 - 90);
-    // var xy = UTIL.translatePoint([0,0], degrees, this.opt.orbitRadius);
-
-    // earth rotates
-    // var days = progress / (1.0 / 365.25);
-    // var dayProgress = days - Math.floor(days);
-    // var xz = UTIL.translatePoint([0,0], dayProgress*360, this.opt.orbitRadius);
-    // this.dLight.position.set(xz[0], 0, xz[1]);
-    // this.dLight.lookAt(new THREE.Vector3(0,0,0));
 
     this.renderer.render(this.scene, this.camera);
     this.controls.update();
