@@ -34,6 +34,7 @@ var App = (function() {
     this.speed = 0;
     this.scale = 1.0;
     this.dataKey = "co2";
+    this.annoations = [];
     this.onSpeed(this.speed);
 
     // Initialize viz and spinners
@@ -63,6 +64,9 @@ var App = (function() {
     var maxRange = d.maxRange[1] - d.maxRange[0];
     this.viz.setRangeMinMax(minRange, maxRange);
 
+    var annotations = data["annotations"][this.dataKey];
+    this.annotations = annotations;
+
     this.onScale(this.scale);
     this.render();
   };
@@ -79,8 +83,11 @@ var App = (function() {
     var values = _.pluck(simplified, 'y');
     var range = [_.min(values), _.max(values)];
 
+    var annotations = _.filter(this.annotations, function(a){ return d0 >= a.startDate && d0 <= a.endDate; });
+
     this.startDate = Date.now();
     this.viz.update(simplified, domain, range);
+    this.viz.updateAnnotations(annotations);
   };
 
   App.prototype.onSpeed = function(value) {

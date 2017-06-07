@@ -12,6 +12,10 @@ var DataViz = (function() {
         fill: "#ffffff",
         fontSize: 18
       },
+      annTextStyle: {
+        fill: "#ffffff",
+        fontSize: 24
+      },
       labelTextStyle: {
         fill: "#ffffff",
         fontSize: 28,
@@ -64,12 +68,13 @@ var DataViz = (function() {
 
   DataViz.prototype.loadView = function(){
     this.app = new PIXI.Application(this.$el.width(), this.$el.height(), {transparent : true});
-    this.labels = new PIXI.Graphics();
     // this.axes = new PIXI.Graphics();
     this.plot = new PIXI.Graphics();
     this.plotProgress = new PIXI.Graphics();
+    this.labels = new PIXI.Graphics();
+    this.annotations = new PIXI.Graphics();
 
-    this.app.stage.addChild(this.plot, this.plotProgress, this.labels);
+    this.app.stage.addChild(this.plot, this.plotProgress, this.labels, this.annotations);
 
     this.$el.append(this.app.view);
   };
@@ -82,8 +87,36 @@ var DataViz = (function() {
     this.renderAnnotations();
   };
 
-  DataViz.prototype.renderAnnotations = function(){
+  DataViz.prototype.renderAnnotation = function(x, y, text, anchor, direction, radius){
+    var textStyle = this.opt.annTextStyle;
+    anchor = anchor || [0,0];
+    direction = direction || false;
+    radius = radius || 50;
 
+    var label = new PIXI.Text(text, textStyle);
+    label.x = x;
+    label.y = y;
+    label.anchor.set(anchor[0], anchor[1]);
+    this.annotations.addChild(label);
+  };
+
+  DataViz.prototype.renderAnnotations = function(annoations){
+    var _this = this;
+
+    // clear annotations
+    this.annotations.clear();
+    while(this.annotations.children[0]) {
+      this.annotations.removeChild(this.annotations.children[0]);
+    }
+
+    $.each(annoations, function(i, ann){
+      if (_.has(ann, "position")) {
+        var pp = ann.position;
+        var xy = _this._percentToPoint(pp[0], pp[1], [_this.opt.margin[0], 90]);
+        _this.renderAnnotation(xy[0], xy[1], ann.text, ann.achor);
+      }
+
+    });
   };
 
   DataViz.prototype.renderLabel = function(labelPoint, line, text, subtext, anchor){
@@ -158,12 +191,6 @@ var DataViz = (function() {
     var points = this.plotData;
     var domain = this.domain;
     var range = this.range;
-    var w = this.app.renderer.width;
-    var h = this.app.renderer.height;
-    var marginX = this.opt.margin[0];
-    var marginY = this.opt.margin[1];
-    var cw = w - marginX * 2;
-    var ch = h - marginY * 2;
     var percent = UTIL.norm(range[1]-range[0], this.minRange, this.maxRange);
     var rad = UTIL.lerp(this.opt.pointRadius[0], this.opt.pointRadius[1], percent);
     var hPercent = this.opt.highlightPointRadius;
@@ -184,11 +211,10 @@ var DataViz = (function() {
       var px = UTIL.norm(p.x, domain[0], domain[1]);
       if (px <= progress) {
         var py = UTIL.norm(p.y, range[0], range[1]);
-        var x = px * cw + marginX;
-        var y = h - marginY - (py * ch);
+        var xy = _this._dataToPoint(p.x, p.y, domain, range);
         var xPercent = px / progress;
         var r = UTIL.lerp(hPercent[0], hPercent[1], xPercent) * rad;
-        _this.plotProgress.drawCircle(x, y, r);
+        _this.plotProgress.drawCircle(xy[0], xy[1], r);
         lastPy = py;
       }
     });
@@ -273,12 +299,6 @@ var DataViz = (function() {
   DataViz.prototype.renderPlot = function(dataPoints, domain, range, clear){
     var _this = this;
     var points = dataPoints || this.plotData;
-    var w = this.app.renderer.width;
-    var h = this.app.renderer.height;
-    var marginX = this.opt.margin[0];
-    var marginY = this.opt.margin[1];
-    var cw = w - marginX * 2;
-    var ch = h - marginY * 2;
 
     domain = domain || this.domain;
     range = range || this.range;
@@ -294,18 +314,8 @@ var DataViz = (function() {
 
     // draw points
     $.each(points, function(i, p){
-      var px = UTIL.norm(p.x, domain[0], domain[1]);
-      var py = UTIL.norm(p.y, range[0], range[1]);
-      px = UTIL.lim(px, 0, 1);
-      py = UTIL.lim(py, 0, 1);
-      var x = px * cw + marginX;
-      var y = h - marginY - (py * ch);
-      // if (i <= 0) {
-      //   _this.plot.moveTo(x, y);
-      // } else {
-      //   _this.plot.lineTo(x, y);
-      // }
-      _this.plot.drawCircle(x, y, rad);
+      var xy = _this._dataToPoint(p.x, p.y, domain, range);
+      _this.plot.drawCircle(xy[0], xy[1], rad);
     });
   };
 
@@ -318,11 +328,42 @@ var DataViz = (function() {
     this.plotData = data;
     this.domain = domain;
     this.range = range;
-
     // this.renderAxes();
     this.renderPlot();
     this.renderLabels();
-    this.renderAnnotations();
+
+  };
+
+  DataViz.prototype.updateAnnotations = function(annotations){
+    this.renderAnnotations(annotations);
+  };
+
+  DataViz.prototype._dataToPoint = function(dx, dy, domain, range){
+    domain = domain || this.domain;
+    range = range || this.range;
+
+    var px = UTIL.norm(dx, domain[0], domain[1]);
+    var py = UTIL.norm(dy, range[0], range[1]);
+
+    px = UTIL.lim(px, 0, 1);
+    py = UTIL.lim(py, 0, 1);
+
+    return this._percentToPoint(px, py);
+  };
+
+  DataViz.prototype._percentToPoint = function(px, py, margin){
+    var w = this.app.renderer.width;
+    var h = this.app.renderer.height;
+    margin = margin || this.opt.margin;
+    var marginX = margin[0];
+    var marginY = margin[1];
+    var cw = w - marginX * 2;
+    var ch = h - marginY * 2;
+
+    var x = px * cw + marginX;
+    var y = h - marginY - (py * ch);
+
+    return [x, y];
   };
 
   return DataViz;
