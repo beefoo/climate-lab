@@ -25,7 +25,7 @@ var Label = (function() {
       "August", "September", "October",
       "November", "December"
     ];
-    var dateF = monthNames[date.getMonth()] + " " + date.getDate();
+    var dateF = monthNames[date.getMonth()] + " " + date.getDate() + ", 2016";
 
     this.$el.text(dateF);
   };
