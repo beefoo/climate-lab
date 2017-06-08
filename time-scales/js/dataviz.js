@@ -91,7 +91,7 @@ var DataViz = (function() {
     var textStyle = this.opt.annTextStyle;
 
     if (ann.pointRadius) {
-      this.annotations.lineStyle(2, 0xac061b);
+      this.annotations.lineStyle(2, 0x03fc1be);
       this.annotations.drawCircle(x, y, ann.pointRadius);
     }
 
