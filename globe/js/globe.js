@@ -25,6 +25,10 @@ var Globe = (function() {
     }, false);
   };
 
+  Globe.prototype.getRotationAngle = function(){
+    return this.camera.rotation.x * 180 / Math.PI;
+  };
+
   Globe.prototype.getProgress = function(){
     var progress = 0;
     var video = this.video;
@@ -89,7 +93,7 @@ var Globe = (function() {
 		vTexture.format = THREE.RGBFormat;
 
     // init globe with video texture
-    var geometry = new THREE.SphereGeometry(0.5, 32, 32);
+    var geometry = new THREE.SphereGeometry(0.5, 64, 64);
     var material = new THREE.MeshBasicMaterial({map: vTexture, overdraw: true});
     this.earth = new THREE.Mesh(geometry, material);
 

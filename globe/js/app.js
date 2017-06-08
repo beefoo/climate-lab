@@ -15,6 +15,7 @@ var App = (function() {
     this.globe = new Globe({el: "#globe"});
     this.orbit = new Orbit({el: "#orbit"});
     this.label = new Label({el: "#label"});
+    this.annotations = new Annotations({el: "#annotations", dataKey: "netrad"});
 
     // Initialize controls
     var sliders = {
@@ -52,6 +53,11 @@ var App = (function() {
     this.globe.isLoaded() && this.globe.render(progress);
     this.orbit.isLoaded() && this.orbit.render(progress);
     this.label.render(progress);
+
+    if (this.globe.isLoaded()) {
+      var angle = this.globe.getRotationAngle();
+      this.annotations.render(progress, angle);
+    }
 
     requestAnimationFrame(function(){
       _this.render();

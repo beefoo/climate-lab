@@ -1,0 +1,13 @@
+{
+  "netrad": [
+    {"angle": [-15, 15], "text": "Areas around the equator get direct sunlight all year-round thus always has a positive net radiation"},
+    {"month": [3], "text": "During the March equinox, the amount of incoming sunlight, and thus net radiation, is roughly equal in both hemispheres"},
+    {"month": [9], "text": "During the September equinox, the amount of incoming sunlight, and thus net radiation, is roughly equal in both hemispheres"},
+    {"angle": [-60, -20], "month": [12], "text": "During the December solstice, the northern hemisphere is tipped its farthest away from the Sun, thus less energy can be absorbed from sunlight"},
+    {"angle": [20, 60], "month": [12], "text": "During the December solstice, the southern hemisphere is tipped its closest to the Sun, thus more energy can be absorbed from sunlight"},
+    {"angle": [-60, -20], "month": [6], "text": "During the June solstice, the northern hemisphere is tipped its closest to the Sun, thus more energy can be absorbed from sunlight"},
+    {"angle": [20, 60], "month": [6], "text": "During the June solstice, the southern hemisphere is tipped its farthest away from the Sun, thus less energy can be absorbed from sunlight"},
+    {"angle": [-90, -75], "text": "Net radiation is negative at each pole because more energy from sunlight is reflected than absorbed"},
+    {"angle": [75, 90], "text": "Net radiation is negative at each pole because more energy from sunlight is reflected than absorbed"}
+  ]
+}
