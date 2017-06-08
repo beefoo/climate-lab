@@ -87,22 +87,34 @@ var DataViz = (function() {
     this.renderAnnotations();
   };
 
-  DataViz.prototype.renderAnnotation = function(x, y, text, anchor, direction, radius){
+  DataViz.prototype.renderAnnotation = function(x, y, ann){
     var textStyle = this.opt.annTextStyle;
-    anchor = anchor || [0,0];
-    direction = direction || false;
-    radius = radius || 50;
 
-    var label = new PIXI.Text(text, textStyle);
-    label.x = x;
-    label.y = y;
-    label.anchor.set(anchor[0], anchor[1]);
-    this.annotations.addChild(label);
+    if (ann.pointRadius) {
+      this.annotations.lineStyle(2, 0xac061b);
+      this.annotations.drawCircle(x, y, ann.pointRadius);
+    }
+
+    if (ann.text) {
+      var label = new PIXI.Text(ann.text, textStyle);
+      if (ann.offset) {
+        x += ann.offset[0];
+        y += ann.offset[1];
+      }
+      label.x = x;
+      label.y = y;
+      if (ann.anchor) {
+        label.anchor.set(ann.anchor[0], ann.anchor[1]);
+      }
+      this.annotations.addChild(label);
+    }
+
   };
 
   DataViz.prototype.renderAnnotations = function(){
     var _this = this;
     var annotations = this.plotAnnotations;
+    var points = this.plotData;
 
     // clear annotations
     this.annotations.clear();
@@ -114,7 +126,14 @@ var DataViz = (function() {
       if (_.has(ann, "position")) {
         var pp = ann.position;
         var xy = _this._percentToPoint(pp[0], pp[1], [_this.opt.margin[0], 90]);
-        _this.renderAnnotation(xy[0], xy[1], ann.text, ann.achor);
+        _this.renderAnnotation(xy[0], xy[1], ann);
+
+      } else if (_.has(ann, "datePosition")) {
+        var dp = ann.datePosition;
+        var sorted = _.sortBy(points, function(p){ return Math.abs(p.x - dp); });
+        var closest = sorted[0];
+        var xy = _this._dataToPoint(closest.x, closest.y);
+        _this.renderAnnotation(xy[0], xy[1], ann);
       }
 
     });
@@ -140,10 +159,10 @@ var DataViz = (function() {
       this.labels.addChild(sublabel);
     }
 
-    this.labels.lineStyle(2, 0x603636);
+    this.labels.lineStyle(2, 0x00676d);
     this.labels.moveTo(line[0][0], line[0][1]).lineTo(line[1][0], line[1][1]);
 
-    this.labels.beginFill(0x603636);
+    this.labels.beginFill(0x00676d);
     this.labels.drawCircle(line[1][0], line[1][1], 5);
   };
 

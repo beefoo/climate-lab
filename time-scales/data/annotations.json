@@ -1,9 +1,14 @@
 {
   "co2": [
     {"startDate": "2015-11-01", "endDate": "2015-12-31", "position": [0, 1], "text": "Just looking at the last month, CO₂ levels may look erratic"},
-    {"startDate": "2013-01-01", "endDate": "2015-04-01", "position": [0, 1], "text": "When looking at the last couple years, you can see the seasonal rhythm of CO₂"},
-    {"startDate": "2013-04-01", "endDate": "2015-03-01", "datePosition": "2015-05-01", "direction": 0, "anchor": [0.5, 1.0], "text": "CO₂ peaks in the spring/after plants decay/in the winter"},
-    {"startDate": "2013-03-01", "endDate": "2015-02-01", "datePosition": "2015-10-01", "direction": 180, "anchor": [0.5, 0], "text": "CO₂ sinks in the fall/when plant regrowth/removes CO₂ from the air"},
+    {"startDate": "2014-06-01", "endDate": "2015-06-01", "position": [0, 1], "text": "When looking at the last couple years, you can see the seasonal rhythm of CO₂"},
+
+    {"startDate": "2012-06-01", "endDate": "2014-05-31", "position": [0, 1], "text": "CO₂ peaks in the spring after plants decay in the winter"},
+    {"startDate": "2010-01-01", "endDate": "2012-05-31", "position": [0, 1], "text": "CO₂ sinks in the fall when plant regrowth removes CO₂ from the air"},
+
+    {"startDate": "2012-06-01", "endDate": "2014-05-31", "datePosition": "2014-05-01", "anchor": [0.5, 1.0], "offset": [0, -50], "text": "May", "pointRadius": 30},
+    {"startDate": "2010-01-01", "endDate": "2012-05-31", "datePosition": "2014-09-20", "anchor": [0.5, 0.0], "offset": [0, 50], "text": "October", "pointRadius": 30},
+
     {"startDate": "1994-01-01", "endDate": "2005-12-31", "position": [0, 1], "text": "When looking at many years, you can see average CO₂ levels are rising..."},
     {"startDate": "1984-01-01", "endDate": "1993-12-31", "position": [0, 1], "text": "When looking at many years, you can see average CO₂ levels are rising and rising..."},
     {"startDate": "1974-01-01", "endDate": "1983-12-31", "position": [0, 1], "text": "When looking at many years, you can see average CO₂ levels are rising and rising and rising..."}
