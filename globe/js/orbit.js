@@ -150,6 +150,16 @@ var Orbit = (function() {
     this.earthHelper.scale.set(0.4, 0.4, 0.4);
     this.earthHelper.rotation.z = this.opt.earthTilt * Math.PI / 180;
     this.earthHelper.add(this.earth);
+
+    // equator
+    var eqGeo = new THREE.CircleGeometry(1.2, 32);
+    eqGeo.vertices.shift();
+    eqGeo.vertices.push(eqGeo.vertices[0].clone());
+    var eqMat = new THREE.LineBasicMaterial( { color: 0x00f6ff } );
+    var equator = new THREE.Line(eqGeo, eqMat);
+    equator.rotation.x = Math.PI / 2;
+    this.earthHelper.add(equator);
+
     this.scene.add(this.earthHelper);
 
     // load textures asynchronously

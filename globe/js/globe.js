@@ -106,6 +106,14 @@ var Globe = (function() {
       countryPromise.resolve();
     });
 
+    // equator
+    var eqGeo = new THREE.CircleGeometry(0.55, 64);
+    eqGeo.vertices.shift();
+    eqGeo.vertices.push(eqGeo.vertices[0].clone());
+    var eqMat = new THREE.LineBasicMaterial( { color: 0x00f6ff } );
+    var equator = new THREE.Line(eqGeo, eqMat);
+    equator.rotation.x = Math.PI / 2;
+
     // add arrow helpers
     // this.earth.add(new THREE.AxisHelper(1));
 
@@ -125,6 +133,7 @@ var Globe = (function() {
 
     this.scene.add(this.earth);
     this.scene.add(this.countries);
+    this.scene.add(equator);
     earthPromise.resolve();
 
     // wait for textures to load
