@@ -15,23 +15,26 @@ var App = (function() {
 
     // Initialize controls
     var sliders = {
-      "#tt-speed": {
-        orientation: "horizontal", min: 0, max: 1, step: 0.001, value: 0,
-        start: function( event, ui ) { _this.transitioning = true; },
-        slide: function(e, ui){ _this.onSpeed(ui.value); },
-        stop: function( event, ui ) { _this.transitioning = false; }
-      },
+      // "#tt-speed": {
+      //   orientation: "horizontal", min: 0, max: 1, step: 0.001, value: 0,
+      //   start: function( event, ui ) { _this.transitioning = true; },
+      //   slide: function(e, ui){ _this.onSpeed(ui.value); },
+      //   stop: function( event, ui ) { _this.transitioning = false; }
+      // },
       "#tt-scale": {
-        orientation: "horizontal", min: 0, max: 1, step: 0.001, value: 1,
+        orientation: "horizontal", min: 0, max: 1.1, step: 0.001, value: 1, range: "max",
         start: function( event, ui ) { _this.transitioning = true; },
-        slide: function(e, ui){ _this.onScale(ui.value); },
+        slide: function(e, ui){
+          if (ui.value > 1) return false;
+          _this.onScale(ui.value);
+        },
         stop: function( event, ui ) { _this.transitioning = false; }
       }
     };
     var controls = new Controls({sliders: sliders});
 
     // Set initial speed and scale
-    this.speed = 0;
+    this.speed = 0.5;
     this.scale = 1.0;
     this.dataKey = "co2";
     this.annotations = [];
