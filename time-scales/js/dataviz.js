@@ -6,7 +6,7 @@ var DataViz = (function() {
       el: '#main',
       margin: [100, 200],
       tickLength: 10,
-      pointRadius: [4, 1],
+      pointRadius: [4, 1.5],
       highlightPointRadius: [0.2, 2],
       axisTextStyle: {
         fill: "#ffffff",
