@@ -3,7 +3,7 @@
 var Sound = (function() {
   function Sound(options) {
     var defaults = {
-      frequency: [40, 1000]
+      frequency: [40, 800]
     };
     this.opt = $.extend({}, defaults, options);
     this.init();
@@ -11,11 +11,11 @@ var Sound = (function() {
 
   Sound.prototype.init = function(){
     this.started = false;
-    this.osc = new Tone.Oscillator({
+    this.tone = new Tone.Oscillator({
 			"frequency" : 440,
-			"volume" : -10
+			"volume" : -10,
+      "type" : "triangle8"
 		}).toMaster();
-
     this.frequency = this.opt.frequency[0];
   };
 
@@ -24,7 +24,9 @@ var Sound = (function() {
     var f = Math.round(UTIL.lerp(ff[0], ff[1], percent));
     if (f!=this.frequency) {
       this.frequency = f;
-      this.osc.frequency.value = f;
+      // this.tone.triggerRelease();
+      // this.tone.triggerAttack(f);
+      this.tone.frequency.value = f;
     }
   };
 
@@ -35,7 +37,7 @@ var Sound = (function() {
   Sound.prototype.start = function(){
     if (!this.started) {
       this.started = true;
-      this.osc.start();
+      this.tone.start();
     }
   	Tone.Master.volume.rampTo(0, 0.05);
   };
