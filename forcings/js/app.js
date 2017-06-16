@@ -16,6 +16,7 @@ var App = (function() {
     this.progress = 0;
 
     this.loadData();
+    this.loadListeners();
   };
 
   App.prototype.loadData = function(){
@@ -24,6 +25,20 @@ var App = (function() {
     $.getJSON(this.opt.dataURL, function(data) {
       console.log('Data loaded.');
       _this.onDataLoaded(data);
+    });
+  };
+
+  App.prototype.loadListeners = function(){
+    var _this = this;
+    
+    $('input[name="pane-active"]').change(function() {
+      var value = this.value;
+
+      _this.dataVizLeft.setActive(false);
+      _this.dataVizRight.setActive(false);
+
+      if (value=="left" || value=="both") _this.dataVizLeft.setActive(true);
+      if (value=="right" || value=="both") _this.dataVizRight.setActive(true);
     });
   };
 
@@ -57,7 +72,7 @@ var App = (function() {
 
     // load data viz
     this.dataVizLeft = new DataViz({"el": "#pane-left", "label": data.data[1].label, "data": data.data[1].data, "domain": data.domain, "range": data.range, "stereo": 0.0});
-    this.dataVizRight = new DataViz({"el": "#pane-right", "label": data.data[0].label, "data": data.data[0].data, "domain": data.domain, "range": data.range, "soundDir": "audio/acoustic_grand_piano-mp3/", "stereo": 1.0});
+    this.dataVizRight = new DataViz({"el": "#pane-right", "label": data.data[0].label, "data": data.data[0].data, "domain": data.domain, "range": data.range, "soundDir": "audio/acoustic_grand_piano-mp3/", "stereo": 1.0, "active": false});
 
     this.render();
   };

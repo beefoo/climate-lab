@@ -11,6 +11,7 @@ var DataViz = (function() {
         fontWeight: "bold"
       },
       plotMargin: [40, 60],
+      active: true,
       rangeIncrement: 0.25,
       sound: {
         soundDir: 'audio/orchestral_harp-mp3/',
@@ -33,6 +34,8 @@ var DataViz = (function() {
 
     this.domain = this.opt.domain;
     this.range = this.opt.range;
+    this.active = this.opt.active;
+
     this.data = [];
     this.cords = [];
     this.label = '';
@@ -151,11 +154,20 @@ var DataViz = (function() {
     var prev = this.progress;
     this.progress = progress;
 
-    this.checkForPluck(prev, progress);
+    if (this.active) {
+      this.checkForPluck(prev, progress);
+      this.pluck();
+      this.renderAxes();
+      this.renderProgress();
 
-    this.pluck();
-    this.renderAxes();
-    this.renderProgress();
+    // clear progress
+    } else {
+      this.plotProgress.clear();
+      while(this.plotProgress.children[0]) {
+        this.plotProgress.removeChild(this.plotProgress.children[0]);
+      }
+    }
+
   };
 
   DataViz.prototype.renderAxes = function(){
@@ -281,6 +293,14 @@ var DataViz = (function() {
     var dp = data[data.length-1];
     var p = this._dataToPoint(dp[0], dp[1]);
     this.plotProgress.drawCircle(p[0], p[1], 5);
+  };
+
+  DataViz.prototype.reset = function() {
+    this.render(0);
+  };
+
+  DataViz.prototype.setActive = function(active) {
+    this.active = active;
   };
 
   DataViz.prototype.setData = function(data, label){
