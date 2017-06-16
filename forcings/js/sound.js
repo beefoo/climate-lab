@@ -21,6 +21,8 @@ var Sound = (function() {
     var notes = this.opt.notes;
     var stereo = this.opt.stereo;
 
+    this.prev = false;
+
     _.each(notes, function(n){
       var filename = dir + n + ext;
       _this.sounds.push(new Howl({ src: [filename], stereo: stereo }));
@@ -30,8 +32,12 @@ var Sound = (function() {
   Sound.prototype.play = function(percent){
     var len = this.sounds.length;
     var i = Math.floor((len - 1) * percent);
-    this.sounds[i].seek(0);
-    this.sounds[i].play();
+
+    if (this.prev) {
+      this.sounds[i].fade(1.0, 0.0, 10, this.prev);
+    }
+    this.prev = this.sounds[i].play();;
+
   };
 
   return Sound;

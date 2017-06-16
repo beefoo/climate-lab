@@ -61,13 +61,11 @@ h2 {
   width: 95%;
   height: 10px;
   position: relative;
-  margin-top: 2rem;
 }
 .slider-vert {
   width: 10px;
-  height: 160px;
+  height: 140px;
   position: relative;
-  margin-left: 2rem;
 }
 
 .ui-slider {
@@ -86,7 +84,7 @@ h2 {
   margin: 40px 0;
 }
 .ui-slider-vertical {
-  margin: 10px;
+  margin: 30px 10px 0;
 }
 .ui-slider .ui-slider-handle:active {
   cursor: grabbing;
