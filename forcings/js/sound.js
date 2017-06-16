@@ -5,7 +5,8 @@ var Sound = (function() {
     var defaults = {
       soundDir: 'audio/orchestral_harp-mp3/',
       soundExt: '.mp3',
-      notes: ['E3', 'Gb3', 'Ab3', 'A3', 'B3', 'Db3', 'Eb3', 'E4', 'Gb4', 'Ab4', 'A4', 'B4', 'Db4']
+      notes: ['E3', 'Gb3', 'Ab3', 'A3', 'B3', 'Db3', 'Eb3', 'E4', 'Gb4', 'Ab4', 'A4', 'B4', 'Db4'],
+      stereo: 0.0
     };
     this.opt = $.extend({}, defaults, options);
     this.init();
@@ -18,10 +19,11 @@ var Sound = (function() {
     var dir = this.opt.soundDir;
     var ext = this.opt.soundExt;
     var notes = this.opt.notes;
+    var stereo = this.opt.stereo;
 
     _.each(notes, function(n){
       var filename = dir + n + ext;
-      _this.sounds.push(new Howl({ src: [filename] }));
+      _this.sounds.push(new Howl({ src: [filename], stereo: stereo }));
     });
   };
 

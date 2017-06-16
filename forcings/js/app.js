@@ -56,8 +56,8 @@ var App = (function() {
     this.data = data.data.slice(1);
 
     // load data viz
-    this.dataVizRight = new DataViz({"el": "#pane-right", "label": data.data[0].label, "data": data.data[0].data, "domain": data.domain, "range": data.range, "soundDir": "audio/acoustic_grand_piano-mp3/"});
-    this.dataVizLeft = new DataViz({"el": "#pane-left", "label": data.data[1].label, "data": data.data[1].data, "domain": data.domain, "range": data.range});
+    this.dataVizLeft = new DataViz({"el": "#pane-left", "label": data.data[1].label, "data": data.data[1].data, "domain": data.domain, "range": data.range, "stereo": 0.0});
+    this.dataVizRight = new DataViz({"el": "#pane-right", "label": data.data[0].label, "data": data.data[0].data, "domain": data.domain, "range": data.range, "soundDir": "audio/acoustic_grand_piano-mp3/", "stereo": 1.0});
 
     this.render();
   };

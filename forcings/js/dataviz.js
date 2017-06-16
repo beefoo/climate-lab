@@ -12,7 +12,17 @@ var DataViz = (function() {
       },
       plotMargin: [40, 60],
       rangeIncrement: 0.25,
-      soundDir: 'audio/orchestral_harp-mp3/'
+      sound: {
+        soundDir: 'audio/orchestral_harp-mp3/',
+        stereo: 0.0,
+      },
+      cord: {
+        curveRatio: 0.45,
+        ampMin: 0.1, // min oscillation height in px
+        oscRange: [0.005, 0.03], // frequency / oscillation speed; lower means slower
+        tensityRange: [0.2, 0.4], // how tense the string is; lower means less tense
+        ampRange: [10, 50] // starting perpendicular height of oscillating string in px
+      }
     };
     this.opt = $.extend({}, defaults, options);
     this.init();
@@ -29,7 +39,7 @@ var DataViz = (function() {
     this.progress = 0;
 
     // load sound
-    this.sound = new Sound({soundDir: this.opt.soundDir});
+    this.sound = new Sound(this.opt.sound);
 
     this.loadView();
     this.setData(this.opt.data, this.opt.label);
@@ -46,6 +56,9 @@ var DataViz = (function() {
     var d0 = UTIL.lerp(domain[0], domain[1], prev);
     var d1 = UTIL.lerp(domain[0], domain[1], curr);
 
+    var ampRange = this.opt.cord.ampRange;
+    var amp = UTIL.lerp(ampRange[0], ampRange[1], curr-prev);
+
     // check to see if we crossed it
     _.each(this.cords, function(c, i){
       var intersections = c.intersections;
@@ -53,6 +66,7 @@ var DataViz = (function() {
         if (intersection > d0 && intersection <= d1) {
           _this.cords[c.i].plucked = true;
           _this.cords[c.i].pluckedAt = new Date();
+          _this.cords[c.i].amplitude = amp;
         }
       });
     });
@@ -64,6 +78,10 @@ var DataViz = (function() {
     var range = this.range;
     var incr = this.opt.rangeIncrement;
     var len = (range[1] - range[0]) / incr;
+    var oscRange = this.opt.cord.oscRange;
+    var tensityRange = this.opt.cord.tensityRange;
+
+    this.cords = [];
 
     var i = 0;
     for (var dy=range[0]; dy<=range[1]; dy+=incr) {
@@ -71,6 +89,8 @@ var DataViz = (function() {
       var pp = _this._dataToPercent(0, dy, domain, range);
       var p = _this._dataToPoint(0, dy, domain, range);
       var intersections = _this._getIntersections(_this.data, dy);
+      var freq = UTIL.lerp(oscRange[0], oscRange[1], progress);
+      var tensity = UTIL.lerp(tensityRange[0], tensityRange[1], progress);
       // console.log(intersections)
       _this.cords.push({
         i: i,
@@ -79,7 +99,10 @@ var DataViz = (function() {
         dy: dy,
         intersections: intersections,
         plucked: false,
-        pluckedAt: false
+        pluckedAt: false,
+        amplitude: 0,
+        frequency: freq,
+        tensity: tensity
       });
       i++;
     }
@@ -157,13 +180,50 @@ var DataViz = (function() {
 
     // draw horizontal lines (cords)
     _.each(this.cords, function(c){
-      if (c.dy===0) {
-        _this.axes.lineStyle(4, 0xc4ced4);
-      } else {
-        _this.axes.lineStyle(2, 0x00676d);
-      }
-      _this.axes.moveTo(x0, c.y).lineTo(x0 + pw, c.y);
+      _this.renderCord(c);
     });
+  };
+
+  DataViz.prototype.renderCord = function(c){
+    if (c.dy===0) this.axes.lineStyle(4, 0xc4ced4);
+    else this.axes.lineStyle(2, 0x00676d);
+
+    // get plot bounds
+    var w = this.app.renderer.width;
+    var x0 = this.opt.plotMargin[0];
+    var pw = w - x0 * 2;
+
+    // check if cord is oscillating
+    var oscillating = false;
+
+    // we are oscillating, draw curve
+    if (c.amplitude > this.opt.cord.ampMin) {
+      var d1 = new Date();
+      var d0 = c.pluckedAt;
+      var td = (d1 - d0) * c.frequency;
+      var a = 2 * Math.PI * td;
+      var ex = Math.exp(td * c.tensity); // exponential function; gets bigger over time
+      var amp = c.amplitude / ex; // the current amplitude; gets smaller over time
+      var yc = Math.cos(a) * amp; // the oscillating y-coordinate
+
+      // set new amplitude
+      this.cords[c.i].amplitude = amp;
+
+      // build bezier curve
+      var curveRatio = this.opt.cord.curveRatio;
+      var xc = x0 + pw * 0.5;
+      var dx = xc - x0;
+      var dy = yc - c.y;
+      var dxBez = curveRatio * Math.sqrt(dx * dx + dy * dy);
+
+      // draw bezier curve
+      this.axes.moveTo(x0, c.y).bezierCurveTo(xc - dxBez, c.y + yc, xc + dxBez, c.y + yc, x0 + pw, c.y);
+
+    // not oscillating, just draw a straight line
+    } else {
+      this.axes.moveTo(x0, c.y).lineTo(x0 + pw, c.y);
+    }
+
   };
 
   DataViz.prototype.renderLabels = function(){
@@ -226,6 +286,7 @@ var DataViz = (function() {
   DataViz.prototype.setData = function(data, label){
     this.label = label;
     this.data = data;
+    this.loadCords();
     this.renderAxes();
     this.renderPlot();
     this.renderLabels();
