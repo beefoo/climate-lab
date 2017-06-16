@@ -29,10 +29,10 @@ FORCING_HEADERS = [
     {"name": "Orbital changes", "label": "Earth's orbital changes"},
     {"name": "Solar", "label": "Solar temperature"},
     {"name": "Volcanic", "label": "Volcanic activity"},
-    {"name": "Greenhouse gases", "label": "Greenhouse gases"},
+    {"name": "Natural", "label": "All natural factors"},
     {"name": "Land use", "label": "Deforestation"},
     {"name": "Anthropogenic tropospheric aerosol", "label": "Ozone pollution"},
-    {"name": "Natural", "label": "All natural factors"},
+    {"name": "Greenhouse gases", "label": "Greenhouse gases"},
     {"name": "Human", "label": "All human factors"}
 ]
 

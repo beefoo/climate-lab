@@ -41,7 +41,7 @@ var App = (function() {
         stop: function( event, ui ) { _this.transitioning = false; }
       },
       "#slider-data": {
-        orientation: "vertical", min: 0, max: data.data.length-2, step: 1, value: 0,
+        orientation: "vertical", min: 0, max: data.data.length-2, step: 1, value: data.data.length-2,
         start: function( event, ui ) { _this.transitioning = true; },
         slide: function(e, ui){
           _this.onDataSelect(ui.value);
@@ -63,7 +63,8 @@ var App = (function() {
   };
 
   App.prototype.onDataSelect = function(value) {
-    var data = this.data[value];
+    var i = this.data.length - 1 - value;
+    var data = this.data[i];
     this.dataVizLeft.setData(data.data, data.label);
   };
 

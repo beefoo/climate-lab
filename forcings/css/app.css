@@ -15,7 +15,8 @@ body {
 .controls,
 .pane,
 .sliders,
-.slider {
+.slider,
+.slider-labels {
   position: absolute;
   top: 0;
   left: 0;
@@ -64,8 +65,22 @@ h2 {
 }
 .slider-vert {
   width: 10px;
-  height: 140px;
+  height: 180px;
   position: relative;
+}
+
+.slider-labels {
+  width: auto;
+  height: 140px;
+  left: 40px;
+}
+.slider-labels ul {
+  list-style: square;
+  margin: 0 0 0 30px;
+  padding: 0;
+}
+.slider-labels li {
+  margin-bottom: 0.36rem;
 }
 
 .ui-slider {
@@ -84,7 +99,7 @@ h2 {
   margin: 40px 0;
 }
 .ui-slider-vertical {
-  margin: 30px 10px 0;
+  margin: 20px 10px 0;
 }
 .ui-slider .ui-slider-handle:active {
   cursor: grabbing;

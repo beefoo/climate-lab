@@ -15,28 +15,27 @@ var Sound = (function() {
   Sound.prototype.init = function(){
     var _this = this;
     this.sounds = [];
+    this.prevSounds = [];
 
     var dir = this.opt.soundDir;
     var ext = this.opt.soundExt;
     var notes = this.opt.notes;
     var stereo = this.opt.stereo;
 
-    this.prev = false;
-
     _.each(notes, function(n){
       var filename = dir + n + ext;
       _this.sounds.push(new Howl({ src: [filename], stereo: stereo }));
+      _this.prevSounds.push(false);
     });
   };
 
   Sound.prototype.play = function(percent){
     var len = this.sounds.length;
     var i = Math.floor((len - 1) * percent);
-
-    if (this.prev) {
-      this.sounds[i].fade(1.0, 0.0, 10, this.prev);
+    if (this.prevSounds[i]) {
+      this.sounds[i].fade(1.0, 0.0, 10, this.prevSounds[i]);
     }
-    this.prev = this.sounds[i].play();;
+    this.prevSounds[i] = this.sounds[i].play();
 
   };
 
