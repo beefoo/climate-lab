@@ -12,10 +12,10 @@ var Sound = (function() {
   Sound.prototype.init = function(){
     this.started = false;
     this.tone = new Tone.Oscillator({
-			"frequency" : 440,
-			"volume" : -10,
+      "frequency" : 440,
+      "volume" : -10,
       "type" : "triangle8"
-		}).toMaster();
+    }).toMaster();
     this.frequency = this.opt.frequency[0];
   };
 
@@ -39,7 +39,7 @@ var Sound = (function() {
       this.started = true;
       this.tone.start();
     }
-  	Tone.Master.volume.rampTo(0, 0.05);
+    Tone.Master.volume.rampTo(0, 0.05);
   };
 
   return Sound;

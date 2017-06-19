@@ -112,8 +112,11 @@ var App = (function() {
     var nonHold = this.duration / dur;
     var progress = elapsed % dur / dur;
 
+    // only play through once
+    if (elapsed > dur) {
+      progress = 0.0;
     // logic for determining if we should hold the last note
-    if (progress >= nonHold) {
+    } else if (progress >= nonHold) {
       progress = 1.0;
     } else {
       progress = UTIL.norm(progress, 0, nonHold);
