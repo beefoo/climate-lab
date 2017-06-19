@@ -31,7 +31,7 @@ h2 {
 }
 
 .panes {
-  height: calc(100% - 240px);
+  height: calc(100% - 300px);
 }
 .pane,
 .slider {
@@ -46,7 +46,7 @@ h2 {
 }
 .controls {
   background: #00897b;
-  height: 240px;
+  height: 300px;
   top: auto;
   bottom: 0;
 }
@@ -56,7 +56,11 @@ h2 {
 .sliders label {
 }
 .slider {
-
+  width: calc(50% - 70px);
+  left: 50px;
+}
+.slider:last-child {
+  left: calc(50% + 50px);
 }
 .slider-horz {
   width: 95%;
@@ -83,7 +87,56 @@ h2 {
   margin-bottom: 0.36rem;
 }
 
-.radio-group {
+.data-knob {
+  text-align: center;
+}
+.data-knob svg {
+  width: 60%;
+  min-width: 300px;
+  display: inline-block;
+  cursor: pointer;
+}
+.data-knob svg #dial {
+  transform-origin: 50% 50%;
+}
+
+.ui-slider {
+  background: #004D40;
+}
+.ui-slider .ui-slider-handle {
+  background: #80CBC4;
+  position: absolute;
+  outline-color: #009688;
+  cursor: move;
+  cursor: grab;
+  cursor: -moz-grab;
+  cursor: -webkit-grab;
+}
+.ui-slider-horizontal {
+  margin: 20px 0 20px;
+}
+.ui-slider-vertical {
+  margin: 20px 10px 0;
+}
+.ui-slider .ui-slider-handle:active {
+  cursor: grabbing;
+  cursor: -moz-grabbing;
+  cursor: -webkit-grabbing;
+}
+.ui-slider-horizontal .ui-slider-handle {
+  top: 50%;
+  height: 30px;
+  width: 20px;
+  margin-top: -15px;
+}
+.ui-slider-vertical .ui-slider-handle {
+  left: 50%;
+  height: 20px;
+  width: 30px;
+  margin-left: -15px;
+}
+
+/*.radio-group {
   padding-top: 1rem;
 }
 .radio-group label {
@@ -137,40 +190,4 @@ h2 {
   -ms-border-radius:100%;
   -moz-border-radius:100%;
   -webkit-border-radius:100%;
-}
-
-.ui-slider {
-  background: #004D40;
-}
-.ui-slider .ui-slider-handle {
-  background: #80CBC4;
-  position: absolute;
-  outline-color: #009688;
-  cursor: move;
-  cursor: grab;
-  cursor: -moz-grab;
-  cursor: -webkit-grab;
-}
-.ui-slider-horizontal {
-  margin: 40px 0;
-}
-.ui-slider-vertical {
-  margin: 20px 10px 0;
-}
-.ui-slider .ui-slider-handle:active {
-  cursor: grabbing;
-  cursor: -moz-grabbing;
-  cursor: -webkit-grabbing;
-}
-.ui-slider-horizontal .ui-slider-handle {
-  top: 50%;
-  height: 30px;
-  width: 20px;
-  margin-top: -15px;
-}
-.ui-slider-vertical .ui-slider-handle {
-  left: 50%;
-  height: 20px;
-  width: 30px;
-  margin-left: -15px;
-}
+}*/

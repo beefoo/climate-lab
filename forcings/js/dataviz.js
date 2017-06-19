@@ -39,6 +39,7 @@ var DataViz = (function() {
     this.data = [];
     this.cords = [];
     this.label = '';
+    this.prevProgress = 0;
     this.progress = 0;
 
     // load sound
@@ -150,12 +151,9 @@ var DataViz = (function() {
     });
   };
 
-  DataViz.prototype.render = function(progress){
-    var prev = this.progress;
-    this.progress = progress;
-
+  DataViz.prototype.render = function(){
     if (this.active) {
-      this.checkForPluck(prev, progress);
+      this.checkForPluck(this.prevProgress, this.progress);
       this.pluck();
       this.renderAxes();
       this.renderProgress();
@@ -296,7 +294,8 @@ var DataViz = (function() {
   };
 
   DataViz.prototype.reset = function() {
-    this.render(0);
+    this.setProgress(0);
+    this.render();
   };
 
   DataViz.prototype.setActive = function(active) {
@@ -311,6 +310,11 @@ var DataViz = (function() {
     this.renderPlot();
     this.renderLabels();
     this.renderProgress();
+  };
+
+  DataViz.prototype.setProgress = function(progress) {
+    this.prevProgress = this.progress;
+    this.progress = progress;
   };
 
   DataViz.prototype._dataToPercent = function(dx, dy, domain, range){

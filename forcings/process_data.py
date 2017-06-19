@@ -30,10 +30,10 @@ FORCING_HEADERS = [
     {"name": "Solar", "label": "Solar temperature"},
     {"name": "Volcanic", "label": "Volcanic activity"},
     {"name": "Natural", "label": "All natural factors"},
-    {"name": "Land use", "label": "Deforestation"},
-    {"name": "Anthropogenic tropospheric aerosol", "label": "Ozone pollution"},
+    {"name": "Human", "label": "All human factors"},
     {"name": "Greenhouse gases", "label": "Greenhouse gases"},
-    {"name": "Human", "label": "All human factors"}
+    {"name": "Anthropogenic tropospheric aerosol", "label": "Ozone pollution"},
+    {"name": "Land use", "label": "Deforestation"}
 ]
 
 # Mean of list
