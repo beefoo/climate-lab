@@ -1,0 +1,68 @@
+<!doctype html>
+<html class="no-js" lang="">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>Climate Lab / Images of change</title>
+  <link rel="stylesheet" href="../shared/css/normalize.css">
+  <link rel="stylesheet" href="../shared/css/base.css">
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+  <div class="app">
+    <div id="main" class="panes">
+      <div id="images" class="pane">
+        <div class="image-pair active">
+          <div class="image" style="background-image: url(img/pederson_glacier_1930.jpg)">
+            <h2 class="label">1930</h2>
+          </div>
+          <div class="image image-right" style="background-image: url(img/pederson_glacier_2005.jpg)">
+            <h2 class="label">2005</h2>
+          </div>
+          <div class="caption">
+            <p>Pedersen Glacier melt, Alaska, summer (Source: <a href="https://climate.nasa.gov/images-of-change?id=212#212-pedersen-glacier-melt-alaska">NASA</a>)</p>
+          </div>
+        </div>
+        <div class="image-pair">
+          <div class="image" style="background-image: url(img/samoa_coral_2014.jpg)">
+            <h2 class="label">Dec 2014</h2>
+          </div>
+          <div class="image image-right" style="background-image: url(img/samoa_coral_2015.jpg)">
+            <h2 class="label">Feb 2015</h2>
+          </div>
+          <div class="caption">
+            <p>Coral bleaching in American Samoa (Source: <a href="http://www.globalcoralbleaching.org/#images">XL Catlin Seaview Survey</a>)</p>
+          </div>
+        </div>
+        <div class="image-pair">
+          <div class="image" style="background-image: url(img/neumayer_glacier_2005.jpg)">
+            <h2 class="label">2005</h2>
+          </div>
+          <div class="image image-right" style="background-image: url(img/neumayer_glacier_2016.jpg)">
+            <h2 class="label">2016</h2>
+          </div>
+          <div class="caption">
+            <p>Neumayer Glacier shrinks on South Georgia Island (Source: <a href="https://climate.nasa.gov/images-of-change?id=601#601-neumayer-glacier-shrinks-on-south-georgia-island">NASA</a>)</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="controls" class="controls">
+      <div class="sliders">
+        <div class="slider">
+          <div id="slider" class="slider-horz"></div>
+          <button class="button-next">Next</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="../shared/js/jquery-3.2.1.min.js"></script>
+  <script src="../shared/js/jquery-ui-1.12.1.custom.slider.min.js"></script>
+  <script src="../shared/js/utils.js"></script>
+
+  <script src="js/controls.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

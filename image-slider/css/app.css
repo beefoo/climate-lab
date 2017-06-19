@@ -1,0 +1,140 @@
+body {
+  overflow: hidden;
+}
+
+.app {
+  background: #212121;
+  color: #fff;
+  letter-spacing: 0.08rem;
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+}
+a {
+  color: #80CBC4;
+}
+
+.panes,
+.controls,
+.pane,
+.image-pair,
+.image-pair .image,
+.sliders,
+.slider {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+h2 {
+  font-size: 1.2rem;
+  margin: 0 0 1.5rem;
+  color: #80CBC4;
+}
+
+.panes {
+  height: calc(100% - 120px);
+}
+.pane,
+.slider {
+  width: calc(100% - 40px);
+  height: calc(100% - 40px);
+  top: 20px;
+  left: 20px;
+}
+.pane {
+  height: auto;
+}
+
+.controls {
+  background: #00897b;
+  height: 120px;
+  top: auto;
+  bottom: 0;
+}
+
+.image-pair {
+  display: none;
+  padding-top: 56.222547584%;
+}
+.image-pair.active {
+  display: block;
+}
+.image-pair .image {
+  background: no-repeat;
+  background-size: auto 100%;
+  background-position: top left;
+  overflow: hidden;
+}
+.image-pair .image-right {
+  left: 50%;
+  width: 50%;
+  background-position: top right;
+}
+.image-pair .label {
+  color: #000;
+  text-shadow: 0 2px rgba(255,255,255,0.4);
+  font-size: 2rem;
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  display: block;
+}
+.image-pair .image-right .label {
+  left: auto;
+  right: 20px;
+}
+.image-pair .caption {
+  position: fixed;
+  height: 60px;
+  bottom: 120px;
+  left: 0;
+  width: 100%;
+  text-align: center;
+  background: #212121;
+}
+
+.button-next {
+  display: inline-block;
+  margin-right: 24px;
+}
+
+.sliders {
+  text-align: right;
+}
+.sliders label {
+}
+.slider-horz {
+  width: 98.2%;
+  height: 10px;
+  position: relative;
+}
+
+.ui-slider {
+  background: #004D40;
+}
+.ui-slider .ui-slider-handle {
+  background: #80CBC4;
+  position: absolute;
+  outline-color: #009688;
+  cursor: move;
+  cursor: grab;
+  cursor: -moz-grab;
+  cursor: -webkit-grab;
+}
+.ui-slider-horizontal {
+  margin: 20px 0 20px;
+}
+.ui-slider .ui-slider-handle:active {
+  cursor: grabbing;
+  cursor: -moz-grabbing;
+  cursor: -webkit-grabbing;
+}
+.ui-slider-horizontal .ui-slider-handle {
+  top: 50%;
+  height: 30px;
+  width: 20px;
+  margin-top: -15px;
+}
