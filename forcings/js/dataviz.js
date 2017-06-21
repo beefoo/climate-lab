@@ -10,6 +10,10 @@ var DataViz = (function() {
         fontSize: 24,
         fontWeight: "bold"
       },
+      axisTextStyle: {
+        fill: "#ffffff",
+        fontSize: 16,
+      },
       plotMargin: [40, 60],
       active: true,
       rangeIncrement: 0.25,
@@ -53,7 +57,7 @@ var DataViz = (function() {
 
   DataViz.prototype.checkForPluck = function(prev, curr) {
     // don't pluck if going backwards
-    if (prev > curr) return false;
+    if (prev >= curr) return false;
 
     var _this = this;
     var domain = this.domain;
@@ -192,6 +196,47 @@ var DataViz = (function() {
     _.each(this.cords, function(c){
       _this.renderCord(c);
     });
+
+    // draw axes labels
+    var textStyle = this.opt.axisTextStyle;
+
+    // draw domain labels
+    var domain = this.domain;
+    var range = this.range;
+    _.each(domain, function(v, i){
+      var p = _this._dataToPoint(v, range[0]);
+      var label = new PIXI.Text(v, textStyle);
+      // center the label
+      label.y = p[1]+10;
+      if (i>0) {
+        label.x = p[0];
+        label.anchor.set(1, 0);
+      } else {
+        label.x = p[0] + 2;
+        label.anchor.set(0, 0);
+      }
+      _this.axes.addChild(label);
+    });
+
+    // draw range labels
+
+    var v = range[0];
+    while (v <= range[1]) {
+      var p = _this._dataToPoint(domain[0], v);
+      var text = v + '°F';
+      if (v > 0) text = "+"+text;
+      var label = new PIXI.Text(text, textStyle);
+      label.x = p[0] - 10;
+      label.y = p[1];
+      label.anchor.set(1, 0.5);
+      _this.axes.addChild(label);
+      v++;
+    }
+
+
+
+
+
   };
 
   DataViz.prototype.renderCord = function(c){
