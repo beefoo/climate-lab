@@ -59,21 +59,23 @@ var App = (function() {
     var sliders = {
       "#slider-time-left": {
         orientation: "horizontal", min: 0, max: 1, step: 0.001, value: 0,
-        start: function( event, ui ) { _this.transitioning = true; },
+        start: function( event, ui ) { },
         slide: function(e, ui){
-          _this.onSlide(_this.dataVizLeft, ui.value);
+          // _this.onSlide(_this.dataVizLeft, ui.value);
         },
-        stop: function( event, ui ) { _this.transitioning = false; }
+        stop: function( event, ui ) { }
       },
       "#slider-time-right": {
         orientation: "horizontal", min: 0, max: 1, step: 0.001, value: 0,
-        start: function( event, ui ) { _this.transitioning = true; },
+        start: function( event, ui ) {  },
         slide: function(e, ui){
-          _this.onSlide(_this.dataVizRight, ui.value);
+          // _this.onSlide(_this.dataVizRight, ui.value);
         },
-        stop: function( event, ui ) { _this.transitioning = false; }
+        stop: function( event, ui ) { }
       }
     };
+    this.$sliderLeft = $("#slider-time-left");
+    this.$sliderRight = $("#slider-time-right");
 
     var controls = new Controls({sliders: sliders});
 
@@ -96,6 +98,9 @@ var App = (function() {
 
   App.prototype.render = function(){
     var _this = this;
+
+    this.onSlide(this.dataVizLeft, this.$sliderLeft.slider("value"));
+    this.onSlide(this.dataVizRight, this.$sliderRight.slider("value"));
 
     this.dataVizLeft.render();
     this.dataVizRight.render();

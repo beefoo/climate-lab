@@ -71,14 +71,18 @@ var DataViz = (function() {
     _.each(this.cords, function(c, i){
       var intersections = c.intersections;
       _.each(intersections, function(intersection){
-        if (intersection > d0 && intersection <= d1) {
+        if (intersection > d0 && intersection < d1) {
           _this.cords[c.i].plucked = true;
           _this.cords[c.i].pluckedAt = new Date();
           _this.cords[c.i].amplitude = amp;
         }
       });
     });
-  }
+  };
+
+  DataViz.prototype.clearProgress = function(){
+    this.prevProgress = this.progress;
+  };
 
   DataViz.prototype.loadCords = function(){
     var _this = this;
@@ -232,10 +236,6 @@ var DataViz = (function() {
       _this.axes.addChild(label);
       v++;
     }
-
-
-
-
 
   };
 
