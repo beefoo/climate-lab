@@ -14,7 +14,7 @@ var DataViz = (function() {
         fill: "#ffffff",
         fontSize: 16,
       },
-      plotMargin: [40, 60],
+      plotMargin: [100, 60],
       active: true,
       rangeIncrement: 0.25,
       sound: {
@@ -24,8 +24,8 @@ var DataViz = (function() {
       cord: {
         curveRatio: 0.45,
         ampMin: 0.1, // min oscillation height in px
-        oscRange: [0.005, 0.03], // frequency / oscillation speed; lower means slower
-        tensityRange: [0.2, 0.4], // how tense the string is; lower means less tense
+        oscRange: [0.005, 0.01], // frequency / oscillation speed; lower means slower
+        tensityRange: [0.05, 0.1], // how tense the string is; lower means less tense
         ampRange: [10, 50] // starting perpendicular height of oscillating string in px
       }
     };
@@ -48,6 +48,10 @@ var DataViz = (function() {
 
     // load sound
     this.sound = new Sound(this.opt.sound);
+
+    // set refData
+    this.refData = false;
+    if (this.opt.refData) this.refData = this.opt.refData;
 
     this.loadView();
     this.setData(this.opt.data, this.opt.label);
@@ -131,11 +135,12 @@ var DataViz = (function() {
   DataViz.prototype.loadView = function(){
     this.app = new PIXI.Application(this.$el.width(), this.$el.height(), {transparent : true});
     this.axes = new PIXI.Graphics();
+    this.refPlot = new PIXI.Graphics();
     this.plot = new PIXI.Graphics();
     this.plotProgress = new PIXI.Graphics();
     this.labels = new PIXI.Graphics();
 
-    this.app.stage.addChild(this.axes, this.plot, this.plotProgress, this.labels);
+    this.app.stage.addChild(this.axes, this.refPlot, this.plot, this.plotProgress, this.labels);
 
     this.$el.append(this.app.view);
   };
@@ -143,6 +148,7 @@ var DataViz = (function() {
   DataViz.prototype.onResize = function(){
     this.app.renderer.resize(this.$el.width(), this.$el.height());
     this.renderAxes();
+    this.renderRef();
     this.renderPlot();
     this.renderLabels();
     this.renderProgress();
@@ -323,19 +329,46 @@ var DataViz = (function() {
   };
 
   DataViz.prototype.renderPlot = function(){
-    this.renderLine(this.plot, this.data, 2, 0x6d6f71);
+    this.renderLine(this.plot, this.data, 2, 0xf1a051);
   };
 
   DataViz.prototype.renderProgress = function(){
     var len = this.data.length-1;
     var progress = this.progress;
     var data = _.filter(this.data, function(v, i){ return (i/len) <= progress; })
-    this.renderLine(this.plotProgress, data, 2, 0xffffff);
+    this.renderLine(this.plotProgress, data, 2, 0xffe1c3);
 
-    this.plotProgress.beginFill(0xffffff);
+    this.plotProgress.beginFill(0xffe1c3);
     var dp = data[data.length-1];
     var p = this._dataToPoint(dp[0], dp[1]);
     this.plotProgress.drawCircle(p[0], p[1], 5);
+  };
+
+  DataViz.prototype.renderRef = function(){
+    if (!this.refData) return false;
+
+    // render data
+    var data = this.refData.data;
+    this.renderLine(this.refPlot, data, 1, 0x6d6f71);
+
+    // draw dot
+    var dp = data[data.length-1];
+    var p = this._dataToPoint(dp[0], dp[1]);
+    this.refPlot.lineStyle(0, 0xffffff);
+    this.refPlot.beginFill(0xffffff);
+    this.refPlot.drawCircle(p[0], p[1], 4);
+
+    // render label
+    var text = this.refData.label;
+    var textStyle = this.opt.axisTextStyle;
+    textStyle.wordWrap = true;
+    textStyle.wordWrapWidth = 100;
+    var label = new PIXI.Text(text, textStyle);
+
+    label.x = p[0] + 10;
+    label.y = p[1];
+    label.anchor.set(0, 0.5);
+    this.refPlot.addChild(label);
   };
 
   DataViz.prototype.reset = function() {
@@ -352,6 +385,7 @@ var DataViz = (function() {
     this.data = data;
     this.loadCords();
     this.renderAxes();
+    this.renderRef();
     this.renderPlot();
     this.renderLabels();
     this.renderProgress();

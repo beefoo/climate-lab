@@ -40,16 +40,6 @@ var App = (function() {
       if (e.deltaY > 0) _this.rotateKnob(1);
       else if (e.deltaY < 0) _this.rotateKnob(-1);
     });
-
-    // $('input[name="pane-active"]').change(function() {
-    //   var value = this.value;
-    //
-    //   _this.dataVizLeft.setActive(false);
-    //   _this.dataVizRight.setActive(false);
-    //
-    //   if (value=="left" || value=="both") _this.dataVizLeft.setActive(true);
-    //   if (value=="right" || value=="both") _this.dataVizRight.setActive(true);
-    // });
   };
 
   App.prototype.onDataLoaded = function(data){
@@ -57,34 +47,20 @@ var App = (function() {
 
     // Initialize controls
     var sliders = {
-      "#slider-time-left": {
-        orientation: "horizontal", min: 0, max: 1, step: 0.001, value: 0,
-        start: function( event, ui ) { },
-        slide: function(e, ui){
-          // _this.onSlide(_this.dataVizLeft, ui.value);
-        },
-        stop: function( event, ui ) { }
-      },
-      "#slider-time-right": {
-        orientation: "horizontal", min: 0, max: 1, step: 0.001, value: 0,
-        start: function( event, ui ) {  },
-        slide: function(e, ui){
-          // _this.onSlide(_this.dataVizRight, ui.value);
-        },
-        stop: function( event, ui ) { }
+      "#slider-time": {
+        orientation: "horizontal", min: 0, max: 1, step: 0.001, value: 0
       }
     };
-    this.$sliderLeft = $("#slider-time-left");
-    this.$sliderRight = $("#slider-time-right");
+    this.$slider = $("#slider-time");
 
     var controls = new Controls({sliders: sliders});
 
     // load data
+    var refData = data.data[0];
     this.data = data.data.slice(1);
 
     // load data viz
-    this.dataVizLeft = new DataViz({"el": "#pane-left", "label": data.data[1].label, "data": data.data[1].data, "domain": data.domain, "range": data.range});
-    this.dataVizRight = new DataViz({"el": "#pane-right", "label": data.data[0].label, "data": data.data[0].data, "domain": data.domain, "range": data.range});
+    this.dataViz = new DataViz({"el": "#pane", "label": data.data[1].label, "data": data.data[1].data, "domain": data.domain, "range": data.range, "refData": refData});
 
     // rotate knob
     this.rotateKnob(1);
@@ -92,18 +68,12 @@ var App = (function() {
     this.render();
   };
 
-  App.prototype.onSlide = function(viz, value) {
-    viz.setProgress(value);
-  };
-
   App.prototype.render = function(){
     var _this = this;
 
-    this.onSlide(this.dataVizLeft, this.$sliderLeft.slider("value"));
-    this.onSlide(this.dataVizRight, this.$sliderRight.slider("value"));
-
-    this.dataVizLeft.render();
-    this.dataVizRight.render();
+    var value = this.$slider.slider("value");
+    this.dataViz.setProgress(value);
+    this.dataViz.render();
 
     requestAnimationFrame(function(){ _this.render(); });
   };
@@ -115,7 +85,7 @@ var App = (function() {
 
     var i = this.dataIndex;
     var data = this.data[i];
-    this.dataVizLeft.setData(data.data, data.label);
+    this.dataViz.setData(data.data, data.label);
 
     var r = -22.5 - i * 45;
     $('#dial').css('transform', 'rotate('+r+'deg)');

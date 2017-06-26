@@ -35,14 +35,11 @@ h2 {
 }
 .pane,
 .slider {
-  width: calc(50% - 40px);
+  width: 900px;
   height: calc(100% - 40px);
   top: 20px;
-  left: 20px;
-}
-#pane-right,
-.slider:last-child {
-  left: calc(50% + 20px);
+  left: 50%;
+  margin-left: -450px;
 }
 .controls {
   background: #00897b;
@@ -51,16 +48,14 @@ h2 {
   bottom: 0;
 }
 
+
 .sliders {
 }
 .sliders label {
 }
 .slider {
-  width: calc(50% - 70px);
-  left: 50px;
-}
-.slider:last-child {
-  left: calc(50% + 50px);
+  width: 760px;
+  margin-left: -360px;
 }
 .slider-horz {
   width: 95%;
@@ -91,7 +86,7 @@ h2 {
   text-align: center;
 }
 .data-knob svg {
-  width: 60%;
+  width: 55%;
   min-width: 300px;
   display: inline-block;
   cursor: pointer;
