@@ -54,7 +54,7 @@ var DataViz = (function() {
     if (this.opt.refData) this.refData = this.opt.refData;
 
     this.loadView();
-    this.setData(this.opt.data, this.opt.label);
+    this.setData(this.opt.data);
     this.loadCords();
     this.loadListeners();
   };
@@ -150,7 +150,7 @@ var DataViz = (function() {
     this.renderAxes();
     this.renderRef();
     this.renderPlot();
-    this.renderLabels();
+    // this.renderLabels();
     this.renderProgress();
   };
 
@@ -246,8 +246,8 @@ var DataViz = (function() {
   };
 
   DataViz.prototype.renderCord = function(c){
-    if (c.dy===0) this.axes.lineStyle(4, 0xc4ced4);
-    else this.axes.lineStyle(2, 0x00676d);
+    if (c.dy===0) this.axes.lineStyle(2, 0xc4ced4);
+    else this.axes.lineStyle(1, 0x6d6e71);
 
     // get plot bounds
     var w = this.app.renderer.width;
@@ -329,16 +329,20 @@ var DataViz = (function() {
   };
 
   DataViz.prototype.renderPlot = function(){
-    this.renderLine(this.plot, this.data, 2, 0xf1a051);
+    if (this.className === "human") this.renderLine(this.plot, this.data, 3, 0xf1a051);
+    else this.renderLine(this.plot, this.data, 3, 0x80CBC4);
   };
 
   DataViz.prototype.renderProgress = function(){
     var len = this.data.length-1;
     var progress = this.progress;
-    var data = _.filter(this.data, function(v, i){ return (i/len) <= progress; })
-    this.renderLine(this.plotProgress, data, 2, 0xffe1c3);
+    var data = _.filter(this.data, function(v, i){ return (i/len) <= progress; });
 
-    this.plotProgress.beginFill(0xffe1c3);
+    var color = 0xc0f8f3;
+    if (this.className === "human") color = 0xffe1c3;
+
+    this.renderLine(this.plotProgress, data, 3, color);
+    this.plotProgress.beginFill(color);
     var dp = data[data.length-1];
     var p = this._dataToPoint(dp[0], dp[1]);
     this.plotProgress.drawCircle(p[0], p[1], 5);
@@ -355,7 +359,7 @@ var DataViz = (function() {
     var dp = data[data.length-1];
     var p = this._dataToPoint(dp[0], dp[1]);
     this.refPlot.lineStyle(0, 0xffffff);
-    this.refPlot.beginFill(0xffffff);
+    this.refPlot.beginFill(0x6d6f71);
     this.refPlot.drawCircle(p[0], p[1], 4);
 
     // render label
@@ -380,14 +384,15 @@ var DataViz = (function() {
     this.active = active;
   };
 
-  DataViz.prototype.setData = function(data, label){
-    this.label = label;
-    this.data = data;
+  DataViz.prototype.setData = function(data){
+    this.label = data.label;
+    this.data = data.data;
+    this.className = data.className;
     this.loadCords();
     this.renderAxes();
     this.renderRef();
     this.renderPlot();
-    this.renderLabels();
+    // this.renderLabels();
     this.renderProgress();
   };
 

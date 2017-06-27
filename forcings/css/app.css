@@ -14,9 +14,11 @@ body {
 .panes,
 .controls,
 .pane,
+.titles,
 .sliders,
 .slider,
-.slider-labels {
+.slider-labels,
+.main-title {
   position: absolute;
   top: 0;
   left: 0;
@@ -24,6 +26,13 @@ body {
   height: 100%;
 }
 
+h1 {
+  color: #fff;
+  display: block;
+  text-align: center;
+  margin: 0 auto;
+  font-size: 2rem;
+}
 h2 {
   font-size: 1.2rem;
   margin: 0 0 1.5rem;
@@ -34,12 +43,13 @@ h2 {
   height: calc(100% - 300px);
 }
 .pane,
-.slider {
+.slider,
+.main-title {
   width: 900px;
   height: calc(100% - 40px);
   top: 20px;
   left: 50%;
-  margin-left: -450px;
+  margin-left: -325px;
 }
 .controls {
   background: #00897b;
@@ -47,15 +57,37 @@ h2 {
   top: auto;
   bottom: 0;
 }
+.main-title {
+  height: 40px;
+  text-align: center;
+}
+.titles {
+  width: 300px;
+  left: 50%;
+  margin-left: -600px;
+}
+.title {
+  display: none;
+}
+.title.active {
+  display: block;
+}
+.title h2 {
+  font-size: 1.6rem;
+  margin-top: 80px;
+}
+.title p {
+  font-size: 1.2rem;
+  line-height: 1.6;
+}
+.title.human h2 {
+  color: #f1a051;
+}
 
 
-.sliders {
-}
-.sliders label {
-}
 .slider {
   width: 760px;
-  margin-left: -360px;
+  margin-left: -240px;
 }
 .slider-horz {
   width: 95%;

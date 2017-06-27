@@ -26,14 +26,14 @@ BASELINE_YEAR_START = 1880
 BASELINE_YEAR_END = 1910
 RANGE = (-1, 2)
 FORCING_HEADERS = [
-    {"name": "Orbital changes", "label": "Earth's orbital changes", "title": "Is it the Earth's orbit?", "sub": "The Earth wobbles on its axis, and its tilt and orbit change over many thousands of years, pushing the climate into and out of ice ages. Yet the influence of orbital changes on the planet's temperature over 125 years has been negligible."},
-    {"name": "Solar", "label": "Solar temperature", "title": "Is it the sun?", "sub": "The sun's temperature varies over decades and centuries. These changes have had little effect on the Earth's overall climate."},
-    {"name": "Volcanic", "label": "Volcanic activity", "title": "Is it volcanoes?", "sub": "The data suggest no. Human industry emits about 100 times more CO₂ than volcanic activity, and eruptions release sulfate chemicals that can actually cool the atmosphere for a year or two."},
-    {"name": "Natural", "label": "All natural factors", "title": "Is it all natural factors combined?", "sub": "If it were, then the response to natural factors should match the observed temperature. Adding the natural factors together just doesn't add up."},
-    {"name": "Human", "label": "All human factors", "title": "Is it all human factors combined?", "sub": "Greenhouse gases warm the atmosphere. Aerosols cool it a little bit. Ozone and land-use changes add and subtract a little. Together they match the observed temperature, particularly since 1950."},
-    {"name": "Greenhouse gases", "label": "Greenhouse gases", "title": "It Really Is Greenhouse Gases", "sub": "Atmospheric CO₂ levels are 40 percent higher than they were in 1750. The green line shows the influence of greenhouse gas emissions. It's no contest."},
-    {"name": "Anthropogenic tropospheric aerosol", "label": "Ozone pollution", "title": "Is it ozone pollution?", "sub": "Natural ozone high in the atmosphere blocks harmful sunlight and cools things slightly. Closer to Earth, ozone is created by pollution and traps heat, making the climate a little bit hotter. What's the overall effect? Not much."},
-    {"name": "Land use", "label": "Deforestation", "title": "Is it deforestation?", "sub": "Humans have cut, plowed, and paved more than half the Earth's land surface. Dark forests are yielding to lighter patches, which reflect more sunlightâ€”and have a slight cooling effect."}
+    {"name": "Orbital changes", "className": "natural", "label": "Earth's orbital changes", "title": "Is it the Earth's orbit?", "sub": "The Earth wobbles on its axis, and its tilt and orbit change over many thousands of years, pushing the climate into and out of ice ages. Yet the influence of orbital changes on the planet's temperature over 125 years has been negligible."},
+    {"name": "Solar", "className": "natural", "label": "Solar temperature", "title": "Is it the sun?", "sub": "The sun's temperature varies over decades and centuries. These changes have had little effect on the Earth's overall climate."},
+    {"name": "Volcanic", "className": "natural", "label": "Volcanic activity", "title": "Is it volcanoes?", "sub": "The data suggest no. Human industry emits about 100 times more CO₂ than volcanic activity, and eruptions release sulfate chemicals that can actually cool the atmosphere for a year or two."},
+    {"name": "Natural", "className": "natural", "label": "All natural factors", "title": "Is it all natural factors combined?", "sub": "If it were, then the response to natural factors should match the observed temperature. Adding the natural factors together just doesn't add up."},
+    {"name": "Human", "className": "human", "label": "All human factors", "title": "Is it all human factors combined?", "sub": "Greenhouse gases warm the atmosphere. Aerosols cool it a little bit. Ozone and land-use changes add and subtract a little. Together they match the observed temperature, particularly since 1950."},
+    {"name": "Greenhouse gases", "className": "human", "label": "Greenhouse gases", "title": "It Really Is Greenhouse Gases", "sub": "Atmospheric CO₂ levels are 40 percent higher than they were in 1750. The orange line shows the influence of greenhouse gas emissions. It's no contest."},
+    {"name": "Anthropogenic tropospheric aerosol", "className": "human", "label": "Ozone pollution", "title": "Is it ozone pollution?", "sub": "Natural ozone high in the atmosphere blocks harmful sunlight and cools things slightly. Closer to Earth, ozone is created by pollution and traps heat, making the climate a little bit hotter. What's the overall effect? Not much."},
+    {"name": "Land use", "className": "human", "label": "Deforestation", "title": "Is it deforestation?", "sub": "Humans have cut, plowed, and paved more than half the Earth's land surface. Dark forests are yielding to lighter patches, which reflect more sunlightâ€”and have a slight cooling effect."}
 ]
 
 # Mean of list
@@ -104,7 +104,7 @@ def getData(rows, colName, startYear, endYear, baseline):
 rows = []
 rows.append({"label": "Observed global temperature", "data": getData(observed, "Annual_Mean", START_YEAR, END_YEAR, oBaseline)})
 for header in FORCING_HEADERS:
-    rows.append({"label": header["label"], "title": header["title"], "sub": header["sub"], "data": getData(forcings, header["name"], START_YEAR, END_YEAR, fBaseline)})
+    rows.append({"label": header["label"], "className": header["className"], "title": header["title"], "sub": header["sub"], "data": getData(forcings, header["name"], START_YEAR, END_YEAR, fBaseline)})
 
 jsonOut = {
     "domain": (START_YEAR, END_YEAR),

@@ -60,7 +60,10 @@ var App = (function() {
     this.data = data.data.slice(1);
 
     // load data viz
-    this.dataViz = new DataViz({"el": "#pane", "label": data.data[1].label, "data": data.data[1].data, "domain": data.domain, "range": data.range, "refData": refData});
+    this.dataViz = new DataViz({"el": "#pane", "data": data.data[1], "domain": data.domain, "range": data.range, "refData": refData});
+
+    // load titles
+    this.titles = new Titles({data: this.data, el: "#titles"});
 
     // rotate knob
     this.rotateKnob(1);
@@ -85,7 +88,8 @@ var App = (function() {
 
     var i = this.dataIndex;
     var data = this.data[i];
-    this.dataViz.setData(data.data, data.label);
+    this.dataViz.setData(data);
+    this.titles.activate(i);
 
     var r = -22.5 - i * 45;
     $('#dial').css('transform', 'rotate('+r+'deg)');
