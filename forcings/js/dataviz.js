@@ -4,7 +4,7 @@ var DataViz = (function() {
   function DataViz(options) {
     var defaults = {
       el: '#main',
-      margin: [10,10],
+      transitionMs: 500,
       labelTextStyle: {
         fill: "#ffffff",
         fontSize: 24,
@@ -40,7 +40,9 @@ var DataViz = (function() {
     this.range = this.opt.range;
     this.active = this.opt.active;
 
+    this.prevData = [];
     this.data = [];
+    this.dataT = [];
     this.cords = [];
     this.label = '';
     this.prevProgress = 0;
@@ -122,6 +124,8 @@ var DataViz = (function() {
       });
       i++;
     }
+
+    // console.log(this.cords);
   };
 
   DataViz.prototype.loadListeners = function(){
@@ -167,9 +171,11 @@ var DataViz = (function() {
 
   DataViz.prototype.render = function(){
     if (this.active) {
+      this.transitionData();
       this.checkForPluck(this.prevProgress, this.progress);
       this.pluck();
       this.renderAxes();
+      this.renderPlot();
       this.renderProgress();
 
     // clear progress
@@ -329,19 +335,22 @@ var DataViz = (function() {
   };
 
   DataViz.prototype.renderPlot = function(){
-    if (this.className === "human") this.renderLine(this.plot, this.data, 3, 0xf1a051);
-    else this.renderLine(this.plot, this.data, 3, 0x80CBC4);
+    if (this.className === "human") this.renderLine(this.plot, this.dataT, 3, 0xf1a051);
+    else this.renderLine(this.plot, this.dataT, 3, 0x80CBC4);
   };
 
   DataViz.prototype.renderProgress = function(){
     var len = this.data.length-1;
     var progress = this.progress;
-    var data = _.filter(this.data, function(v, i){ return (i/len) <= progress; });
+    var data = _.filter(this.dataT, function(v, i){ return (i/len) <= progress; });
 
     var color = 0xc0f8f3;
     if (this.className === "human") color = 0xffe1c3;
 
     this.renderLine(this.plotProgress, data, 3, color);
+
+    if (!data.length) return false;
+
     this.plotProgress.beginFill(color);
     var dp = data[data.length-1];
     var p = this._dataToPoint(dp[0], dp[1]);
@@ -386,8 +395,12 @@ var DataViz = (function() {
 
   DataViz.prototype.setData = function(data){
     this.label = data.label;
-    this.data = data.data;
+    this.prevData = this.data.slice(0);
+    this.data = data.data.slice(0);
     this.className = data.className;
+
+    this.transitionStart = new Date();
+
     this.loadCords();
     this.renderAxes();
     this.renderRef();
@@ -399,6 +412,32 @@ var DataViz = (function() {
   DataViz.prototype.setProgress = function(progress) {
     this.prevProgress = this.progress;
     this.progress = progress;
+  };
+
+  DataViz.prototype.transitionData = function(){
+    this.dataT = this.data.slice(0);
+
+    // data must be same length
+    if (this.prevData.length != this.data.length || !this.transitionStart) return false;
+
+    // get time since transition start
+    var transitionMs = this.opt.transitionMs;
+    var now = new Date();
+    var timeSince = now - this.transitionStart;
+
+    // we are transitioning
+    if (timeSince <= transitionMs) {
+      var progress = timeSince / transitionMs;
+      progress = UTIL.easeInOutSin(progress);
+      var data = [];
+      var d0 = this.prevData;
+      var d1 = this.data;
+      _.each(d0, function(v, i){
+        var y = UTIL.lerp(v[1], d1[i][1], progress);
+        data.push([v[0], y]);
+      });
+      this.dataT = data;
+    }
   };
 
   DataViz.prototype._dataToPercent = function(dx, dy, domain, range){

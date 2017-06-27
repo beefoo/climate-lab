@@ -39,6 +39,10 @@
     return t<.5 ? 4*t*t*t : (t-1)*(2*t-2)*(2*t-2)+1;
   };
 
+  UTIL.easeInOutSin = function (t) {
+    return (1 + Math.sin(Math.PI * t - Math.PI / 2)) / 2;
+  };
+
   UTIL.lerp = function(a, b, percent) {
     return (1.0*b - a) * percent + a;
   };
