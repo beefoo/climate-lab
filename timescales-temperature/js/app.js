@@ -66,8 +66,10 @@ var App = (function() {
     this.data = d.data;
     this.minDomain = d.minDomain;
     this.maxDomain = d.maxDomain;
+    this.minRange = d.minRange;
+    this.maxRange = d.maxRange;
 
-    var minRange = d.minRange[1] - d.minRange[0];
+    var minRange = d.maxRange[1] - d.minRange[0];
     var maxRange = d.maxRange[1] - d.maxRange[0];
     this.viz.setRangeMinMax(minRange, maxRange);
 
@@ -95,7 +97,7 @@ var App = (function() {
     var mapped = _.map(filtered, function(d){ return {x: d[0], y: d[1]}; });
     var simplified = this.simplify(mapped);
     var values = _.pluck(simplified, 'y');
-    var range = [_.min(values), _.max(values)];
+    var range = [_.min(values), this.maxRange[1]];
 
     var annotations = _.filter(this.annotations, function(a){ return d0 >= a.startDate && d0 <= a.endDate; });
 

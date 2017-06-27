@@ -2,6 +2,10 @@
 (function() {
   window.UTIL = {};
 
+  UTIL.ceilToNearest = function(value, nearest) {
+    return Math.ceil(value / nearest) * nearest;
+  };
+
   UTIL.dateDiff = function(date1, date2) {
     var diff = Math.floor(date2.getTime() - date1.getTime());
     var day = 1000 * 60 * 60 * 24;
@@ -41,6 +45,10 @@
 
   UTIL.easeInOutSin = function (t) {
     return (1 + Math.sin(Math.PI * t - Math.PI / 2)) / 2;
+  };
+
+  UTIL.floorToNearest = function(value, nearest) {
+    return Math.floor(value / nearest) * nearest;
   };
 
   UTIL.lerp = function(a, b, percent) {

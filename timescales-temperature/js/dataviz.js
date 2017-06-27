@@ -8,6 +8,7 @@ var DataViz = (function() {
       tickLength: 10,
       pointRadius: [4, 1.5],
       highlightPointRadius: [0.2, 2],
+      yMajorStep: 0.5,
       axisTextStyle: {
         fill: "#ffffff",
         fontSize: 18
@@ -68,20 +69,20 @@ var DataViz = (function() {
 
   DataViz.prototype.loadView = function(){
     this.app = new PIXI.Application(this.$el.width(), this.$el.height(), {transparent : true});
-    // this.axes = new PIXI.Graphics();
+    this.axes = new PIXI.Graphics();
     this.plot = new PIXI.Graphics();
     this.plotProgress = new PIXI.Graphics();
     this.labels = new PIXI.Graphics();
     this.annotations = new PIXI.Graphics();
 
-    this.app.stage.addChild(this.plot, this.plotProgress, this.labels, this.annotations);
+    this.app.stage.addChild(this.axes, this.plot, this.plotProgress, this.labels, this.annotations);
 
     this.$el.append(this.app.view);
   };
 
   DataViz.prototype.onResize = function(){
     this.app.renderer.resize(this.$el.width(), this.$el.height());
-    // this.renderAxes();
+    this.renderAxes();
     this.renderPlot();
     this.renderLabels();
     this.renderAnnotations();
@@ -137,6 +138,62 @@ var DataViz = (function() {
       }
 
     });
+  };
+
+  DataViz.prototype.renderAxes = function(domain, range){
+    var _this = this;
+    var domain = domain || this.domain;
+    var range = range || this.range;
+    var w = this.app.renderer.width;
+    var h = this.app.renderer.height;
+    var marginX = this.opt.margin[0];
+    var marginY = this.opt.margin[1];
+    var cw = w - marginX * 2;
+    var ch = h - marginY * 2;
+    var len = this.opt.tickLength;
+
+    var textStyle = new PIXI.TextStyle(this.opt.axisTextStyle);
+
+    // clear axes
+    this.axes.clear();
+    while(this.axes.children[0]) {
+      this.axes.removeChild(this.axes.children[0]);
+    }
+
+    // draw y ticks/labels
+    var yMajorStep = this.opt.yMajorStep;
+    var ym0 = UTIL.ceilToNearest(range[0], yMajorStep);
+    var ym1 = UTIL.floorToNearest(range[1], yMajorStep);
+    var value = ym0;
+    var x0 = marginX;
+    var x1 = w - marginX;
+    var y0 = h - marginY;
+    var y1 = marginY;
+
+    while(value <= ym1) {
+      var p = this._dataToPoint(0, value, domain, range);
+      var y = p[1];
+
+      if (value===0) this.axes.lineStyle(2, 0xc4ced4);
+      else if (Math.abs(value) % 1 > 0) this.axes.lineStyle(1, 0x6d6f71);
+      else this.axes.lineStyle(2, 0x6d6f71);
+
+      _this.axes.moveTo(x0-len, y).lineTo(x1, y);
+
+      var text = value + "°F";
+      if (value > 0) text = '+' + text;
+      var label = new PIXI.Text(text, textStyle);
+      label.x = x0-len-10;
+      label.y = y;
+      label.anchor.set(1.0, 0.5);
+      _this.axes.addChild(label);
+
+      value += yMajorStep;
+    }
+
+    // draw y axis
+    this.axes.lineStyle(2, 0xc4ced4);
+    _this.axes.moveTo(x0, y0).lineTo(x0, y1);
   };
 
   DataViz.prototype.renderLabel = function(labelPoint, line, text, subtext, anchor){
@@ -218,7 +275,7 @@ var DataViz = (function() {
     var hPercent = this.opt.highlightPointRadius;
 
     this.plotProgress.clear();
-    this.plotProgress.beginFill(0xFFFFFF);
+    this.plotProgress.beginFill(0xdae6e6);
 
     // start/stop sound
     if (progress <= 0) {
@@ -233,7 +290,8 @@ var DataViz = (function() {
           var py = UTIL.norm(p.y, range[0], range[1]);
           var xy = _this._dataToPoint(p.x, p.y, domain, range);
           var xPercent = px / progress;
-          var r = UTIL.lerp(hPercent[0], hPercent[1], xPercent) * rad;
+          // var r = UTIL.lerp(hPercent[0], hPercent[1], xPercent) * rad;
+          var r = rad;
           _this.plotProgress.drawCircle(xy[0], xy[1], r);
           lastPy = py;
         }
@@ -242,77 +300,6 @@ var DataViz = (function() {
       if (lastPy !== false) {
         this.sound && this.sound.change(lastPy);
       }
-    }
-  };
-
-  DataViz.prototype.renderAxes = function(domain, range, alpha, clear){
-    var _this = this;
-    var domain = domain || this.domain;
-    var range = range || this.range;
-    var w = this.app.renderer.width;
-    var h = this.app.renderer.height;
-    var marginX = this.opt.margin[0];
-    var marginY = this.opt.margin[1];
-    var cw = w - marginX * 2;
-    var ch = h - marginY * 2;
-    var len = this.opt.tickLength;
-    alpha = alpha || 1.0;
-
-    var textStyle = new PIXI.TextStyle(this.opt.axisTextStyle);
-
-    // clear axes
-    if (clear !== false) {
-      this.axes.clear();
-      while(this.axes.children[0]) {
-        this.axes.removeChild(this.axes.children[0]);
-      }
-    }
-    this.axes.lineStyle(2, 0x595454);
-
-    // draw x ticks/labels
-    var y = h - marginY;
-    var x = marginX;
-    var x0 = domain[0];
-    var x1 = domain[1];
-    var xs = this.getXAxis(domain);
-
-    $.each(xs, function(i, value){
-      var px = value.value;
-      x = marginX + px * cw;
-
-      // draw tick
-      _this.axes.moveTo(x, y).lineTo(x, y+len);
-
-      // draw label
-      if (value.label !== "") {
-        var label = new PIXI.Text(value.label, textStyle);
-        label.x = x;
-        label.y = y+len+20;
-        label.anchor.set(value.anchor, 0.0);
-        _this.axes.addChild(label);
-      }
-    });
-
-    // draw y ticks/labels
-    var y0 = Math.ceil(range[0]);
-    var y1 = Math.floor(range[1]);
-    var value = y0;
-    var tickEvery = 10;
-    x = marginX;
-
-    while(value <= y1) {
-      var py = UTIL.norm(value, y0, y1);
-      py = UTIL.lim(py, 0, 1);
-      y = h - marginY - (py * ch);
-      _this.axes.moveTo(x, y).lineTo(x-len, y);
-      if (value % tickEvery === 0 || value==y0 || value==y1) {
-        var label = new PIXI.Text(value, textStyle);
-        label.x = x-len-20;
-        label.y = y;
-        label.anchor.set(1.0, 0.5);
-        _this.axes.addChild(label);
-      }
-      value += 1;
     }
   };
 
@@ -329,7 +316,7 @@ var DataViz = (function() {
     if (clear !== false) {
       this.plot.clear();
     }
-    this.plot.beginFill(0x595454);
+    this.plot.beginFill(0x3fc1be);
     // this.plot.lineStyle(2, 0x595454);
 
     // draw points
@@ -348,7 +335,7 @@ var DataViz = (function() {
     this.plotData = data;
     this.domain = domain;
     this.range = range;
-    // this.renderAxes();
+    this.renderAxes();
     this.renderPlot();
     this.renderLabels();
     this.renderAnnotations();
