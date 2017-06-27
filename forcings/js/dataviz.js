@@ -209,7 +209,7 @@ var DataViz = (function() {
     this.axes.moveTo(x0, y0).lineTo(x0, y0 + ph);
 
     // draw horizontal lines (cords)
-    _.each(this.cords, function(c){
+    _.each(this.cords, function(c,i){
       _this.renderCord(c);
     });
 
@@ -253,7 +253,7 @@ var DataViz = (function() {
 
   DataViz.prototype.renderCord = function(c){
     if (c.dy===0) this.axes.lineStyle(2, 0xc4ced4);
-    else this.axes.lineStyle(1, 0x6d6e71);
+    else this.axes.lineStyle(2, 0x45474c);
 
     // get plot bounds
     var w = this.app.renderer.width;
