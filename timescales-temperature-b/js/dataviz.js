@@ -16,8 +16,18 @@ var DataViz = (function() {
         fontSize: 28,
         fontWeight: "bold"
       },
-      axisTextStyle: {
+      plotTextStyle: {
         fill: "#ffffff",
+        fontSize: 36,
+        fontWeight: "bold"
+      },
+      plotSubtextStyle: {
+        fill: "#ffffff",
+        fontSize: 18,
+        align: "center"
+      },
+      axisTextStyle: {
+        fill: "#d2d1dd",
         fontSize: 18
       }
     };
@@ -42,6 +52,14 @@ var DataViz = (function() {
 
     this.loadView();
     this.loadListeners();
+  };
+
+  DataViz.prototype.isMiniMode = function(){
+    var w = this.app.renderer.width;
+    var m = this.opt.margin;
+    var plotW = w - m[0] - m[2];
+
+    return (this.plotData.length * this.opt.plotDataMaxW < plotW);
   };
 
   DataViz.prototype.loadListeners = function(){
@@ -96,6 +114,7 @@ var DataViz = (function() {
     var ym0 = UTIL.ceilToNearest(range[0], yAxisStep);
     var ym1 = UTIL.floorToNearest(range[1], yAxisStep);
     var value = ym0;
+    var miniMode = this.isMiniMode();
 
     this.axes.clear();
     while(this.axes.children[0]) {
@@ -103,7 +122,7 @@ var DataViz = (function() {
     }
 
     // draw domain axis
-    if (this.plotData.length * this.opt.plotDataMaxW > plotW) {
+    if (!miniMode) {
       _.each(this.domain, function(d,i){
         var text = d;
         var ts = _.clone(textStyle);
@@ -132,21 +151,22 @@ var DataViz = (function() {
       else _this.axes.lineStyle(2, 0x845b5b);
 
       var text = "20th century average temperature";
-      if (value > 0) text = "+" + value + "°C";
-      else if (value < 0) text = value + "°C";
+      if (value > 0) text = "+" + value + "°C ("+UTIL.round(value*1.8,1)+"°F)";
+      else if (value < 0) text = value + "°C ("+UTIL.round(value*1.8,1)+"°F)";
       else {
         textStyle.wordWrap = true;
         textStyle.wordWrapWidth = x0 - 40;
         textStyle.align = 'right';
       }
 
-      var label = new PIXI.Text(text, textStyle);
-      label.x = x0 - 20;
-      label.y = y;
-      label.anchor.set(1.0, 0.5);
-      this.axes.addChild(label);
-
-      _this.axes.moveTo(x0, y).lineTo(x1, y);
+      if (!miniMode || value===0) {
+        var label = new PIXI.Text(text, textStyle);
+        label.x = x0 - 20;
+        label.y = y;
+        label.anchor.set(1.0, 0.5);
+        this.axes.addChild(label);
+        _this.axes.moveTo(x0, y).lineTo(x1, y);
+      }
 
       value += yAxisStep;
     }
@@ -183,6 +203,8 @@ var DataViz = (function() {
     var w = this.app.renderer.width;
     var h = this.app.renderer.height;
     var m = this.opt.margin;
+    var textStyle = this.opt.plotTextStyle;
+    var subtextStyle = this.opt.plotSubtextStyle;
 
     var plotW = w - m[0] - m[2];
     var plotH = h - m[1] - m[3];
@@ -193,6 +215,7 @@ var DataViz = (function() {
     var dataW = plotW / data.length;
     var dataMargin = 0.5;
     var offsetX = 0;
+    var miniMode = this.isMiniMode();
 
     var plotDataMaxW = this.opt.plotDataMaxW;
     if (dataW > plotDataMaxW) {
@@ -214,17 +237,40 @@ var DataViz = (function() {
       var p = _this._dataToPoint(d.year, d.currentValue, domain, range);
       var px = UTIL.norm(d.year, domain[0], domain[1]+1);
       var x = i * dataW + offsetX;
+      var y = p[1];
 
       // if (UTIL.within(p[0], x0, x1) && UTIL.within(p[1], y0, y1)) {}
       _this.plot.beginFill(parseInt(d.color.substring(1), 16));
 
       // positive value
       if (p[1] < baseline[1]) {
-        if (d.value > 0) _this.plot.drawRect(x, p[1], dataW-dataMargin*2, baseline[1]-p[1]);
+        _this.plot.drawRect(x, p[1], dataW-dataMargin*2, baseline[1]-p[1]);
 
       // negative value
       } else if (p[1] > baseline[1]) {
-        if (d.value < 0) _this.plot.drawRect(x, baseline[1], dataW-dataMargin*2, p[1]-baseline[1]);
+        _this.plot.drawRect(x, baseline[1], dataW-dataMargin*2, p[1]-baseline[1]);
+      }
+
+      if (miniMode) {
+        var label = new PIXI.Text(d.year, textStyle);
+        var text = Math.abs(d.value) + "°C";
+        text += " ("+UTIL.round(Math.abs(d.value)*1.8,1)+"°F)"
+        if (d.value < 0) text += " below 20th century average";
+        else text += " above 20th century average";
+        subtextStyle.wordWrap = true;
+        subtextStyle.wordWrapWidth = plotDataMaxW * 0.8;
+        subtextStyle.fill = d.color;
+        var sublabel = new PIXI.Text(text, subtextStyle);
+
+        label.x = x + dataW/2;
+        label.y = y + 10;
+        label.anchor.set(0.5, 0);
+        _this.plot.addChild(label);
+
+        sublabel.x = x + dataW/2;
+        sublabel.y = label.y + 48;
+        sublabel.anchor.set(0.5, 0);
+        _this.plot.addChild(sublabel);
       }
     });
 
