@@ -63,7 +63,7 @@ var App = (function() {
     var domain = [d0, d1];
 
     var filtered = _.filter(this.data, function(d){ return d[0] >= d0 && d[0] <= d1; });
-    var mapped = _.map(filtered, function(d){ return {year: d[0], value: d[1], color: d[2], record: d[3]}; });
+    var mapped = _.map(filtered, function(d){ return {year: d[0], value: d[1], color: d[2], norm: d[3], record: d[4]}; });
     var values = _.pluck(mapped, 'value');
     var range = [_.min(values), _.max(values)];
 

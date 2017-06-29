@@ -331,12 +331,15 @@ var DataViz = (function() {
   };
 
   DataViz.prototype.update = function(data, toDomain, toRange){
+    var _this = this;
+
     // add to dataset
     if (data.length > this.plotData.length) {
       var addData = data.slice(this.plotData.length);
       _.each(addData, function(d,i){
         addData[i].currentValue = 0;
         addData[i].transitionValueStart = new Date();
+        _this.sound && _this.sound.play(d.norm);
       });
       this.plotData = this.plotData.concat(addData);
 

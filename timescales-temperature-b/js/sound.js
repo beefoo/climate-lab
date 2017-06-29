@@ -3,43 +3,30 @@
 var Sound = (function() {
   function Sound(options) {
     var defaults = {
-      frequency: [40, 800]
+      sprites: SPRITES,
+      audio: ['audio/key.mp3']
     };
     this.opt = $.extend({}, defaults, options);
     this.init();
   }
 
   Sound.prototype.init = function(){
-    this.started = false;
-    this.tone = new Tone.Oscillator({
-      "frequency" : 440,
-      "volume" : -10,
-      "type" : "triangle8"
-    }).toMaster();
-    this.frequency = this.opt.frequency[0];
+    var sprites = this.opt.sprites;
+    this.sound = new Howl({
+      src: this.opt.audio,
+      sprite: sprites
+    });
+    this.notes = _.keys(sprites);
+    console.log(this.notes)
   };
 
-  Sound.prototype.change = function(percent){
-    var ff = this.opt.frequency;
-    var f = Math.round(UTIL.lerp(ff[0], ff[1], percent));
-    if (f!=this.frequency) {
-      this.frequency = f;
-      // this.tone.triggerRelease();
-      // this.tone.triggerAttack(f);
-      this.tone.frequency.value = f;
-    }
-  };
+  Sound.prototype.play = function(percent){
+    if (percent < 0 || percent > 1) return false;
 
-  Sound.prototype.end = function(){
-    Tone.Master.volume.rampTo(-Infinity, 0.05);
-  };
-
-  Sound.prototype.start = function(){
-    if (!this.started) {
-      this.started = true;
-      this.tone.start();
-    }
-    Tone.Master.volume.rampTo(0, 0.05);
+    var len = this.notes.length;
+    var i = Math.floor((len - 1) * percent);
+    var sprite = this.notes[i];
+    this.sound.play(sprite);
   };
 
   return Sound;

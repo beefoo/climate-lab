@@ -90,9 +90,10 @@ for i,d in enumerate(data):
             data[i]["Record"] = 1
 
     n = norm(d["Value"], dataRange[0], dataRange[1])
+    data[i]["Norm"] = n
     data[i]["Color"] = lerpColor(colorStart, colorFinish, n)
 
-tuples = [(d["Year"], d["Value"], d["Color"], d["Record"]) for d in data]
+tuples = [(d["Year"], d["Value"], d["Color"], d["Norm"], d["Record"]) for d in data]
 jsonData = {
     "data": tuples,
     "domain": dataDomain,
