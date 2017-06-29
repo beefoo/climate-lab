@@ -75,9 +75,6 @@ var App = (function() {
     var values = _.pluck(mapped, 'value');
     var range = [_.min(values), _.max(values)];
 
-    // var annotations = _.filter(this.annotations, function(a){ return d0 >= a.startDate && d0 <= a.endDate; });
-    // this.viz.updateAnnotations(annotations);
-
     this.startDate = Date.now();
     this.viz.update(mapped, domain, range);
   };

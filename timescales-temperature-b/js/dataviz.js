@@ -6,7 +6,10 @@ var DataViz = (function() {
       el: '#main',
       margin: [50,50,50,50],
       enableSound: true,
-      transitionMs: 500
+      transitionAxesMs: 500,
+      transitionPlotMs: 500,
+      minRange: [-0.25, 0.25],
+      yAxisStep: 0.25
     };
     this.opt = $.extend({}, defaults, options);
     this.init();
@@ -45,9 +48,8 @@ var DataViz = (function() {
     this.plot = new PIXI.Graphics();
     this.plotProgress = new PIXI.Graphics();
     this.labels = new PIXI.Graphics();
-    this.annotations = new PIXI.Graphics();
 
-    this.app.stage.addChild(this.axes, this.plot, this.plotProgress, this.labels, this.annotations);
+    this.app.stage.addChild(this.plot, this.plotProgress, this.axes, this.labels);
 
     this.$el.append(this.app.view);
   };
@@ -57,7 +59,6 @@ var DataViz = (function() {
     this.renderAxes();
     this.renderPlot();
     this.renderLabels();
-    this.renderAnnotations();
   };
 
   DataViz.prototype.render = function(progress){
@@ -66,15 +67,41 @@ var DataViz = (function() {
     this.transition();
 
     this.renderPlot();
+    this.renderAxes();
     this.renderProgress(progress);
   };
 
-  DataViz.prototype.renderAnnotations = function(){
+  DataViz.prototype.renderAxes = function(){
+    this.axes.clear();
 
-  };
+    var _this = this;
+    var domain = this.domain;
+    var range = this.range;
+    var w = this.app.renderer.width;
+    var h = this.app.renderer.height;
+    var m = this.opt.margin;
+    var yAxisStep = this.opt.yAxisStep;
 
-  DataViz.prototype.renderAxes = function(domain, range){
+    var plotW = w - m[0] - m[2];
+    var x0 = m[0];
+    var x1 = x0 + plotW;
+    var ym0 = UTIL.ceilToNearest(range[0], yAxisStep);
+    var ym1 = UTIL.floorToNearest(range[1], yAxisStep);
+    var value = ym0;
 
+    while(value <= ym1) {
+      var p = _this._dataToPoint(0, value, domain, range);
+      var y = p[1];
+
+      // draw line
+      if (value===0) _this.axes.lineStyle(3, 0xffffff);
+      else if (value<0) _this.axes.lineStyle(1, 0x54799b);
+      else _this.axes.lineStyle(1, 0x845b5b);
+
+      _this.axes.moveTo(x0, y).lineTo(x1, y);
+
+      value += yAxisStep;
+    }
   };
 
   DataViz.prototype.renderLabels = function(){
@@ -94,29 +121,42 @@ var DataViz = (function() {
     var w = this.app.renderer.width;
     var h = this.app.renderer.height;
     var m = this.opt.margin;
+
     var plotW = w - m[0] - m[2];
     var plotH = h - m[1] - m[3];
+    var x0 = m[0];
+    var x1 = x0 + plotW;
+    var y0 = m[1];
+    var y1 = y0 + plotH;
 
     var dataW = plotW / data.length;
 
     this.plot.clear();
 
-    if (data.length==1) {
-      var d = data[0];
-      this.plot.beginFill(parseInt(d.color.substring(1), 16));
-      this.plot.drawRect(m[0], m[1], plotW, plotH);
-      return false;
-    }
-
+    var baseline = _this._dataToPoint(0, 0, domain, range);
     _.each(data, function(d){
       var p = _this._dataToPoint(d.year, d.value, domain, range);
+
+      // if (UTIL.within(p[0], x0, x1) && UTIL.within(p[1], y0, y1)) {}
       _this.plot.beginFill(parseInt(d.color.substring(1), 16));
-      _this.plot.drawRect(p[0], p[1], dataW, plotH-p[1]);
+
+      // positive value
+      if (p[1] < baseline[1]) {
+        _this.plot.drawRect(p[0], p[1], dataW, baseline[1]-p[1]);
+
+      // negative value
+      } else if (p[1] > baseline[1]) {
+        _this.plot.drawRect(p[0], baseline[1], dataW, p[1]-baseline[1]);
+      }
     });
 
   };
 
   DataViz.prototype.transition = function(){
+    this.domain = this.toDomain;
+    this.range = this.toRange;
+    return false;
+
     // check if we need to transition
     var domainEqual = _.isEqual(this.domain, this.toDomain);
     var rangeEqual = _.isEqual(this.range, this.toRange);
@@ -124,7 +164,7 @@ var DataViz = (function() {
 
     // check for transition
     var now = new Date();
-    var transitionMs = this.opt.transitionMs;
+    var transitionMs = this.opt.transitionAxesMs;
     var timeSince = transitionMs + 1;
     if (this.transitionStart) timeSince = now - this.transitionStart;
 
@@ -151,18 +191,21 @@ var DataViz = (function() {
   DataViz.prototype.update = function(data, toDomain, toRange){
     this.plotData = data;
 
-    if (!this.domain) this.domain = toDomain;
-    if (!this.range) this.range = toRange;
+    var minRange = this.opt.minRange;
+    if (toRange[0] > minRange[0]) toRange[0] = minRange[0];
+    if (toRange[1] < minRange[1]) toRange[1] = minRange[1];
 
-    this.fromDomain = this.domain;
-    this.fromRange = this.range;
+    if (!this.domain) this.domain = toDomain.slice(0);
+    if (!this.range) this.range = toRange.slice(0);
+
+    // if (this.toDomain) this.domain = this.toDomain.slice(0);
+    // if (this.toRange) this.range = this.toRange.slice(0);
+
+    this.fromDomain = this.domain.slice(0);
+    this.fromRange = this.range.slice(0);
     this.toDomain = toDomain;
     this.toRange = toRange;
     this.transitionStart = new Date();
-  };
-
-  DataViz.prototype.updateAnnotations = function(annotations){
-    this.plotAnnotations = annotations;
   };
 
   DataViz.prototype._dataToPoint = function(dx, dy, domain, range){
@@ -171,9 +214,6 @@ var DataViz = (function() {
 
     var px = UTIL.norm(dx, domain[0], domain[1]+1);
     var py = UTIL.norm(dy, range[0], range[1]);
-
-    px = UTIL.lim(px, 0, 1);
-    py = UTIL.lim(py, 0, 1);
 
     return this._percentToPoint(px, py);
   };
