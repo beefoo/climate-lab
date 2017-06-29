@@ -4,13 +4,22 @@ var DataViz = (function() {
   function DataViz(options) {
     var defaults = {
       el: '#main',
-      margin: [50,50,50,50],
+      margin: [220,100,50,100],
       enableSound: true,
       transitionAxesMs: 500,
       transitionPlotMs: 1000,
       minRange: [-0.25, 0.25],
       yAxisStep: 0.25,
-      plotDataMaxW: 200
+      plotDataMaxW: 200,
+      labelTextStyle: {
+        fill: "#ffffff",
+        fontSize: 28,
+        fontWeight: "bold"
+      },
+      axisTextStyle: {
+        fill: "#ffffff",
+        fontSize: 18
+      }
     };
     this.opt = $.extend({}, defaults, options);
     this.init();
@@ -47,10 +56,9 @@ var DataViz = (function() {
     this.app = new PIXI.Application(this.$el.width(), this.$el.height(), {transparent : true});
     this.axes = new PIXI.Graphics();
     this.plot = new PIXI.Graphics();
-    this.plotProgress = new PIXI.Graphics();
     this.labels = new PIXI.Graphics();
 
-    this.app.stage.addChild(this.plot, this.plotProgress, this.axes, this.labels);
+    this.app.stage.addChild(this.plot, this.axes, this.labels);
 
     this.$el.append(this.app.view);
   };
@@ -69,12 +77,10 @@ var DataViz = (function() {
 
     this.renderPlot();
     this.renderAxes();
-    this.renderProgress(progress);
+    this.renderLabels();
   };
 
   DataViz.prototype.renderAxes = function(){
-    this.axes.clear();
-
     var _this = this;
     var domain = this.domain;
     var range = this.range;
@@ -82,6 +88,7 @@ var DataViz = (function() {
     var h = this.app.renderer.height;
     var m = this.opt.margin;
     var yAxisStep = this.opt.yAxisStep;
+    var textStyle = this.opt.axisTextStyle;
 
     var plotW = w - m[0] - m[2];
     var x0 = m[0];
@@ -90,14 +97,54 @@ var DataViz = (function() {
     var ym1 = UTIL.floorToNearest(range[1], yAxisStep);
     var value = ym0;
 
+    this.axes.clear();
+    while(this.axes.children[0]) {
+      this.axes.removeChild(this.axes.children[0]);
+    }
+
+    // draw domain axis
+    if (this.plotData.length * this.opt.plotDataMaxW > plotW) {
+      _.each(this.domain, function(d,i){
+        var text = d;
+        var ts = _.clone(textStyle);
+        ts.fontSize = 28;
+        var label = new PIXI.Text(text, ts);
+        var y = h - m[3];
+        label.x = x0;
+        label.y = y + 10;
+        label.anchor.set(0, 0);
+        if (i > 0) {
+          label.x = x1;
+          label.anchor.set(1, 0);
+        }
+        _this.axes.addChild(label);
+      });
+    }
+
+    // draw range axis
     while(value <= ym1) {
       var p = _this._dataToPoint(0, value, domain, range);
       var y = p[1];
 
       // draw line
       if (value===0) _this.axes.lineStyle(3, 0xffffff);
-      else if (value<0) _this.axes.lineStyle(1, 0x54799b);
-      else _this.axes.lineStyle(1, 0x845b5b);
+      else if (value<0) _this.axes.lineStyle(2, 0x54799b);
+      else _this.axes.lineStyle(2, 0x845b5b);
+
+      var text = "20th century average temperature";
+      if (value > 0) text = "+" + value + "°C";
+      else if (value < 0) text = value + "°C";
+      else {
+        textStyle.wordWrap = true;
+        textStyle.wordWrapWidth = x0 - 40;
+        textStyle.align = 'right';
+      }
+
+      var label = new PIXI.Text(text, textStyle);
+      label.x = x0 - 20;
+      label.y = y;
+      label.anchor.set(1.0, 0.5);
+      this.axes.addChild(label);
 
       _this.axes.moveTo(x0, y).lineTo(x1, y);
 
@@ -106,11 +153,25 @@ var DataViz = (function() {
   };
 
   DataViz.prototype.renderLabels = function(){
+    var domain = this.domain;
+    var textStyle = this.opt.labelTextStyle;
+    var text = "Annual Global Land and Ocean Temperature Anomalies";
+    if (domain[0]==domain[1]) text += " ("+domain[0]+")";
+    else text += " ("+domain[0]+"-"+domain[1]+")";
 
-  };
+    var x = this.app.renderer.width / 2;
+    var y = 20;
 
-  DataViz.prototype.renderProgress = function(progress){
+    this.labels.clear();
+    while(this.labels.children[0]) {
+      this.labels.removeChild(this.labels.children[0]);
+    }
 
+    var label = new PIXI.Text(text, textStyle);
+    label.x = x;
+    label.y = y;
+    label.anchor.set(0.5, 0);
+    this.labels.addChild(label);
   };
 
   DataViz.prototype.renderPlot = function(){
@@ -142,6 +203,10 @@ var DataViz = (function() {
     offsetX += dataMargin + x0;
 
     this.plot.clear();
+    while(this.plot.children[0]) {
+      this.plot.removeChild(this.plot.children[0]);
+    }
+
     this.plot.lineStyle(2, 0x212121);
 
     var baseline = _this._dataToPoint(0, 0, domain, range);

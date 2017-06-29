@@ -26,12 +26,9 @@ var App = (function() {
     };
     var controls = new Controls({sliders: sliders});
 
-    // Set initial speed and scale
-    this.speed = this.opt.speed;
+    // Set initial scale
     this.scale = 0.0;
     this.dataKey = this.opt.dataKey;
-    this.annotations = [];
-    this.onSpeed(this.speed);
 
     // Initialize viz and spinners
     this.viz = new DataViz({el: "#pane", enableSound: this.opt.enableSound});
@@ -55,11 +52,6 @@ var App = (function() {
     this.domain = d.domain;
     this.range = d.range;
 
-    // check for annotations
-    if (_.has(data,"annotations")) {
-      this.annotations = data["annotations"][this.dataKey];
-    }
-
     this.onScale(this.scale);
     this.render();
   };
@@ -75,44 +67,13 @@ var App = (function() {
     var values = _.pluck(mapped, 'value');
     var range = [_.min(values), _.max(values)];
 
-    this.startDate = Date.now();
     this.viz.update(mapped, domain, range);
-  };
-
-  App.prototype.onSpeed = function(value) {
-    var r = this.opt.durationRange;
-    this.duration = UTIL.lerp(r[0], r[1], value);
-    this.startDate = Date.now();
   };
 
   App.prototype.render = function(){
     var _this = this;
 
-    if (this.startDate==undefined) {
-      this.startDate = Date.now();
-    }
-    var d = Date.now();
-    var elapsed = d - this.startDate;
-    var hold = this.opt.durationHold;
-    var dur = this.duration + hold;
-    var nonHold = this.duration / dur;
-    var progress = elapsed % dur / dur;
-
-    // only play through once
-    if (elapsed > dur) {
-      progress = 0.0;
-    // logic for determining if we should hold the last note
-    } else if (progress >= nonHold) {
-      progress = 1.0;
-    } else {
-      progress = UTIL.norm(progress, 0, nonHold);
-    }
-
-    if (this.transitioning) {
-      this.viz.render(0);
-    } else {
-      this.viz.render(progress);
-    }
+    this.viz.render();
 
     requestAnimationFrame(function(){ _this.render(); });
   };
