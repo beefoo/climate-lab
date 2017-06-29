@@ -7,9 +7,10 @@ var DataViz = (function() {
       margin: [50,50,50,50],
       enableSound: true,
       transitionAxesMs: 500,
-      transitionPlotMs: 500,
+      transitionPlotMs: 1000,
       minRange: [-0.25, 0.25],
-      yAxisStep: 0.25
+      yAxisStep: 0.25,
+      plotDataMaxW: 200
     };
     this.opt = $.extend({}, defaults, options);
     this.init();
@@ -18,7 +19,7 @@ var DataViz = (function() {
   DataViz.prototype.init = function(){
     this.$el = $(this.opt.el);
 
-    this.plotData = false;
+    this.plotData = [];
 
     this.domain = false;
     this.range = false;
@@ -128,31 +129,62 @@ var DataViz = (function() {
     var x1 = x0 + plotW;
     var y0 = m[1];
     var y1 = y0 + plotH;
-
     var dataW = plotW / data.length;
+    var dataMargin = 0.5;
+    var offsetX = 0;
+
+    var plotDataMaxW = this.opt.plotDataMaxW;
+    if (dataW > plotDataMaxW) {
+      dataW = plotDataMaxW;
+      var innerPlotW = dataW * data.length;
+      offsetX = (plotW - innerPlotW) / 2;
+    }
+    offsetX += dataMargin + x0;
 
     this.plot.clear();
+    this.plot.lineStyle(2, 0x212121);
 
     var baseline = _this._dataToPoint(0, 0, domain, range);
-    _.each(data, function(d){
-      var p = _this._dataToPoint(d.year, d.value, domain, range);
+    _.each(data, function(d, i){
+      var p = _this._dataToPoint(d.year, d.currentValue, domain, range);
+      var px = UTIL.norm(d.year, domain[0], domain[1]+1);
+      var x = i * dataW + offsetX;
 
       // if (UTIL.within(p[0], x0, x1) && UTIL.within(p[1], y0, y1)) {}
       _this.plot.beginFill(parseInt(d.color.substring(1), 16));
 
       // positive value
       if (p[1] < baseline[1]) {
-        _this.plot.drawRect(p[0], p[1], dataW, baseline[1]-p[1]);
+        if (d.value > 0) _this.plot.drawRect(x, p[1], dataW-dataMargin*2, baseline[1]-p[1]);
 
       // negative value
       } else if (p[1] > baseline[1]) {
-        _this.plot.drawRect(p[0], baseline[1], dataW, p[1]-baseline[1]);
+        if (d.value < 0) _this.plot.drawRect(x, baseline[1], dataW-dataMargin*2, p[1]-baseline[1]);
       }
     });
 
   };
 
   DataViz.prototype.transition = function(){
+    var _this = this;
+    var now = new Date();
+    var transitionPlotMs = this.opt.transitionPlotMs;
+
+    // transition data
+    _.each(this.plotData, function(d,i){
+      if (d.transitionValueStart) {
+        var timeSince = now - d.transitionValueStart;
+        if (timeSince > transitionPlotMs) {
+          _this.plotData[i].currentValue = d.value;
+        } else {
+          var progress = timeSince / transitionPlotMs;
+          progress = UTIL.easeInElastic(progress);
+          _this.plotData[i].currentValue = d.value * progress;
+        }
+      }
+    });
+
+    // comment/uncomment to enable/disable domain/range transition
     this.domain = this.toDomain;
     this.range = this.toRange;
     return false;
@@ -163,7 +195,6 @@ var DataViz = (function() {
     if (domainEqual && rangeEqual) return false;
 
     // check for transition
-    var now = new Date();
     var transitionMs = this.opt.transitionAxesMs;
     var timeSince = transitionMs + 1;
     if (this.transitionStart) timeSince = now - this.transitionStart;
@@ -189,7 +220,19 @@ var DataViz = (function() {
   };
 
   DataViz.prototype.update = function(data, toDomain, toRange){
-    this.plotData = data;
+    // add to dataset
+    if (data.length > this.plotData.length) {
+      var addData = data.slice(this.plotData.length);
+      _.each(addData, function(d,i){
+        addData[i].currentValue = 0;
+        addData[i].transitionValueStart = new Date();
+      });
+      this.plotData = this.plotData.concat(addData);
+
+    // reduce dataset
+    } else {
+      this.plotData = this.plotData.slice(0, data.length);
+    }
 
     var minRange = this.opt.minRange;
     if (toRange[0] > minRange[0]) toRange[0] = minRange[0];
@@ -212,7 +255,7 @@ var DataViz = (function() {
     domain = domain || this.domain;
     range = range || this.range;
 
-    var px = UTIL.norm(dx, domain[0], domain[1]+1);
+    var px = UTIL.norm(dx, domain[0], domain[1]);
     var py = UTIL.norm(dy, range[0], range[1]);
 
     return this._percentToPoint(px, py);
