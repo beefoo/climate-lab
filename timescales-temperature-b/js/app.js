@@ -65,7 +65,7 @@ var App = (function() {
   };
 
   App.prototype.onScale = function(value) {
-    value = UTIL.easeInOutCubic(value);
+    value = UTIL.easeInOutSin(value);
     var d0 = this.domain[0];
     var d1 = Math.round(UTIL.lerp(this.domain[0], this.domain[1], value));
     var domain = [d0, d1];
@@ -112,9 +112,9 @@ var App = (function() {
     }
 
     if (this.transitioning) {
-      this.viz.renderProgress(0);
+      this.viz.render(0);
     } else {
-      this.viz.renderProgress(progress);
+      this.viz.render(progress);
     }
 
     requestAnimationFrame(function(){ _this.render(); });

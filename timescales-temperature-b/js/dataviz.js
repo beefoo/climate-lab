@@ -5,7 +5,8 @@ var DataViz = (function() {
     var defaults = {
       el: '#main',
       margin: [50,50,50,50],
-      enableSound: true
+      enableSound: true,
+      transitionMs: 500
     };
     this.opt = $.extend({}, defaults, options);
     this.init();
@@ -15,11 +16,15 @@ var DataViz = (function() {
     this.$el = $(this.opt.el);
 
     this.plotData = false;
-    this.plotPlay = false;
+
     this.domain = false;
     this.range = false;
-    this.sound = false;
+    this.fromDomain = false;
+    this.fromRange = false;
+    this.toDomain = false;
+    this.toRange = false;
 
+    this.sound = false;
     if (this.opt.enableSound) this.sound = new Sound({});
 
     this.loadView();
@@ -55,6 +60,15 @@ var DataViz = (function() {
     this.renderAnnotations();
   };
 
+  DataViz.prototype.render = function(progress){
+    if (!this.plotData || !this.domain || !this.range) return false;
+
+    this.transition();
+
+    this.renderPlot();
+    this.renderProgress(progress);
+  };
+
   DataViz.prototype.renderAnnotations = function(){
 
   };
@@ -68,15 +82,13 @@ var DataViz = (function() {
   };
 
   DataViz.prototype.renderProgress = function(progress){
-    if (!this.plotData || !this.domain || !this.range) return false;
-
 
   };
 
-  DataViz.prototype.renderPlot = function(data, domain, range){
-    data = data || this.plotData;
-    domain = domain || this.domain;
-    range = range || this.range;
+  DataViz.prototype.renderPlot = function(){
+    var data = this.plotData;
+    var domain = this.domain;
+    var range = this.range;
 
     var _this = this;
     var w = this.app.renderer.width;
@@ -104,14 +116,49 @@ var DataViz = (function() {
 
   };
 
-  DataViz.prototype.update = function(data, domain, range){
+  DataViz.prototype.transition = function(){
+    // check if we need to transition
+    var domainEqual = _.isEqual(this.domain, this.toDomain);
+    var rangeEqual = _.isEqual(this.range, this.toRange);
+    if (domainEqual && rangeEqual) return false;
+
+    // check for transition
+    var now = new Date();
+    var transitionMs = this.opt.transitionMs;
+    var timeSince = transitionMs + 1;
+    if (this.transitionStart) timeSince = now - this.transitionStart;
+
+    // end transition
+    if (timeSince > transitionMs) {
+      this.domain = this.toDomain;
+      this.range = this.toRange;
+      return false;
+    }
+
+    // interpolate
+    var progress = timeSince / transitionMs;
+    progress = UTIL.easeInOutSin(progress);
+
+    var x0 = UTIL.lerp(this.fromDomain[0], this.toDomain[0], progress);
+    var x1 = UTIL.lerp(this.fromDomain[1], this.toDomain[1], progress);
+    this.domain = [x0, x1];
+
+    var y0 = UTIL.lerp(this.fromRange[0], this.toRange[0], progress);
+    var y1 = UTIL.lerp(this.fromRange[1], this.toRange[1], progress);
+    this.range = [y0, y1];
+  };
+
+  DataViz.prototype.update = function(data, toDomain, toRange){
     this.plotData = data;
-    this.domain = domain;
-    this.range = range;
-    this.renderAxes();
-    this.renderPlot();
-    this.renderLabels();
-    this.renderAnnotations();
+
+    if (!this.domain) this.domain = toDomain;
+    if (!this.range) this.range = toRange;
+
+    this.fromDomain = this.domain;
+    this.fromRange = this.range;
+    this.toDomain = toDomain;
+    this.toRange = toRange;
+    this.transitionStart = new Date();
   };
 
   DataViz.prototype.updateAnnotations = function(annotations){
