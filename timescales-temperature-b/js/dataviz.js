@@ -339,8 +339,10 @@ var DataViz = (function() {
       _.each(addData, function(d,i){
         addData[i].currentValue = 0;
         addData[i].transitionValueStart = new Date();
-        _this.sound && _this.sound.play(d.norm);
+        // _this.sound && _this.sound.play(d.norm);
       });
+      // just play the last note
+      _this.sound && _this.sound.play(addData[addData.length-1].norm);
       this.plotData = this.plotData.concat(addData);
 
     // reduce dataset
