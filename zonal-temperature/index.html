@@ -1,0 +1,50 @@
+<!doctype html>
+<html class="no-js" lang="">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>Climate Lab / Temperature around the world</title>
+  <link rel="stylesheet" href="../shared/css/normalize.css">
+  <link rel="stylesheet" href="../shared/css/base.css">
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+  <div class="app">
+    <div id="main" class="panes">
+      <div id="pane-left" class="pane">
+        <div id="map" class="map">
+          <video id="video-temperature" autoplay loop crossorigin="anonymous">
+            <source src="https://s3.amazonaws.com/brianfoo-amnh/temperature_1950-2016.mp4" type='video/mp4'>
+          </video>
+          <div class="helper"></div>
+        </div>
+      </div>
+      <div id="pane-right" class="pane"></div>
+    </div>
+    <div id="controls" class="controls">
+      <div class="sliders">
+        <div class="slider left">
+          <label for="zone">Slide to change zone</label>
+          <div id="zone" class="slider-vert zone"></div>
+        </div>
+        <div class="slider right">
+          <label for="time">Slide to change month</label>
+          <div id="time" class="slider-horz zone"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="../shared/js/jquery-3.2.1.min.js"></script>
+  <script src="../shared/js/jquery-ui-1.12.1.custom.slider.min.js"></script>
+  <script src="../shared/js/underscore-min.js"></script>
+  <script src="../shared/js/pixi.min.js"></script>
+  <script src="../shared/js/utils.js"></script>
+
+  <script src="js/datamap.js"></script>
+  <script src="js/datagraph.js"></script>
+  <script src="js/controls.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
