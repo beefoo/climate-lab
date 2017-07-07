@@ -1,3 +1,4 @@
 *.nc
 img/frames/*
 !img/frames/.keep
+*.mp4

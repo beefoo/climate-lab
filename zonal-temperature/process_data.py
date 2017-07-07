@@ -7,75 +7,79 @@
 
 import argparse
 import csv
-from datetime import datetime
+from datetime import datetime, timedelta
 import json
 import math
+from netCDF4 import Dataset
 import os
+from pprint import pprint
 import sys
 
 # input
 parser = argparse.ArgumentParser()
-parser.add_argument('-in', dest="INPUT_FILE", default="data/ZonAnn.Ts+dSST.csv", help="Temperature input file")
+parser.add_argument('-in', dest="INPUT_FILE", default="data/gistemp1200_ERSSTv4.nc", help="Temperature input file")
+parser.add_argument('-start', dest="START_YEAR", default=1950, type=int, help="Start year")
+parser.add_argument('-end', dest="END_YEAR", default=2016, type=int, help="End year")
+parser.add_argument('-zones', dest="ZONES", default=12, type=int, help="Number of zones")
 parser.add_argument('-out', dest="OUTPUT_FILE", default="data/processed_data.json", help="Output file")
-
 args = parser.parse_args()
 
-# Zones from north to south
-ZONES = [
-    "64N-90N",
-    "44N-64N",
-    "24N-44N",
-    "EQU-24N",
-    "24S-EQU",
-    "44S-24S",
-    "64S-44S",
-    "90S-64S"
-]
+# config
+INPUT_FILE = args.INPUT_FILE
+OUTPUT_FILE = args.OUTPUT_FILE
+START_YEAR = args.START_YEAR
+END_YEAR = args.END_YEAR
+ZONES = args.ZONES
 
-def parseNumber(string):
-    try:
-        num = float(string)
-        if "." not in string:
-            num = int(string)
-        return num
-    except ValueError:
-        return string
+if 180.0/ZONES % 1 > 0:
+    print "Warning: zones not a divisor of 180"
 
-def parseNumbers(arr):
-    for i, item in enumerate(arr):
-        for key in item:
-            arr[i][key] = parseNumber(item[key])
-    return arr
+# Mean of list
+def mean(data):
+    n = len(data)
+    if n < 1:
+        return 0
+    else:
+        return 1.0 * sum(data) / n
 
-def readCSV(filename):
-    rows = []
-    if os.path.isfile(filename):
-        with open(filename, 'rb') as f:
-            lines = [line for line in f if not line.startswith("#")]
-            reader = csv.DictReader(lines, skipinitialspace=True)
-            rows = list(reader)
-            rows = parseNumbers(rows)
-    return rows
+# Open NetCDF file
+ds = Dataset(INPUT_FILE, 'r')
 
-rawData = readCSV(args.INPUT_FILE)
-rawData = sorted(rawData, key=lambda k: k["Year"])
-dataDomain = [rawData[0]["Year"], rawData[-1]["Year"]]
+# Extract data from NetCDF file
+lats = ds.variables['lat'][:] # float: latitude between -90 and 90
+lons = ds.variables['lon'][:] # float: longitude between -180 and 180
+times = ds.variables['time'][:] # int: days since 1/1/1800
+tempData = ds.variables['tempanomaly'][:] # short: surface temperature anomaly (K), e.g. tempData[time][lat][lon]
 
-data = {}
-for z in ZONES:
-    data[z] = []
-
-for d in rawData:
-    for z in ZONES:
-        data[z].append((d["Year"], d[z]))
-
-globalData = [(d["Year"], d["Glob"]) for d in rawData]
+# retrieve data from each zone
+data = []
+zoneSize = 180 / ZONES
+baseDate = "1800-01-01"
+bd = datetime.strptime(baseDate, "%Y-%m-%d")
+for zone in range(ZONES):
+    i0 = zone * zoneSize
+    i1 = (zone+1) * zoneSize
+    zoneLats = lats[i0:i1]
+    zoneData = []
+    for j, days in enumerate(times):
+        theDate = bd + timedelta(days=int(days))
+        theYear = theDate.year
+        theMonth = theDate.month
+        if START_YEAR <= theYear <= END_YEAR:
+            arr = []
+            for i, lat in enumerate(zoneLats):
+                values = tempData[j][i0+i][:]
+                values = [v for v in values if v != "--"]
+                if len(values) > 0:
+                    arr += values
+            value = mean(arr)
+            zoneData.append(value)
+    data.append(zoneData)
+    print "Zone %s complete" % (zone+1)
 
 jsonData = {
     "data": data,
-    "domain": dataDomain,
-    "zones": ZONES,
-    "global": globalData
+    "domain": [START_YEAR, END_YEAR]
 }
 
 # Retrieve existing data if exists
@@ -88,4 +92,4 @@ jsonOut["temperature"] = jsonData
 # Write to file
 with open(args.OUTPUT_FILE, 'w') as f:
     json.dump(jsonOut, f)
-    print "Wrote %s items to %s" % (len(rawData), args.OUTPUT_FILE)
+    print "Wrote %s zones to %s" % (len(data), args.OUTPUT_FILE)
