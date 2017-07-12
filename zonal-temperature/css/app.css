@@ -3,7 +3,7 @@ body {
 }
 
 .app {
-  background: #242424;
+  background: #212121;
   color: #fff;
   letter-spacing: 0.08rem;
   width: 100vw;
@@ -40,7 +40,8 @@ h2 {
 .slider:last-child {
   left: 50%;
 }
-.pane video {
+.pane video,
+.pane img {
   width: 100%;
   height: auto;
 }
@@ -51,8 +52,10 @@ h2 {
   bottom: 0;
 }
 
-.map {
-  width: 100%;
+.map,
+.graph {
+  width: 50vw;
+  height: 25vw;
   position: relative;
   top: 50%;
   transform: translateY(-50%);

@@ -1,4 +1,3 @@
 var CONFIG = {
-  dataURL: 'data/processed_data.json',
-  dataKey: "temperature"
+  dataURL: 'data/processed_data.json'
 };

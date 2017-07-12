@@ -2,21 +2,36 @@
 
 var DataMap = (function() {
   function DataMap(options) {
-    var defaults = {  };
+    var defaults = {
+      imageDir: 'img/map/'
+    };
     this.opt = $.extend({}, defaults, options);
     this.init();
   }
 
   DataMap.prototype.init = function(){
     this.$el = $(this.opt.el);
-    this.$video = this.$el.find('video').first();
-    this.video = this.$video[0];
+    this.$img = this.$el.find('img').first();
     this.$helper = this.$el.find('.helper').first();
 
+    this.frameCount = 0;
     this.time = this.opt.time;
     this.zone = this.opt.zone;
 
     this.loadListeners();
+
+  };
+
+  DataMap.prototype.initTime = function(frameCount) {
+    this.frameCount = frameCount;
+
+    // preload images
+    for (var frame=1; frame<=frameCount; frame++) {
+      var img =  new Image();
+      img.src = this.opt.imageDir + 'frame' + UTIL.pad(frame, 5) + '.jpg';
+    }
+
+    this.updateTime(this.time);
   };
 
   DataMap.prototype.initZones = function(zoneCount) {
@@ -24,8 +39,7 @@ var DataMap = (function() {
 
     this.$helper.css({
       height: height + "%",
-      display: "block",
-      marginTop: "-" + (height/2) + "%"
+      display: "block"
     });
 
     this.updateZone(this.zone);
@@ -36,10 +50,6 @@ var DataMap = (function() {
 
     $(window).on('resize', function(e){
       _this.onResize();
-    })
-
-    this.video.addEventListener('loadeddata', function(e){
-      _this.onVideoLoaded();
     });
   };
 
@@ -54,19 +64,22 @@ var DataMap = (function() {
   };
 
   DataMap.prototype.updateTime = function(value){
-    if (!this.video || !this.video.duration) return false;
+    if (this.frameCount <= 0) return false;
 
     this.time = value;
 
-    var dur = this.video.duration;
-    var time = dur * value;
-    this.video.currentTime = time;
-    this.video.pause();
+    var frame = Math.round(value * (this.frameCount - 1)) + 1;
+    frame = UTIL.pad(frame, 5);
+    this.$img[0].src = this.opt.imageDir + 'frame' + frame + '.jpg';
   };
 
   DataMap.prototype.updateZone = function(value){
     this.zone = value;
-    var top = this.zone * 100;
+
+    var h = this.$el.height();
+    var hh = this.$helper.height();
+    var maxTop = (h - hh) / h * 100;
+    var top = this.zone * maxTop;
 
     this.$helper.css('top', top + '%');
   };

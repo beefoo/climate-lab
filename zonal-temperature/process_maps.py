@@ -3,7 +3,8 @@
 # Gridded Monthly Temperature Anomaly Data
 # source: https://data.giss.nasa.gov/gistemp/
 # inspect: ncdump -h data/gistemp1200_ERSSTv4.nc
-# compile: ffmpeg -framerate 30/1 -i img/frames/frame%05d.png -c:v libx264 -r 30 -pix_fmt yuv420p -q:v 1 video/temperature_1950-2016.mp4
+# compile: ffmpeg -framerate 15/1 -i img/frames/frame%05d.png -c:v libx264 -r 15 -pix_fmt yuv420p -q:v 1 video/temperature_1980-2016.mp4
+# convert: ffmpeg -i video/temperature_1980-2016.mp4 -c:v libvpx -b:v 1M -c:a libvorbis video/temperature_1980-2016.webm
 
 import argparse
 import datetime
@@ -18,9 +19,10 @@ import sys
 # input
 parser = argparse.ArgumentParser()
 parser.add_argument('-in', dest="INPUT_FILE", default="data/gistemp1200_ERSSTv4.nc", help="Temperature input file")
-parser.add_argument('-start', dest="START_YEAR", default=1950, type=int, help="Start year")
+parser.add_argument('-start', dest="START_YEAR", default=1980, type=int, help="Start year")
 parser.add_argument('-end', dest="END_YEAR", default=2016, type=int, help="End year")
 parser.add_argument('-out', dest="OUTPUT_DIR", default="img/frames/", help="Output directory")
+parser.add_argument('-trans', dest="TRANSITION_FRAMES", default=0, type=int, help="Number of transition frames")
 args = parser.parse_args()
 
 # config
@@ -28,6 +30,8 @@ INPUT_FILE = args.INPUT_FILE
 OUTPUT_DIR = args.OUTPUT_DIR
 START_YEAR = args.START_YEAR
 END_YEAR = args.END_YEAR
+TRANSITION_FRAMES = args.TRANSITION_FRAMES
+
 BACKGROUND_IMAGE = 'img/worldmap.png'
 GRADIENT = [
     "#4B94D8", # blue
@@ -42,7 +46,6 @@ TARGET_HEIGHT = TARGET_WIDTH / 2
 LATLON_OFFSET = 0.8
 BLUR_RADIUS = 0
 RADIUS_RANGE = [0.2, 1.2]
-TRANSITION_FRAMES = 10
 
 # Add colors
 def hex2rgb(hex):
@@ -183,21 +186,25 @@ def dataToImg(filename, dataFrom, dataTo, amount):
 
 index = 1
 for i, days in enumerate(times):
-    if i < 0:
-        continue
     theDate = bd + datetime.timedelta(days=int(days))
     theYear = theDate.year
     theMonth = theDate.month
     if START_YEAR <= theYear <= END_YEAR:
-        if theYear==START_YEAR and theMonth<=1:
-            continue
-        dataFrom = tempData[i-1]
-        dataTo = tempData[i]
-        frames = TRANSITION_FRAMES
-        for f in range(frames):
+        if TRANSITION_FRAMES <= 0:
+            data = tempData[i]
             filename = "%sframe%s.png" % (OUTPUT_DIR, str(index).zfill(5))
-            dataToImg(filename, dataFrom, dataTo, 1.0*f/frames)
+            dataToImg(filename, data, data, 0)
             index += 1
+        else:
+            if theYear==START_YEAR and theMonth<=1:
+                continue
+            dataFrom = tempData[i-1]
+            dataTo = tempData[i]
+            frames = TRANSITION_FRAMES
+            for f in range(frames):
+                filename = "%sframe%s.png" % (OUTPUT_DIR, str(index).zfill(5))
+                dataToImg(filename, dataFrom, dataTo, 1.0*f/frames)
+                index += 1
     sys.stdout.write('\r')
     sys.stdout.write("%s%%" % round(1.0*i/t*100,1))
     sys.stdout.flush()

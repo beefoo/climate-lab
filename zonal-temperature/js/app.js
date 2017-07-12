@@ -15,7 +15,6 @@ var App = (function() {
     // Initialize
     this.time = 1;
     this.zone = 0.5;
-    this.dataKey = this.opt.dataKey;
 
     // Initialize controls
     var sliders = {
@@ -34,11 +33,9 @@ var App = (function() {
     };
     var controls = new Controls({sliders: sliders});
 
-
-
     // Initialize viz
-    this.map = new DataMap({el: "#pane-left", time: this.time, zone: this.zone});
-    this.graph = new DataGraph({el: "#pane-right", time: this.time, zone: this.zone});
+    this.map = new DataMap({el: "#map", time: this.time, zone: this.zone});
+    this.graph = new DataGraph({el: "#graph", time: this.time, zone: this.zone});
 
     this.loadData();
   };
@@ -53,29 +50,32 @@ var App = (function() {
   };
 
   App.prototype.onDataLoaded = function(data){
-    var d = data[this.dataKey];
-
-    this.data = d.data;
-    this.domain = d.domain;
+    this.data = data.zoneData;
+    this.domain = data.domain;
+    this.range = data.range;
 
     this.map.initZones(this.data.length);
+    this.map.initTime(this.data[0].length);
+    this.graph.initData(this.data, this.domain, this.range);
+    this.graph.updateZone(this.zone);
 
-    this.render();
+    // this.render();
   };
 
   App.prototype.onTimeChange = function(value) {
-    // this.map.updateTime(value);
+    this.map.updateTime(value);
     this.graph.updateTime(value);
   };
 
   App.prototype.onZoneChange = function(value) {
     this.map.updateZone(value);
+    this.graph.updateZone(value);
   };
 
   App.prototype.render = function(){
     var _this = this;
 
-    // this.map.render();
+    this.map.render();
     this.graph.render();
 
     requestAnimationFrame(function(){ _this.render(); });

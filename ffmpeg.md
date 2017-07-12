@@ -30,3 +30,9 @@ Increase frame rate from 10fps to 30fps with interpolation using [butterflow](ht
 ```
 butterflow -r 30 net_radiation_10fps.mp4
 ```
+
+Convert .mp4 to .webm
+
+```
+ffmpeg -i input.mp4 -c:v libvpx -b:v 1M -c:a libvorbis output.webm
+```

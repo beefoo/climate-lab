@@ -18,9 +18,9 @@ import sys
 # input
 parser = argparse.ArgumentParser()
 parser.add_argument('-in', dest="INPUT_FILE", default="data/gistemp1200_ERSSTv4.nc", help="Temperature input file")
-parser.add_argument('-start', dest="START_YEAR", default=1950, type=int, help="Start year")
+parser.add_argument('-start', dest="START_YEAR", default=1980, type=int, help="Start year")
 parser.add_argument('-end', dest="END_YEAR", default=2016, type=int, help="End year")
-parser.add_argument('-zones', dest="ZONES", default=12, type=int, help="Number of zones")
+parser.add_argument('-zones', dest="ZONES", default=9, type=int, help="Number of zones")
 parser.add_argument('-out', dest="OUTPUT_FILE", default="data/processed_data.json", help="Output file")
 args = parser.parse_args()
 
@@ -30,9 +30,7 @@ OUTPUT_FILE = args.OUTPUT_FILE
 START_YEAR = args.START_YEAR
 END_YEAR = args.END_YEAR
 ZONES = args.ZONES
-
-if 180.0/ZONES % 1 > 0:
-    print "Warning: zones not a divisor of 180"
+RANGE = (-6, 6)
 
 # Mean of list
 def mean(data):
@@ -51,9 +49,12 @@ lons = ds.variables['lon'][:] # float: longitude between -180 and 180
 times = ds.variables['time'][:] # int: days since 1/1/1800
 tempData = ds.variables['tempanomaly'][:] # short: surface temperature anomaly (K), e.g. tempData[time][lat][lon]
 
+if 1.0*len(lats)/ZONES % 1 > 0:
+    print "Warning: zones not a divisor of %s" % len(lats)
+
 # retrieve data from each zone
 data = []
-zoneSize = 180 / ZONES
+zoneSize = len(lats) / ZONES
 baseDate = "1800-01-01"
 bd = datetime.strptime(baseDate, "%Y-%m-%d")
 for zone in range(ZONES):
@@ -76,18 +77,20 @@ for zone in range(ZONES):
             zoneData.append(value)
     data.append(zoneData)
     print "Zone %s complete" % (zone+1)
+data = list(reversed(data))
 
 jsonData = {
-    "data": data,
-    "domain": [START_YEAR, END_YEAR]
+    "zoneData": data,
+    "domain": [START_YEAR, END_YEAR],
+    "range": RANGE
 }
 
 # Retrieve existing data if exists
-jsonOut = {}
+jsonOut = jsonData
 if os.path.isfile(args.OUTPUT_FILE):
     with open(args.OUTPUT_FILE) as f:
         jsonOut = json.load(f)
-jsonOut["temperature"] = jsonData
+        jsonOut.update(jsonData)
 
 # Write to file
 with open(args.OUTPUT_FILE, 'w') as f:
