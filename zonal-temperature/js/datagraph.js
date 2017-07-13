@@ -3,7 +3,7 @@
 var DataGraph = (function() {
   function DataGraph(options) {
     var defaults = {
-      margin: [0.02, 0.02, 0.02, 0.02]
+      margin: [0.1, 0.02, 0.1, 0.02]
     };
     this.opt = $.extend({}, defaults, options);
     this.init();
@@ -27,6 +27,8 @@ var DataGraph = (function() {
     this.data = data;
     this.domain = domain;
     this.range = range;
+
+    this.renderAxes();
   };
 
   DataGraph.prototype.loadListeners = function(){
@@ -64,7 +66,7 @@ var DataGraph = (function() {
 
   DataGraph.prototype.renderMarker = function(){
     this.marker.clear();
-    this.marker.lineStyle(4, 0xe8233c, 0.8);
+    this.marker.lineStyle(4, 0xf1a051, 0.8);
 
     var w = this.app.renderer.width;
     var h = this.app.renderer.height;
@@ -82,6 +84,38 @@ var DataGraph = (function() {
   };
 
   DataGraph.prototype.renderAxes = function(){
+    var _this = this;
+
+    // clear axes
+    this.axes.clear();
+    while(this.axes.children[0]) {
+      this.axes.removeChild(this.axes.children[0]);
+    }
+
+    var w = this.app.renderer.width;
+    var h = this.app.renderer.height;
+    var margin = this.opt.margin;
+    var mx0 = margin[0] * w;
+    var my0 = margin[1] * h;
+    var mx1 = margin[2] * w;
+    var my1 = margin[3] * h;
+    var cw = w - mx0 - mx1;
+    var ch = h - my0 - my1;
+
+    // draw y axis
+    this.axes.lineStyle(2, 0xc4ced4);
+    this.axes.moveTo(mx0, my1).lineTo(mx0, my1+ch);
+
+    // draw horizontal lines
+    var range = this.range;
+    var v = range[0];
+    while (v <= range[1]) {
+      var p = _this._dataToPoint(0, v);
+      if (v!=0) _this.axes.lineStyle(1, 0x56585c);
+      else _this.axes.lineStyle(2, 0xffffff);
+      _this.axes.moveTo(mx0, p[1]).lineTo(mx0+cw, p[1]);
+      v++;
+    }
 
   };
 
@@ -89,17 +123,25 @@ var DataGraph = (function() {
 
   };
 
+
+
   DataGraph.prototype.renderPlot = function(){
-    var _this = this;
-    var data = this.zoneData;
-    var len = data.length;
+    var data = this.zoneData[0];
+    var trend = this.zoneData[1];
 
     this.plot.clear();
     // while(this.plot.children[0]) {
     //   this.plot.removeChild(this.plot.children[0]);
     // }
 
-    this.plot.lineStyle(2, 0xFFFFFF);
+    this.renderPlotLine(data, 2, 0x56585c);
+    this.renderPlotLine(trend, 2, 0xf1a051);
+  };
+
+  DataGraph.prototype.renderPlotLine = function(data, w, color){
+    var _this = this;
+    var len = data.length;
+    this.plot.lineStyle(w, color);
 
     _.each(data, function(d, i){
       var dx = i / (len-1);

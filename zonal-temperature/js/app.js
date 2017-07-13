@@ -13,7 +13,7 @@ var App = (function() {
     var _this = this;
 
     // Initialize
-    this.time = 1;
+    this.time = 0.5;
     this.zone = 0.5;
 
     // Initialize controls
@@ -36,6 +36,7 @@ var App = (function() {
     // Initialize viz
     this.map = new DataMap({el: "#map", time: this.time, zone: this.zone});
     this.graph = new DataGraph({el: "#graph", time: this.time, zone: this.zone});
+    this.label = new Label({el: "#label", time: this.time, zone: this.zone});
 
     this.loadData();
   };
@@ -53,11 +54,13 @@ var App = (function() {
     this.data = data.zoneData;
     this.domain = data.domain;
     this.range = data.range;
+    var frames = this.data[0][0].length;
 
     this.map.initZones(this.data.length);
-    this.map.initTime(this.data[0].length);
+    this.map.initTime(frames);
     this.graph.initData(this.data, this.domain, this.range);
     this.graph.updateZone(this.zone);
+    this.label.initTime(this.domain, frames);
 
     // this.render();
   };
@@ -65,6 +68,7 @@ var App = (function() {
   App.prototype.onTimeChange = function(value) {
     this.map.updateTime(value);
     this.graph.updateTime(value);
+    this.label.updateTime(value);
   };
 
   App.prototype.onZoneChange = function(value) {
