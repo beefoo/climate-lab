@@ -41,9 +41,22 @@ h2 {
 .slider.right {
   left: 50%;
 }
-.pane video,
-.pane img {
+.pane .temperature {
   width: 100%;
+  height: auto;
+}
+.pane .key {
+  position: absolute;
+  width: 100%;
+  height: 100px;
+  bottom: -100px;
+  text-align: center;
+  left: 0;
+}
+.pane .key img {
+  display: inline-block;
+  width: 100%;
+  max-width: 600px;
   height: auto;
 }
 .controls {
@@ -94,9 +107,12 @@ h2 {
   position: absolute;
   color: #fff;
   text-align: center;
+  line-height: 1;
 }
-.label span {
-
+.label small {
+  font-size: 1.4rem;
+  color: #6d6f71;
+  line-height: 1;
 }
 
 .sliders {

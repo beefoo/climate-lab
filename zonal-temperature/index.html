@@ -16,23 +16,24 @@
           <!-- <video id="video-temperature" autoplay loop crossorigin="anonymous">
             <source src="https://s3.amazonaws.com/brianfoo-amnh/temperature_1980-2016.mp4" type='video/mp4'>
           </video> -->
-          <img id="video-temperature" src="img/map/frame00223.jpg" />
+          <img id="video-temperature" class="temperature" src="img/map/frame00223.jpg" />
           <div class="helper"></div>
+          <div class="key"><img src="img/zonal_color_key.png" alt="Color key for temperature map" /></div>
         </div>
       </div>
       <div id="pane-right" class="pane right">
         <div id="graph" class="graph"></div>
       </div>
-      <div class="label" id="label"><h1>Temperature in <span id="month-label"></span></h1></div>
+      <div class="label" id="label"><h1><span id="month-label"></span><br /><small>Regional temperature differences from 1951 to 1980 average</small></h1></div>
     </div>
     <div id="controls" class="controls">
       <div class="sliders">
         <div class="slider left">
-          <label for="zone">Slide to change zone</label>
+          <label for="zone">Slide to change the region</label>
           <div id="zone" class="slider-vert zone"></div>
         </div>
         <div class="slider right">
-          <label for="time">Slide to change month</label>
+          <label for="time">Slide to change the time</label>
           <div id="time" class="slider-horz zone"></div>
         </div>
       </div>
