@@ -1,0 +1,61 @@
+<!doctype html>
+<html class="no-js" lang="">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>Climate Lab / Data Globe</title>
+  <link rel="stylesheet" href="../shared/css/normalize.css">
+  <link rel="stylesheet" href="../shared/css/base.css">
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body style='margin: 0px; background-color: #000000; overflow: hidden;'>
+  <script src="../shared/js/jquery-3.2.1.min.js"></script>
+  <script src="../shared/js/three.min.js"></script>
+  <script src="../shared/js/three/OrbitControls.js"></script>
+  <script>
+    var renderer  = new THREE.WebGLRenderer({
+      antialias  : true
+    });
+    renderer.setSize( window.innerWidth, window.innerHeight );
+    document.body.appendChild( renderer.domElement );
+    renderer.shadowMapEnabled  = true
+
+    var scene  = new THREE.Scene();
+    var camera  = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.01, 100 );
+    camera.position.z = 1;
+
+    var light  = new THREE.AmbientLight( 0x222222 )
+    scene.add( light )
+
+    var light  = new THREE.DirectionalLight( 0xffffff, 1 )
+    light.position.set(5,5,5)
+    scene.add( light )
+
+    var earthGeo = new THREE.SphereGeometry(0.25, 32, 32);
+    var earthMat = new THREE.MeshBasicMaterial();
+    var earth = new THREE.Mesh(earthGeo, earthMat);
+    scene.add(earth);
+
+    var earthTextureLoader = new THREE.TextureLoader();
+    earthTextureLoader.load('img/surface_temperature.png', function (texture) {
+      earth.material.map = texture;
+      earth.material.map.needsUpdate = true;
+      renderer.render( scene, camera );
+    });
+
+    var controls = new THREE.OrbitControls(camera, renderer.domElement);
+
+    function animate(){
+      controls.update();
+      requestAnimationFrame(function(){ animate(); });
+    }
+
+    animate();
+
+
+  </script>
+
+
+
+</body>
+</html>
