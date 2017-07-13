@@ -76,6 +76,19 @@ h2 {
   outline: 1px solid transparent;
   box-shadow: 0 0 1px rgba(0, 0, 0, 0.05);
 }
+/*.map .helper:after {
+  content: "➞";
+  display: block;
+  position: absolute;
+  top: 50%;
+  height: 20px;
+  margin-top: -10px;
+  width: 40px;
+  right: -40px;
+  color: #fff;
+  font-size: 3rem;
+  line-height: 20px;
+}*/
 
 .label {
   position: absolute;

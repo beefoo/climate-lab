@@ -73,7 +73,15 @@
       rb = ab + amount * (bb - ab);
 
     return '#' + ((1 << 24) + (rr << 16) + (rg << 8) + rb | 0).toString(16).slice(1);
-  }
+  };
+
+  UTIL.lerpList = function(l1, l2, amount) {
+    var ll = [];
+    for (var i=0; i<l1.length; i++) {
+      ll.push(UTIL.lerp(l1[i], l2[i], amount));
+    }
+    return ll;
+  };
 
   UTIL.lim = function(num, min, max) {
     if (num < min) return min;

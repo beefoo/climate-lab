@@ -35,6 +35,13 @@ var DataGraph = (function() {
     this.renderAxes();
   };
 
+  DataGraph.prototype.lerpData = function(d1, d2, amount){
+    return [
+      UTIL.lerpList(d1[0], d2[0], amount),
+      UTIL.lerpList(d1[1], d2[1], amount)
+    ]
+  };
+
   DataGraph.prototype.loadListeners = function(){
     var _this = this;
 
@@ -200,10 +207,36 @@ var DataGraph = (function() {
     var dataLen = this.data.length;
     if (dataLen <= 0) return false;
 
+    var p = value * (dataLen-1);
     var i = Math.round(value * (dataLen-1));
-    this.zone = value;
-    this.zoneData = this.data[i];
+    var diff = p - i;
 
+    if (Math.abs(diff) > 0) {
+      var d1 = false;
+      var d2 = false;
+      var amount = 0;
+
+      if (diff < 0 && i>0) {
+        amount = UTIL.norm(diff, -0.5, 0);
+        d1 = this.data[i-1];
+        d2 = this.data[i];
+      } else if (diff > 0 && i<dataLen-1) {
+        amount = UTIL.norm(diff, 0, 5);
+        d1 = this.data[i];
+        d2 = this.data[i+1];
+      }
+
+      if (d1 && d2) {
+        this.zoneData = this.lerpData(d1, d2, amount);
+      } else {
+        this.zoneData = this.data[i];
+      }
+
+    } else {
+      this.zoneData = this.data[i];
+    }
+
+    this.zone = value;
     this.renderPlot();
   };
 
