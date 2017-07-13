@@ -3,7 +3,11 @@
 var DataGraph = (function() {
   function DataGraph(options) {
     var defaults = {
-      margin: [0.1, 0.02, 0.1, 0.02]
+      margin: [0.1, 0.02, 0.1, 0.1],
+      axisTextStyle: {
+        fill: "#d2d1dd",
+        fontSize: 18
+      }
     };
     this.opt = $.extend({}, defaults, options);
     this.init();
@@ -101,19 +105,51 @@ var DataGraph = (function() {
     var my1 = margin[3] * h;
     var cw = w - mx0 - mx1;
     var ch = h - my0 - my1;
+    var textStyle = this.opt.axisTextStyle;
 
     // draw y axis
     this.axes.lineStyle(2, 0xc4ced4);
-    this.axes.moveTo(mx0, my1).lineTo(mx0, my1+ch);
+    this.axes.moveTo(mx0, my0).lineTo(mx0, my0+ch);
 
     // draw horizontal lines
     var range = this.range;
     var v = range[0];
     while (v <= range[1]) {
       var p = _this._dataToPoint(0, v);
+
+      // draw line
       if (v!=0) _this.axes.lineStyle(1, 0x56585c);
       else _this.axes.lineStyle(2, 0xffffff);
       _this.axes.moveTo(mx0, p[1]).lineTo(mx0+cw, p[1]);
+
+      // draw label
+      if (v%2===0) {
+        var text = v + '°C';
+        if (v > 0) text = "+"+text;
+        var label = new PIXI.Text(text, textStyle);
+        label.x = p[0] - 10;
+        label.y = p[1];
+        label.anchor.set(1, 0.5);
+        _this.axes.addChild(label);
+      }
+
+      v++;
+    }
+
+    // draw x axis
+    var domain = this.domain;
+    v = domain[0];
+    while (v <= domain[1]) {
+      // draw label
+      if (v%10===0 || v===domain[1] || v===domain[0]) {
+        var px = UTIL.norm(v, domain[0], domain[1]);
+        var p = _this._dataToPoint(px, range[0]);
+        var label = new PIXI.Text(v, textStyle);
+        label.x = p[0];
+        label.y = p[1] + 35;
+        label.anchor.set(0.5, 1);
+        _this.axes.addChild(label);
+      }
       v++;
     }
 

@@ -73,12 +73,17 @@ h2 {
   top: 0;
   display: none;
   box-sizing: border-box;
+  outline: 1px solid transparent;
+  box-shadow: 0 0 1px rgba(0, 0, 0, 0.05);
 }
 
 .label {
   position: absolute;
   color: #fff;
   text-align: center;
+}
+.label span {
+
 }
 
 .sliders {
