@@ -5,7 +5,6 @@ import csv
 from datetime import datetime, timedelta
 import json
 import math
-import matplotlib.pyplot as plt
 import os
 import sys
 
@@ -24,7 +23,9 @@ import sys
 BASELINE = 13.9
 
 PALEO_DATA_FILE = "data/glhad_eiv_composite.csv"
-INSTRUMENT_DATA_FILE = "data/188001-201705.csv"
+# INSTRUMENT_DATA_FILE = "data/188001-201705.csv"
+INSTRUMENT_DATA_FILE = "data/1880-2017.csv"
+OUTPUT_FILE = "data/processed_data.json"
 
 def dateToSeconds(date):
     (year, month, day) = date
@@ -110,9 +111,34 @@ combinedData = paleoData + instrData
 
 # convert date to int
 for i,d in enumerate(combinedData):
-    combinedData[i]["Date"] = dateToSeconds(d["Date"])
+    # combinedData[i]["Date"] = dateToSeconds(d["Date"])
+    combinedData[i]["Date"] = d["Date"][0]
 
+# plot data
 xs = [d["Date"] for d in combinedData]
-ys = [d["Value"] for d in combinedData]
-plt.plot(xs, ys)
-plt.show()
+ys = [d["Abs"] for d in combinedData]
+# import matplotlib.pyplot as plt
+# plt.plot(xs, ys)
+# plt.show()
+
+data = [round(d["Abs"],3) for d in combinedData]
+dataDomain = [xs[0], xs[-1]]
+dataRange = [math.floor(min(ys)), math.ceil(max(ys))]
+
+jsonData = {
+    "data": data,
+    "domain": dataDomain,
+    "range": dataRange
+}
+
+# Retrieve existing data if exists
+jsonOut = {}
+if os.path.isfile(OUTPUT_FILE):
+    with open(OUTPUT_FILE) as f:
+        jsonOut = json.load(f)
+jsonOut["temperature"] = jsonData
+
+# Write to file
+with open(OUTPUT_FILE, 'w') as f:
+    json.dump(jsonOut, f)
+    print "Wrote %s items to %s" % (len(data), OUTPUT_FILE)
