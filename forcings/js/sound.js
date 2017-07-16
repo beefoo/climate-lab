@@ -5,7 +5,7 @@ var Sound = (function() {
     var defaults = {
       soundDir: 'audio/orchestral_harp-mp3/',
       soundExt: '.mp3',
-      notes: ['E3', 'Gb3', 'Ab3', 'A3', 'B3', 'Db3', 'Eb3', 'E4', 'Gb4', 'Ab4', 'A4', 'B4', 'Db4'],
+      notes: ['Db3', 'Eb3', 'E3', 'Gb3', 'Ab3', 'A3', 'B3', 'Db4', 'E4', 'Gb4', 'Ab4', 'A4', 'B4'],
       stereo: 0.0
     };
     this.opt = $.extend({}, defaults, options);

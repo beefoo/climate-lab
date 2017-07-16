@@ -4,7 +4,7 @@ var DataViz = (function() {
   function DataViz(options) {
     var defaults = {
       el: '#main',
-      transitionMs: 500,
+      transitionMs: 3000,
       labelTextStyle: {
         fill: "#ffffff",
         fontSize: 24,
@@ -41,8 +41,9 @@ var DataViz = (function() {
     this.active = this.opt.active;
 
     this.prevData = [];
+    this.lastData = [];
+    this.lastColor = 0;
     this.data = [];
-    this.dataT = [];
     this.cords = [];
     this.label = '';
     this.prevProgress = 0;
@@ -142,9 +143,10 @@ var DataViz = (function() {
     this.refPlot = new PIXI.Graphics();
     this.plot = new PIXI.Graphics();
     this.plotProgress = new PIXI.Graphics();
+    this.plotFade = new PIXI.Graphics();
     this.labels = new PIXI.Graphics();
 
-    this.app.stage.addChild(this.axes, this.refPlot, this.plot, this.plotProgress, this.labels);
+    this.app.stage.addChild(this.axes, this.refPlot, this.plot, this.plotProgress, this.plotFade, this.labels);
 
     this.$el.append(this.app.view);
   };
@@ -153,7 +155,6 @@ var DataViz = (function() {
     this.app.renderer.resize(this.$el.width(), this.$el.height());
     this.renderAxes();
     this.renderRef();
-    this.renderPlot();
     // this.renderLabels();
     this.renderProgress();
   };
@@ -175,7 +176,6 @@ var DataViz = (function() {
       this.checkForPluck(this.prevProgress, this.progress);
       this.pluck();
       this.renderAxes();
-      this.renderPlot();
       this.renderProgress();
 
     // clear progress
@@ -310,16 +310,16 @@ var DataViz = (function() {
     this.labels.addChild(label);
   };
 
-  DataViz.prototype.renderLine = function(g, data, lineW, color){
+  DataViz.prototype.renderLine = function(g, data, lineW, color, alpha){
     var _this = this;
+    alpha = alpha || 1;
 
     // clear labels
     g.clear();
     while(g.children[0]) {
       g.removeChild(g.children[0]);
     }
-
-    g.lineStyle(lineW, color);
+    g.lineStyle(lineW, color, alpha);
 
     var domain = this.domain;
     var range = this.range;
@@ -334,15 +334,10 @@ var DataViz = (function() {
     });
   };
 
-  DataViz.prototype.renderPlot = function(){
-    if (this.className === "human") this.renderLine(this.plot, this.dataT, 3, 0xf1a051);
-    else this.renderLine(this.plot, this.dataT, 3, 0x80CBC4);
-  };
-
   DataViz.prototype.renderProgress = function(){
     var len = this.data.length-1;
     var progress = this.progress;
-    var data = _.filter(this.dataT, function(v, i){ return (i/len) <= progress; });
+    var data = _.filter(this.data, function(v, i){ return (i/len) <= progress; });
 
     var color = 0xc0f8f3;
     if (this.className === "human") color = 0xffe1c3;
@@ -355,6 +350,14 @@ var DataViz = (function() {
     var dp = data[data.length-1];
     var p = this._dataToPoint(dp[0], dp[1]);
     this.plotProgress.drawCircle(p[0], p[1], 5);
+
+    this.lastData = data;
+    this.lastColor = color;
+
+    if (this.prevData.length && progress < 0.5) {
+      var alpha = 1.0 - progress * 2;
+      this.renderLine(this.plotFade, this.prevData, 3, this.prevColor, alpha);
+    }
   };
 
   DataViz.prototype.renderRef = function(){
@@ -395,17 +398,21 @@ var DataViz = (function() {
 
   DataViz.prototype.setData = function(data){
     this.label = data.label;
-    this.prevData = this.data.slice(0);
+    this.prevData = this.lastData.slice(0);
+    this.prevColor = this.lastColor;
     this.data = data.data.slice(0);
     this.className = data.className;
+
+    // reset progress
+    this.prevProgress = 0;
+    this.progress = 0;
 
     this.transitionStart = new Date();
 
     this.loadCords();
     this.renderAxes();
     this.renderRef();
-    this.renderPlot();
-    // this.renderLabels();
+
     this.renderProgress();
   };
 
@@ -415,10 +422,9 @@ var DataViz = (function() {
   };
 
   DataViz.prototype.transitionData = function(){
-    this.dataT = this.data.slice(0);
 
-    // data must be same length
-    if (this.prevData.length != this.data.length || !this.transitionStart) return false;
+    // transiton start must be defined
+    if (!this.transitionStart) return false;
 
     // get time since transition start
     var transitionMs = this.opt.transitionMs;
@@ -427,16 +433,20 @@ var DataViz = (function() {
 
     // we are transitioning
     if (timeSince <= transitionMs) {
+      // set progress for progress line
       var progress = timeSince / transitionMs;
       progress = UTIL.easeInOutSin(progress);
-      var data = [];
-      var d0 = this.prevData;
-      var d1 = this.data;
-      _.each(d0, function(v, i){
-        var y = UTIL.lerp(v[1], d1[i][1], progress);
-        data.push([v[0], y]);
-      });
-      this.dataT = data;
+      this.setProgress(progress);
+
+
+      // var data = [];
+      // var d0 = this.prevData;
+      // var d1 = this.data;
+      // _.each(d0, function(v, i){
+      //   var y = UTIL.lerp(v[1], d1[i][1], progress);
+      //   data.push([v[0], y]);
+      // });
+      // this.dataT = data;
     }
   };
 

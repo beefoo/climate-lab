@@ -5,8 +5,9 @@ var Sound = (function() {
     var defaults = {
       soundDir: 'audio/orchestral_harp-mp3/',
       soundExt: '.mp3',
-      notes: ['E3', 'Gb3', 'Ab3', 'A3', 'B3', 'Db3', 'Eb3', 'E4', 'Gb4', 'Ab4', 'A4', 'B4', 'Db4'],
-      stereo: 0.0
+      notes: ['Db3', 'Eb3', 'E3', 'Gb3', 'Ab3', 'A3', 'B3', 'Db4', 'E4', 'Gb4', 'Ab4', 'A4', 'B4'],
+      stereo: 0.0,
+      waitMs: 100
     };
     this.opt = $.extend({}, defaults, options);
     this.init();
@@ -15,7 +16,6 @@ var Sound = (function() {
   Sound.prototype.init = function(){
     var _this = this;
     this.sounds = [];
-    this.prevSounds = [];
 
     var dir = this.opt.soundDir;
     var ext = this.opt.soundExt;
@@ -24,18 +24,31 @@ var Sound = (function() {
 
     _.each(notes, function(n){
       var filename = dir + n + ext;
-      _this.sounds.push(new Howl({ src: [filename], stereo: stereo }));
-      _this.prevSounds.push(false);
+      var soundData = {
+        player: new Howl({ src: [filename], stereo: stereo }),
+        prevSound: false,
+        lastPlayed: false
+      };
+      _this.sounds.push(soundData);
     });
   };
 
   Sound.prototype.play = function(percent){
     var len = this.sounds.length;
     var i = Math.floor((len - 1) * percent);
-    if (this.prevSounds[i]) {
-      this.sounds[i].fade(1.0, 0.0, 10, this.prevSounds[i]);
+
+    // don't play same note right after it was played
+    var now = new Date();
+    var waitMs = this.opt.waitMs;
+    if (!this.sounds[i].lastPlayed || (now-this.sounds[i].lastPlayed) > 100) {
+      // fade out prev sound
+      // if (this.sounds[i].prevSound) {
+      //   this.sounds[i].player.fade(1.0, 0.0, 10, this.sounds[i].prevSound);
+      // }
+      this.sounds[i].prevSound = this.sounds[i].player.play();
+      this.sounds[i].lastPlayed = now;
+      // console.log(this.opt.notes[i])
     }
-    this.prevSounds[i] = this.sounds[i].play();
 
   };
 
