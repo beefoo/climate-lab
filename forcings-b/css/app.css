@@ -164,3 +164,48 @@ h2 {
   height: 50px;
   line-height: 50px;
 }
+
+/* Styles for dual mode */
+.app {
+  display: none;
+}
+.app.default,
+.app.sender,
+.app.receiver {
+  display: block;
+}
+
+.app.sender .panes {
+  display: none;
+}
+.app.sender .controls {
+  height: 100%;
+  top: 0;
+  bottom: auto;
+}
+.app.sender .buttons {
+  height: 200px;
+  position: absolute;
+  top: 50%;
+  margin-top: -100px;
+}
+
+.app.receiver .panes {
+  height: 100%;
+  max-height: 700px;
+}
+.app.receiver .controls {
+  display: none;
+}
+
+@media only screen and (min-height: 700px) {
+  .app.receiver .panes {
+    top: 50%;
+    margin-top: -350px;
+  }
+}
+@media only screen and (min-width: 1800px) {
+  .app.receiver {
+    transform: scale(1.3);
+  }
+}

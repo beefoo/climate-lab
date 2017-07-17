@@ -59,6 +59,18 @@
     return Math.floor(value / nearest) * nearest;
   };
 
+  UTIL.getQueryVariable = function(variable) {
+    var query = window.location.search.substring(1);
+    var vars = query.split('&');
+    for (var i = 0; i < vars.length; i++) {
+      var pair = vars[i].split('=');
+      if (decodeURIComponent(pair[0]) == variable) {
+        return decodeURIComponent(pair[1]);
+      }
+    }
+    return false;
+  };
+
   UTIL.lerp = function(a, b, percent) {
     return (1.0*b - a) * percent + a;
   };
@@ -129,6 +141,17 @@
     var s = num+"";
     while (s.length < size) s = "0" + s;
     return s;
+  };
+
+  UTIL.parseQuery = function() {
+    var qstr = window.location.search.substring(1);
+    var query = {};
+    var a = (qstr[0] === '?' ? qstr.substr(1) : qstr).split('&');
+    for (var i = 0; i < a.length; i++) {
+      var b = a[i].split('=');
+      query[decodeURIComponent(b[0])] = decodeURIComponent(b[1] || '');
+    }
+    return query;
   }
 
   UTIL.round = function(value, precision) {

@@ -15,8 +15,25 @@ var App = (function() {
     this.data = [];
     this.dataIndex = -1;
 
-    this.loadData();
+    this.initMode();
+    if (this.mode !== 'sender') this.loadData();
     this.loadListeners();
+  };
+
+  App.prototype.initMode = function(){
+    var q = UTIL.parseQuery();
+
+    this.mode = 'default';
+
+    if (_.has(q, 'mode')) this.mode = q.mode;
+
+    $('.app').addClass(this.mode);
+
+    // pop out a new window if receiver
+    if (this.mode==='receiver') {
+      var url = window.location.href.split('?')[0] + '?mode=sender';
+      window.open(url);
+    }
   };
 
   App.prototype.loadData = function(){
@@ -31,9 +48,17 @@ var App = (function() {
   App.prototype.loadListeners = function(){
     var _this = this;
 
-    $('.factor-button').on('click', function(){
-      _this.onFactorClick($(this));
-    });
+    if (this.mode!=='sender') {
+      crosstab.on('factor.select', function(message) {
+        _this.selectFactor(message.data);
+      });
+    }
+
+    if (this.mode!=='receiver') {
+      $('.factor-button').on('click', function(){
+        _this.onFactorClick($(this));
+      });
+    }
   };
 
   App.prototype.onDataLoaded = function(data){
@@ -55,12 +80,9 @@ var App = (function() {
   App.prototype.onFactorClick = function($el) {
     $('.factor-button').removeClass('selected');
     $el.addClass('selected');
-
     var index = parseInt($el.attr('data-value'));
-    var factorData = this.data[index];
 
-    this.dataViz.setData(factorData);
-    this.titles.activate(index);
+    crosstab.broadcast('factor.select', index);
   };
 
   App.prototype.render = function(){
@@ -69,6 +91,12 @@ var App = (function() {
     this.dataViz.render();
 
     requestAnimationFrame(function(){ _this.render(); });
+  };
+
+  App.prototype.selectFactor = function(index) {
+    var factorData = this.data[index];
+    this.dataViz.setData(factorData);
+    this.titles.activate(index);
   };
 
   return App;
