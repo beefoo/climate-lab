@@ -12,28 +12,35 @@ var App = (function() {
   App.prototype.init = function(){
     var _this = this;
 
-    // Initialize controls
-    var sliders = {
-      "#scale": {
-        orientation: "horizontal", min: -0.1, max: 1, step: 0.001, value: 0, range: "min",
-        start: function( event, ui ) { _this.transitioning = true; },
-        slide: function(e, ui){
-          if (ui.value < 0) return false;
-          _this.onScale(ui.value);
-        },
-        stop: function( event, ui ) { _this.transitioning = false; }
-      }
-    };
-    var controls = new Controls({sliders: sliders});
+    this.initMode();
 
     // Set initial scale
     this.scale = 0.0;
     this.dataKey = this.opt.dataKey;
 
-    // Initialize viz and spinners
-    this.viz = new DataViz({el: "#pane", enableSound: this.opt.enableSound});
+    // Initialize viz
+    if (this.mode !== 'sender') {
+      this.viz = new DataViz({el: "#pane", enableSound: this.opt.enableSound});
+      this.loadData();
+    }
 
-    this.loadData();
+    this.loadListeners();
+  };
+
+  App.prototype.initMode = function(){
+    var q = UTIL.parseQuery();
+
+    this.mode = 'default';
+
+    if (_.has(q, 'mode')) this.mode = q.mode;
+
+    $('.app').addClass(this.mode);
+
+    // pop out a new window if receiver
+    if (this.mode==='receiver') {
+      var url = window.location.href.split('?')[0] + '?mode=sender';
+      window.open(url);
+    }
   };
 
   App.prototype.loadData = function(){
@@ -43,6 +50,32 @@ var App = (function() {
       console.log('Data loaded.');
       _this.onDataLoaded(data);
     });
+  };
+
+  App.prototype.loadListeners = function(){
+    var _this = this;
+
+    if (this.mode!=='sender') {
+      crosstab.on('scale.change', function(message) {
+        _this.onScale(message.data);
+      });
+    }
+
+    if (this.mode!=='receiver') {
+      // Initialize controls
+      var sliders = {
+        "#scale": {
+          orientation: "horizontal", min: -0.1, max: 1, step: 0.001, value: this.scale, range: "min",
+          slide: function(e, ui){
+            if (ui.value < 0) return false;
+            // _this.onScale(ui.value);
+            crosstab.broadcast('scale.change', ui.value);
+          }
+        }
+      };
+      var controls = new Controls({sliders: sliders});
+    }
+
   };
 
   App.prototype.onDataLoaded = function(data){

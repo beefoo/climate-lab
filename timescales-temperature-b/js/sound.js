@@ -17,7 +17,7 @@ var Sound = (function() {
       sprite: sprites
     });
     this.notes = _.keys(sprites);
-    console.log(this.notes)
+    // console.log(this.notes)
   };
 
   Sound.prototype.play = function(percent){

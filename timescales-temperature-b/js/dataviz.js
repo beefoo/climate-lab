@@ -175,7 +175,7 @@ var DataViz = (function() {
   DataViz.prototype.renderLabels = function(){
     var domain = this.domain;
     var textStyle = this.opt.labelTextStyle;
-    var text = "Annual Global Land and Ocean Temperature Anomalies";
+    var text = "Annual Global temperature differences from the 20th century average";
     if (domain[0]==domain[1]) text += " ("+domain[0]+")";
     else text += " ("+domain[0]+"-"+domain[1]+")";
 

@@ -51,7 +51,6 @@ h2 {
   height: 10px;
   position: relative;
 }
-
 .ui-slider {
   background: #004D40;
   margin: 20px 0 40px;
@@ -113,4 +112,58 @@ h2 {
   height: 20px;
   left: calc(50% - 1px);
   background: #004D40;
+}
+
+
+/* Styles for dual mode */
+.app {
+  display: none;
+}
+.app.default,
+.app.sender,
+.app.receiver {
+  display: block;
+}
+
+.app.sender .panes {
+  display: none;
+}
+.app.sender .controls {
+  height: 100%;
+  top: 0;
+  bottom: auto;
+}
+.app.sender .sliders {
+  height: 200px;
+  top: 50%;
+  margin-top: -100px;
+}
+.app.sender .slider-horz {
+  width: 100%;
+  height: 20px;
+  position: relative;
+}
+.app.sender .ui-slider-horizontal .ui-slider-handle {
+  height: 60px;
+  width: 40px;
+  margin-top: -30px;
+}
+.app.sender .ui-slider-range-min {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 20px;
+  background: #f7941d;
+}
+.app.sender label {
+  font-size: 2rem;
+  margin: 0 0 3rem;
+  display: block;
+}
+
+.app.receiver .panes {
+  height: 100%;
+}
+.app.receiver .controls {
+  display: none;
 }
