@@ -16,29 +16,33 @@ var App = (function() {
     this.time = 0.5;
     this.zone = 0.5;
 
-    // Initialize controls
-    var sliders = {
-      "#zone": {
-        orientation: "vertical", min: 0, max: 1, step: 0.001, value: this.zone,
-        slide: function(e, ui){
-          _this.onZoneChange(1-ui.value);
-        }
-      },
-      "#time": {
-        orientation: "horizontal", min: 0, max: 1, step: 0.001, value: this.time,
-        slide: function(e, ui){
-          _this.onTimeChange(ui.value);
-        }
-      }
-    };
-    var controls = new Controls({sliders: sliders});
+    this.initMode();
 
     // Initialize viz
-    this.map = new DataMap({el: "#map", time: this.time, zone: this.zone});
-    this.graph = new DataGraph({el: "#graph", time: this.time, zone: this.zone});
-    this.label = new Label({el: "#label", time: this.time, zone: this.zone});
+    if (this.mode !== 'sender') {
+      this.map = new DataMap({el: "#map", time: this.time, zone: this.zone});
+      this.graph = new DataGraph({el: "#graph", time: this.time, zone: this.zone});
+      this.label = new Label({el: "#label", time: this.time, zone: this.zone});
+      this.loadData();
+    }
 
-    this.loadData();
+    this.loadListeners();
+  };
+
+  App.prototype.initMode = function(){
+    var q = UTIL.parseQuery();
+
+    this.mode = 'default';
+
+    if (_.has(q, 'mode')) this.mode = q.mode;
+
+    $('.app').addClass(this.mode);
+
+    // pop out a new window if receiver
+    if (this.mode==='receiver') {
+      var url = window.location.href.split('?')[0] + '?mode=sender';
+      window.open(url);
+    }
   };
 
   App.prototype.loadData = function(){
@@ -48,6 +52,40 @@ var App = (function() {
       console.log('Data loaded.');
       _this.onDataLoaded(data);
     });
+  };
+
+  App.prototype.loadListeners = function(){
+    var _this = this;
+
+    if (this.mode!=='sender') {
+      crosstab.on('zone.change', function(message) {
+        _this.onZoneChange(message.data);
+      });
+      crosstab.on('time.change', function(message) {
+        _this.onTimeChange(message.data);
+      });
+    }
+
+    if (this.mode!=='receiver') {
+      // Initialize controls
+      var sliders = {
+        "#zone": {
+          orientation: "vertical", min: 0, max: 1, step: 0.001, value: this.zone,
+          slide: function(e, ui){
+            // _this.onZoneChange(1-ui.value);
+            crosstab.broadcast('zone.change', 1-ui.value);
+          }
+        },
+        "#time": {
+          orientation: "horizontal", min: 0, max: 1, step: 0.001, value: this.time,
+          slide: function(e, ui){
+            // _this.onTimeChange(ui.value);
+            crosstab.broadcast('time.change', ui.value);
+          }
+        }
+      };
+      var controls = new Controls({sliders: sliders});
+    }
   };
 
   App.prototype.onDataLoaded = function(data){
