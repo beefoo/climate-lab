@@ -21,7 +21,7 @@ var App = (function() {
     // Initialize controls
     var sliders = {
       "#slider": {
-        orientation: "horizontal", min: 0, max: 100, step: 0.1, value: 50,
+        orientation: "horizontal", min: 0, max: 1, step: 0.001, value: 0.5, gamepad: 1,
         slide: function(e, ui){
           _this.onSlide(ui.value);
         }
@@ -44,8 +44,8 @@ var App = (function() {
   };
 
   App.prototype.onSlide = function(value) {
-    var left = value;
-    var width = 100 - value;
+    var left = value * 100;
+    var width = (1 - value) * 100;
 
     $('.image-right').css({
       left: left + '%',

@@ -35,15 +35,6 @@ var Controls = (function() {
     // if (!('ongamepadconnected' in window)) return false;
     var _this = this;
 
-    // var gamepads = navigator.getGamepads ? navigator.getGamepads() : (navigator.webkitGetGamepads ? navigator.webkitGetGamepads() : []);
-    // // console.log(gamepads)
-    // $.each(gamepads, function(i, gamepad){
-    //   if (gamepad) {
-    //     console.log("Gamepad connected", gamepad);
-    //     _this.initGamepad(gamepads[i]);
-    //   }
-    // });
-
     window.addEventListener("gamepadconnected", function(e){
       console.log("Gamepad connected", e.gamepad);
       _this.initGamepad(e.gamepad);

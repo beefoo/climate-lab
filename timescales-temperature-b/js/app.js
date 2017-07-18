@@ -65,7 +65,7 @@ var App = (function() {
       // Initialize controls
       var sliders = {
         "#scale": {
-          orientation: "horizontal", min: -0.1, max: 1, step: 0.001, value: this.scale, range: "min",
+          orientation: "horizontal", min: -0.1, max: 1, step: 0.001, value: this.scale, range: "min", gamepad: 1,
           slide: function(e, ui){
             if (ui.value < 0) return false;
             // _this.onScale(ui.value);
