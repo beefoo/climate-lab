@@ -70,14 +70,14 @@ var App = (function() {
       // Initialize controls
       var sliders = {
         "#zone": {
-          orientation: "vertical", min: 0, max: 1, step: 0.001, value: this.zone,
+          orientation: "vertical", min: 0, max: 1, step: 0.001, value: this.zone, gamepad: 0,
           slide: function(e, ui){
             // _this.onZoneChange(1-ui.value);
             crosstab.broadcast('zone.change', 1-ui.value);
           }
         },
         "#time": {
-          orientation: "horizontal", min: 0, max: 1, step: 0.001, value: this.time,
+          orientation: "horizontal", min: 0, max: 1, step: 0.001, value: this.time, gamepad: 1,
           slide: function(e, ui){
             // _this.onTimeChange(ui.value);
             crosstab.broadcast('time.change', ui.value);
