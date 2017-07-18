@@ -223,9 +223,11 @@ h2 {
   display: block;
 }
 
-.app.receiver .panes {
+.app.receiver .panes,
+.app.gamepad .panes {
   height: 100%;
 }
-.app.receiver .controls {
+.app.receiver .controls,
+.app.gamepad .controls {
   display: none;
 }
