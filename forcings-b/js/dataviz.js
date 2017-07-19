@@ -339,8 +339,8 @@ var DataViz = (function() {
     var progress = this.progress;
     var data = _.filter(this.data, function(v, i){ return (i/len) <= progress; });
 
-    var color = 0xc0f8f3;
-    if (this.className === "human") color = 0xffe1c3;
+    var color = 0x68f9cc;
+    if (this.className === "human") color = 0xfcb064;
 
     this.renderLine(this.plotProgress, data, 3, color);
 
