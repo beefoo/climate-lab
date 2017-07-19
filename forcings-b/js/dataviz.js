@@ -365,7 +365,7 @@ var DataViz = (function() {
 
     // render data
     var data = this.refData.data;
-    this.renderLine(this.refPlot, data, 1, 0x6d6f71);
+    this.renderLine(this.refPlot, data, 2, 0xa6acb2);
 
     // draw dot
     var dp = data[data.length-1];
