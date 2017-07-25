@@ -21,28 +21,60 @@
   }
   .toc ol {
     list-style-type: lower-latin;
+    margin-top: -1rem;
+    padding-top: 0;
+  }
+  h1 {
+    margin: 0;
+  }
+  h2 {
+    border-top: 1px solid black;
+    margin: 3rem 0 -1rem;
+    padding-top: 1.5rem;
+  }
+  .archived,
+  .archived a {
+    color: #999;
   }
   </style>
 </head>
 <body>
   <div class="container">
     <h1>Climate Lab: Table of contents</h1>
+    <h2>Warming World</h2>
     <ol class="toc">
-      <li>Data at different timescales:
+      <li>
+        Temperature at different time scales (<a href="https://github.com/beefoo/climate-lab/labels/warming-timescales">issues</a>):
         <ol>
-          <li><a href="timescales-temperature-b/">Global temperature data</a> (under construction) - see and hear observed global temperature data data over time, and can change the time scale from years (to see seasonal patterns) decades (to see short term noise) to the past 50 years (to see long term global trend). You can also use in <a href="timescales-temperature-b/?mode=receiver">multi-window mode</a>.</li>
-          <li><a href="timescales-temperature/">Global temperature data (alternative version)</a> (archived)</li>
-          <li><a href="timescales-co2/">CO<sub>2</sub> data</a> (archived) - see and hear observed CO<sub>2</sub> data over time, and can change the time scale from months to years (to see seasonal patterns) to the past 50 years (to see global trend)</li>
+          <li><a href="timescales-temperature-b/">Version 1.0</a> - see and hear observed global temperature data data over time, and can change the time scale from years (to see seasonal patterns) decades (to see short term noise) to the past 50 years (to see long term global trend). You can also use in <a href="timescales-temperature-b/?mode=receiver">multi-window mode</a>.</li>
+          <li class="archived"><a href="timescales-temperature/">Version 0.2</a> <em>(archived)</em></li>
+          <li class="archived"><a href="timescales-co2/">Version 0.1</a> <em>(archived)</em> - see and hear observed CO<sub>2</sub> data over time, and can change the time scale from months to years (to see seasonal patterns) to the past 50 years (to see global trend)</li>
+        </ol>
+      </li>
+      <li>
+        Temperature around the world (<a href="https://github.com/beefoo/climate-lab/labels/warming-regional">issues</a>):
+        <ol>
+          <li><a href="zonal-temperature/">Version 1.0</a> - how warming differs around the world. You can also use in <a href="zonal-temperature/?mode=receiver">multi-window mode</a>.</li>
         </ol>
       <li>
-          <a href="forcings-b/">Climate forcings</a> (under construction) - explore what drives the climate warmer or cooler. You can also use in <a href="forcings-b/?mode=receiver">multi-window mode</a>.
+          What's warming the planet? (<a href="https://github.com/beefoo/climate-lab/labels/warming-forcings">issues</a>)
           <ol>
-            <li><a href="forcings/">Alternative version</a> - knob control with slider for playing graph</li>
+            <li><a href="forcings-b/">Version 1.0</a> - explore what drives the climate warmer or cooler. You can also use in <a href="forcings-b/?mode=receiver">multi-window mode</a>.</li>
+            <li class="archived"><a href="forcings/">Version 0.1</a> <em>(archived)</em> - knob control with slider for playing graph</li>
           </ol>
       </li>
-      <li><a href="zonal-temperature/">Temperature around the world</a> (under construction) - how warming differs around the world. You can also use in <a href="zonal-temperature/?mode=receiver">multi-window mode</a>.</li>
-      <li><a href="image-slider/">Images of change</a> - images of different locations on planet Earth, showing change over time periods ranging from centuries to days</li>
+    </ol>
+
+    <h2>How Climate Works</h2>
+
+    <ol class="toc">
       <li><a href="globe/">Data on a globe</a> (under construction) - view <a href="https://neo.sci.gsfc.nasa.gov/view.php?datasetId=CERES_NETFLUX_D&date=2016-12-01">net radiation</a> over one year on a globe to see seasonal pattern caused by earth's orbit around the sun</li>
+    </ol>
+
+    <h2>Consequences of Climate Change</h2>
+
+    <ol class="toc">
+      <li><a href="image-slider/">Images of change</a> (under construction) - images of different locations on planet Earth, showing change over time periods ranging from centuries to days</li>
     </ol>
   </div>
 </body>
