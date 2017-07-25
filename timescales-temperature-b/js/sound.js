@@ -14,7 +14,8 @@ var Sound = (function() {
     var sprites = this.opt.sprites;
     this.sound = new Howl({
       src: this.opt.audio,
-      sprite: sprites
+      sprite: sprites,
+      volume: 0.5
     });
     this.notes = _.keys(sprites);
     // console.log(this.notes)
