@@ -18,7 +18,7 @@ var DataViz = (function() {
       active: true,
       rangeIncrement: 0.25,
       sound: {
-        soundDir: 'audio/orchestral_harp-mp3/',
+        soundDir: '../shared/audio/orchestral_harp-mp3/',
         stereo: 0.0,
       },
       cord: {

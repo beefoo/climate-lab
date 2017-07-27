@@ -4,7 +4,7 @@ var Sound = (function() {
   function Sound(options) {
     var defaults = {
       sprites: SPRITES,
-      audio: ['audio/key.mp3']
+      audio: ['../shared/audio/key.mp3']
     };
     this.opt = $.extend({}, defaults, options);
     this.init();

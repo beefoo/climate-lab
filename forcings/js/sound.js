@@ -3,7 +3,7 @@
 var Sound = (function() {
   function Sound(options) {
     var defaults = {
-      soundDir: 'audio/orchestral_harp-mp3/',
+      soundDir: '../shared/audio/orchestral_harp-mp3/',
       soundExt: '.mp3',
       notes: ['Db3', 'Eb3', 'E3', 'Gb3', 'Ab3', 'A3', 'B3', 'Db4', 'E4', 'Gb4', 'Ab4', 'A4', 'B4'],
       stereo: 0.0
