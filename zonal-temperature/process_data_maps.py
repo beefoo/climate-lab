@@ -18,7 +18,7 @@ import sys
 # input
 parser = argparse.ArgumentParser()
 parser.add_argument('-in', dest="INPUT_FILE", default="data/gistemp1200_ERSSTv4.nc", help="Temperature input file")
-parser.add_argument('-start', dest="START_YEAR", default=1980, type=int, help="Start year")
+parser.add_argument('-start', dest="START_YEAR", default=1990, type=int, help="Start year")
 parser.add_argument('-end', dest="END_YEAR", default=2016, type=int, help="End year")
 parser.add_argument('-out', dest="OUTPUT_FILE", default="data/processed_data.json", help="Output file")
 args = parser.parse_args()

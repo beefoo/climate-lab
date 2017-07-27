@@ -28,7 +28,7 @@ var DataMap = (function() {
     // preload images
     for (var frame=1; frame<=frameCount; frame++) {
       var img =  new Image();
-      img.src = this.opt.imageDir + 'frame' + UTIL.pad(frame, 5) + '.jpg';
+      img.src = this.opt.imageDir + 'frame' + UTIL.pad(frame, 5) + '.png';
     }
 
     this.updateTime(this.time);
@@ -70,7 +70,7 @@ var DataMap = (function() {
 
     var frame = Math.round(value * (this.frameCount - 1)) + 1;
     frame = UTIL.pad(frame, 5);
-    this.$img[0].src = this.opt.imageDir + 'frame' + frame + '.jpg';
+    this.$img[0].src = this.opt.imageDir + 'frame' + frame + '.png';
   };
 
   DataMap.prototype.updateZone = function(value){

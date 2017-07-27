@@ -83,6 +83,10 @@ h2 {
   text-align: center;
 }
 
+.map {
+  background: url(../img/worldmap.png) 0 0 no-repeat;
+  background-size: 100% auto;
+}
 .map,
 .graph {
   width: 50vw;
