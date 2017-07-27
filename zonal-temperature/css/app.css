@@ -59,6 +59,10 @@ h2 {
   max-width: 600px;
   height: auto;
 }
+.pane.right .key img {
+  max-width: 465px;
+  margin-top: 20px;
+}
 .controls {
   background: #00897b;
   height: 220px;
@@ -80,7 +84,7 @@ h2 {
 .map .helper {
   width: 100%;
   height: 0px;
-  border: 2px solid #ddd;
+  border: 2px solid #80CBC4;
   position: absolute;
   left: 0;
   top: 0;

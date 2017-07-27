@@ -77,7 +77,7 @@ var DataGraph = (function() {
 
   DataGraph.prototype.renderMarker = function(){
     this.marker.clear();
-    this.marker.lineStyle(4, 0xf1a051, 0.8);
+    this.marker.lineStyle(4, 0x80CBC4, 0.8);
 
     var w = this.app.renderer.width;
     var h = this.app.renderer.height;
