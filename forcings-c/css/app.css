@@ -1,0 +1,211 @@
+body {
+  overflow: hidden;
+}
+
+.app {
+  background: #212121;
+  color: #fff;
+  letter-spacing: 0.08rem;
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+}
+
+.panes,
+.controls,
+.pane,
+.titles,
+.main-title {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+h1 {
+  color: #fff;
+  display: block;
+  text-align: center;
+  margin: 0 auto;
+  font-size: 2rem;
+}
+h2 {
+  font-size: 1.2rem;
+  margin: 1rem 0 0.5rem;
+  color: #80CBC4;
+}
+
+.panes {
+  height: calc(100% - 220px);
+}
+.pane,
+.main-title {
+  width: 900px;
+  height: calc(100% - 40px);
+  top: 20px;
+  left: 50%;
+  margin-left: -325px;
+}
+.controls {
+  background: #00897b;
+  height: 220px;
+  top: auto;
+  bottom: 0;
+}
+.main-title {
+  height: 40px;
+  text-align: center;
+}
+.titles {
+  width: 300px;
+  left: 50%;
+  margin-left: -600px;
+}
+.title {
+  display: none;
+}
+.title.active {
+  display: block;
+}
+.title h2 {
+  font-size: 1.6rem;
+  margin-top: 80px;
+}
+.title p {
+  font-size: 1.2rem;
+  line-height: 1.6;
+}
+.title.human h2 {
+  color: #f1a051;
+}
+
+.buttons {
+  box-sizing: border-box;
+  padding: 0 2rem;
+  position: relative;
+  margin: 0 auto;
+  max-width: 1280px;
+}
+.factors:first-child h2 {
+  margin-top: 0.6rem;
+}
+.button-group button {
+  display: block;
+  float: left;
+  width: 21.25%;
+  height: 50px;
+  text-align: left;
+  border: none;
+  background: #00695C;
+  color: #fff;
+  outline-color: #009688;
+  cursor: pointer;
+  font-size: 1rem;
+  padding: 0.3rem 0.6rem;
+  box-sizing: border-box;
+  box-shadow: 0 1px 1px rgba(0,0,0,0.5);
+  vertical-align: middle;
+}
+.button-group button svg {
+  width: 15%;
+  height: auto;
+  display: block;
+  float: left;
+}
+.button-group button svg path,
+.button-group button svg rect,
+.button-group button svg circle,
+.button-group button svg polygon {
+  fill: #fff;
+}
+
+.button-group button span {
+  display: block;
+  width: 75%;
+  float: right;
+  vertical-align: middle;
+}
+.button-group button:hover {
+  background: #23a392;
+}
+.button-group button.selected {
+  background: #fff;
+  color: #00695C;
+}
+.button-group button.selected svg path,
+.button-group button.selected svg rect,
+.button-group button.selected svg circle,
+.button-group button.selected svg polygon {
+  fill: #00695C;
+}
+.human .button-group button {
+  background: #935e24;
+}
+.human .button-group button:hover {
+  background: #ad702b;
+}
+.human .button-group button.selected {
+  background: #fff;
+  color: #935e24;
+}
+.human .button-group button.selected svg path,
+.human .button-group button.selected svg rect,
+.human .button-group button.selected svg circle,
+.human .button-group button.selected svg polygon {
+  fill: #935e24;
+}
+.button-group .divider {
+  display: block;
+  float: left;
+  width: 5%;
+  text-align: center;
+  font-size: 1.8rem;
+  height: 50px;
+  line-height: 50px;
+}
+
+/* Styles for dual mode */
+.app {
+  display: none;
+}
+.app.default,
+.app.sender,
+.app.receiver {
+  display: block;
+}
+
+.app.sender .panes {
+  display: none;
+}
+.app.sender .controls {
+  height: 100%;
+  top: 0;
+  bottom: auto;
+}
+.app.sender .buttons {
+  height: 200px;
+  position: absolute;
+  top: 50%;
+  margin-top: -100px;
+}
+
+.app.receiver .panes {
+  height: 100%;
+  max-height: 700px;
+}
+.app.receiver .controls {
+  display: none;
+}
+
+@media only screen and (min-height: 700px) {
+  .app.receiver .panes {
+    top: 50%;
+    margin-top: -350px;
+  }
+}
+@media only screen and (min-width: 1800px) {
+  .app.receiver {
+    transform: scale(1.3);
+  }
+}
