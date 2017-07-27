@@ -31,7 +31,8 @@ OUTPUT_FILE = args.OUTPUT_FILE
 START_YEAR = args.START_YEAR
 END_YEAR = args.END_YEAR
 ZONES = args.ZONES
-RANGE = (-6, 6)
+# RANGE = (-6, 6) # Celsius
+RANGE = (-11, 11) # Fahrenheit
 
 GRADIENT = [
     "#4B94D8", # blue
@@ -136,11 +137,13 @@ for zone in range(ZONES):
             arr = []
             for i, lat in enumerate(zoneLats):
                 values = tempData[j][i0+i][:]
-                values = [v for v in values if v != "--"]
+                # convert to Fahrenheit
+                values = [v*1.8 for v in values if v != "--"]
                 if len(values) > 0:
                     arr += values
             value = mean(arr)
             zoneData.append(value)
+    # window: 5 years (12 months x 5)
     trendData = savitzky_golay(zoneData, 12*5+1, 3)
     data.append([zoneData, list(trendData)])
     print "Zone %s complete" % (zone+1)

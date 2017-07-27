@@ -6,7 +6,7 @@ var DataGraph = (function() {
       margin: [0.1, 0.02, 0.1, 0.1],
       axisTextStyle: {
         fill: "#d2d1dd",
-        fontSize: 18
+        fontSize: 16
       }
     };
     this.opt = $.extend({}, defaults, options);
@@ -131,7 +131,7 @@ var DataGraph = (function() {
 
       // draw label
       if (v%2===0) {
-        var text = v + '°C';
+        var text = v + '°F';
         if (v > 0) text = "+"+text;
         var label = new PIXI.Text(text, textStyle);
         label.x = p[0] - 10;
