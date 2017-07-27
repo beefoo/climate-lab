@@ -59,7 +59,7 @@ h2 {
   max-width: 600px;
   height: auto;
 }
-.pane.right .key img {
+.graph .key img {
   max-width: 465px;
   margin-top: 20px;
 }
@@ -71,7 +71,9 @@ h2 {
   font-size: 1.2rem;
   width: 100%;
   text-align: center;
-
+}
+.graph .section-label {
+  font-size: 0.9rem;
 }
 .controls {
   background: #00897b;

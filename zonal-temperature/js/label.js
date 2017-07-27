@@ -54,7 +54,7 @@ var Label = (function() {
     var lat1 = Math.round(UTIL.lerp(0, 180-degPerZone, zone) - 90);
     var lat2 = lat1 + degPerZone;
 
-    var text = "Region between "+lat1+" and "+lat2+" degrees of latitude";
+    var text = "Temperature differences of region between "+lat1+" and "+lat2+" degrees of latitude";
     this.$region.text(text);
   };
 
