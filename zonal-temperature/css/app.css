@@ -109,6 +109,14 @@ h2 {
   outline: 1px solid transparent;
   box-shadow: 0 0 1px rgba(0, 0, 0, 0.05);
 }
+.map .worldmap {
+  position: absolute;
+  width: 100%;
+  height: auto;
+  top: 0;
+  left: 0;
+  z-index: -1;
+}
 /*.map .helper:after {
   content: "➞";
   display: block;

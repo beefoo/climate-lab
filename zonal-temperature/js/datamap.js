@@ -11,8 +11,9 @@ var DataMap = (function() {
 
   DataMap.prototype.init = function(){
     this.$el = $(this.opt.el);
-    this.$img = this.$el.find('img').first();
+    this.$img = this.$el.find('#video-temperature').first();
     this.$helper = this.$el.find('.helper').first();
+    this.$worldmap = this.$el.find('#worldmap').first();
 
     this.frameCount = 0;
     this.time = this.opt.time;
@@ -54,6 +55,7 @@ var DataMap = (function() {
   };
 
   DataMap.prototype.onResize = function(){
+    this.updateZone(this.zone);
   };
 
   DataMap.prototype.onVideoLoaded = function(){
@@ -82,6 +84,11 @@ var DataMap = (function() {
     var top = this.zone * maxTop;
 
     this.$helper.css('top', top + '%');
+
+    var hw = this.$helper.width();
+    var y0 = top / 100 * h;
+    var y1 = y0 + hh;
+    this.$worldmap.css('clip', 'rect('+y0+'px,'+hw+'px,'+y1+'px,0px)');
   };
 
   return DataMap;
