@@ -33,7 +33,7 @@ FORCING_HEADERS = [
     {"name": "Land use", "className": "human", "label": "Deforestation", "title": "Is it deforestation?", "sub": "When forests are cleared, the land underneath reflects more sunlight than the darker trees. This light bounces off the Earth’s surface, causing the planet to cool a little."},
     {"name": "Ozone", "className": "human", "label": "Ozone pollution", "title": "Is it ozone pollution?", "sub": "Ozone has a different effect depending on where it is in the atmosphere. In the higher layers, it blocks light and keeps the planet cool. Lower down, ozone is a pollutant and traps heat near the Earth. Overall, the warming effect isn’t strong."},
     {"name": "Greenhouse gases", "className": "human", "label": "Greenhouse gases", "title": "Is it greenhouse gases?", "sub": "The rise in heat-trapping greenhouse gases is the only factor that matches the world’s warming since 1880."},
-    {"name": "Human", "className": "human", "label": "Is it all human factors combined?", "sub": "Greenhouse gases warm the atmosphere. Other factors cool it a little. Together they match the observed temperature, particularly since 1950."}
+    {"name": "Human", "className": "human", "label": "All human factors", "title": "Is it all human factors combined?", "sub": "Greenhouse gases warm the atmosphere. Other factors cool it a little. Together they match the observed temperature, particularly since 1950."}
 ]
 
 # Mean of list
