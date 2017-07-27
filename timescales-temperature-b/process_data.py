@@ -14,7 +14,7 @@ import sys
 
 # 20the century average temperature in °C
 # https://www.ncdc.noaa.gov/sotc/global/201613
-BASELINE = 13.9
+BASELINE = 13.9 * 9.0 / 5.0
 
 # input
 parser = argparse.ArgumentParser()
@@ -72,6 +72,11 @@ def lerpColor(s, f, amount):
 
 data = readCSV(args.INPUT_FILE)
 
+# Convert to Fahrenheit
+for i,d in enumerate(data):
+    # Check for records set
+    data[i]["Value"] = round(d["Value"] * 9.0 / 5.0, 1)
+
 years = [d["Year"] for d in data]
 values = [d["Value"] for d in data]
 dataDomain = [min(years), max(years)]
@@ -92,6 +97,7 @@ for i,d in enumerate(data):
     n = norm(d["Value"], dataRange[0], dataRange[1])
     data[i]["Norm"] = n
     data[i]["Color"] = lerpColor(colorStart, colorFinish, n)
+
 
 tuples = [(d["Year"], d["Value"], d["Color"], d["Norm"], d["Record"]) for d in data]
 jsonData = {

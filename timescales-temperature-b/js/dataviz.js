@@ -141,7 +141,7 @@ var DataViz = (function() {
         ts.fontSize = 22;
         var label = new PIXI.Text(text, ts);
         label.x = p[0];
-        label.y = p[1];
+        label.y = p[1] + 10;
         label.anchor.set(0.5, 0);
         this.axes.addChild(label);
         value++;
@@ -156,12 +156,12 @@ var DataViz = (function() {
 
       // draw line
       if (value===0) _this.axes.lineStyle(3, 0xffffff);
-      else if (value<0) _this.axes.lineStyle(2, 0x54799b);
-      else _this.axes.lineStyle(2, 0x845b5b);
+      else if (value<0) _this.axes.lineStyle(2, 0x54799b, 0.5);
+      else _this.axes.lineStyle(2, 0x845b5b, 0.5);
 
       var text = "20th century average temperature";
-      if (value > 0) text = "+" + value + "°C ("+UTIL.round(value*1.8,1)+"°F)";
-      else if (value < 0) text = value + "°C ("+UTIL.round(value*1.8,1)+"°F)";
+      if (value > 0) text = "+" + value + "°F";
+      else if (value < 0) text = value + "°F";
       else {
         textStyle.wordWrap = true;
         textStyle.wordWrapWidth = x0 - 40;
@@ -262,8 +262,7 @@ var DataViz = (function() {
 
       if (miniMode) {
         var label = new PIXI.Text(d.year, textStyle);
-        var text = Math.abs(d.value) + "°C";
-        text += " ("+UTIL.round(Math.abs(d.value)*1.8,1)+"°F)"
+        var text = Math.abs(d.value) + "°F";
         if (d.value < 0) text += " below 20th century average";
         else text += " above 20th century average";
         subtextStyle.wordWrap = true;
