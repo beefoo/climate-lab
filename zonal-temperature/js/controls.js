@@ -67,9 +67,10 @@ var Controls = (function() {
       var state = (axes[control.gamepad] + 1) / 2;
       state = Math.min(state, 1);
       state = Math.max(state, 0);
+      if (state > 0.99) state = 1.0;
       // state has changed, execute callback
       if (prevState[key] != state) {
-        // console.log("State change", key)
+        // console.log("State change", key, state)
         control.slide(null, {value: state});
         _this.state[key] = state;
       }
