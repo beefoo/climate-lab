@@ -99,7 +99,7 @@ var App = (function() {
     this.graph.initData(this.data, this.domain, this.range);
     this.graph.updateZone(this.zone);
     this.label.initTime(this.domain, frames);
-
+    this.label.initZone(this.data.length, this.zone);
     // this.render();
   };
 
@@ -112,6 +112,7 @@ var App = (function() {
   App.prototype.onZoneChange = function(value) {
     this.map.updateZone(value);
     this.graph.updateZone(value);
+    this.label.updateZone(value);
   };
 
   App.prototype.render = function(){

@@ -63,6 +63,16 @@ h2 {
   max-width: 465px;
   margin-top: 20px;
 }
+.pane .section-label {
+  top: -30px;
+  left: 0;
+  position: absolute;
+  color: #bbb;
+  font-size: 1.2rem;
+  width: 100%;
+  text-align: center;
+
+}
 .controls {
   background: #00897b;
   height: 220px;
