@@ -113,7 +113,7 @@ var DataViz = (function() {
     var x1 = x0 + plotW;
     var ym0 = UTIL.ceilToNearest(range[0], yAxisStep);
     var ym1 = UTIL.floorToNearest(range[1], yAxisStep);
-    var value = ym0;
+    var value = 0;
     var miniMode = this.isMiniMode();
 
     this.axes.clear();
@@ -123,23 +123,32 @@ var DataViz = (function() {
 
     // draw domain axis
     if (!miniMode) {
-      _.each(this.domain, function(d,i){
-        var text = d;
-        var ts = _.clone(textStyle);
-        ts.fontSize = 28;
-        var label = new PIXI.Text(text, ts);
-        var y = h - m[3];
-        label.x = x0;
-        label.y = y + 10;
-        label.anchor.set(0, 0);
-        if (i > 0) {
-          label.x = x1;
-          label.anchor.set(1, 0);
+      var count = domain[1] - domain[0];
+      var showEvery = 5;
+      if (count > 30) showEvery = 10;
+      if (count > 80) showEvery = 20;
+      value = domain[0];
+      while (value <= domain[1]) {
+        var delta = domain[1] - value;
+        var valid = (value === domain[0] || value === domain[1] || value % showEvery === 0) && (delta >= showEvery/2 || delta <= 0);
+        if (!valid) {
+          value++;
+          continue;
         }
-        _this.axes.addChild(label);
-      });
+        var p = _this._dataToPoint(value, range[0], domain, range);
+        var text = value;
+        var ts = _.clone(textStyle);
+        ts.fontSize = 22;
+        var label = new PIXI.Text(text, ts);
+        label.x = p[0];
+        label.y = p[1];
+        label.anchor.set(0.5, 0);
+        this.axes.addChild(label);
+        value++;
+      }
     }
 
+    var value = ym0;
     // draw range axis
     while(value <= ym1) {
       var p = _this._dataToPoint(0, value, domain, range);
@@ -175,9 +184,9 @@ var DataViz = (function() {
   DataViz.prototype.renderLabels = function(){
     var domain = this.domain;
     var textStyle = this.opt.labelTextStyle;
-    var text = "Annual Global temperature differences from the 20th century average";
-    if (domain[0]==domain[1]) text += " ("+domain[0]+")";
-    else text += " ("+domain[0]+"-"+domain[1]+")";
+    var text = "Has global temperature been getting warmer?";
+    // if (domain[0]==domain[1]) text += " ("+domain[0]+")";
+    // else text += " ("+domain[0]+"-"+domain[1]+")";
 
     var x = this.app.renderer.width / 2;
     var y = 20;
