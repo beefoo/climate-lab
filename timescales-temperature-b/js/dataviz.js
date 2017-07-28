@@ -184,7 +184,7 @@ var DataViz = (function() {
   DataViz.prototype.renderLabels = function(){
     var domain = this.domain;
     var textStyle = this.opt.labelTextStyle;
-    var text = "Has global temperature been getting warmer?";
+    var text = "How has the average global temperature changed?";
     // if (domain[0]==domain[1]) text += " ("+domain[0]+")";
     // else text += " ("+domain[0]+"-"+domain[1]+")";
 
