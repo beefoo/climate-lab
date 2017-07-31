@@ -22,10 +22,13 @@ import sys
 # https://www.ncdc.noaa.gov/sotc/global/201613
 BASELINE = 13.9
 
+START_YEAR = 1700
+END_YEAR = 2016
 PALEO_DATA_FILE = "data/glhad_eiv_composite.csv"
 # INSTRUMENT_DATA_FILE = "data/188001-201705.csv"
 INSTRUMENT_DATA_FILE = "data/1880-2017.csv"
 OUTPUT_FILE = "data/processed_data.json"
+GRADIENT = ["#8ac1f2", "#c643c4", "#ff3f3f"]
 
 def dateToSeconds(date):
     (year, month, day) = date
@@ -65,10 +68,7 @@ def parseNumber(string):
 def parseRows(arr):
     for i, item in enumerate(arr):
         for key in item:
-            if key == "Value":
-                arr[i][key] = parseNumber(item[key])
-            elif key == "Date":
-                arr[i][key] = parseDate(item[key])
+            arr[i][key] = parseNumber(item[key])
     return arr
 
 def readCSV(filename):
@@ -81,6 +81,47 @@ def readCSV(filename):
             rows = parseRows(rows)
     return rows
 
+# Add colors
+def hex2rgb(hex):
+  # "#FFFFFF" -> [255,255,255]
+  return tuple([int(hex[i:i+2], 16) for i in range(1,6,2)])
+
+def rgb2hex(rgb):
+  # [255,255,255] -> "0xFFFFFF"
+  rgb = [int(x) for x in list(rgb)]
+  return "0x"+"".join(["0{0:x}".format(v) if v < 16 else "{0:x}".format(v) for v in rgb]).upper()
+
+def lerp(a, b, amount):
+    return (b-a) * amount + a
+
+def lerpColor(s, f, amount):
+    rgb = [
+      int(s[j] + amount * (f[j]-s[j]))
+      for j in range(3)
+    ]
+    return tuple(rgb)
+
+def norm(value, a, b):
+    n = 1.0 * (value - a) / (b - a)
+    n = min(n, 1)
+    n = max(n, 0)
+    return n
+
+def getColor(grad, amount):
+    gradLen = len(grad)
+    i = (gradLen-1) * amount
+    remainder = i % 1
+    rgb = (0,0,0)
+    if remainder > 0:
+        rgb = lerpColor(grad[int(i)], grad[int(i)+1], remainder)
+    else:
+        rgb = grad[int(i)]
+    return int(rgb2hex(rgb), 16)
+
+
+# Convert colors to RGB
+GRADIENT = [hex2rgb(g) for g in GRADIENT]
+
 # read data
 paleoData = readCSV(PALEO_DATA_FILE)
 instrData = readCSV(INSTRUMENT_DATA_FILE)
@@ -90,15 +131,15 @@ paleoData = sorted(paleoData, key=lambda k: k["Date"])
 instrData = sorted(instrData, key=lambda k: k["Date"])
 
 # remove paleo data that is invalid or available in intrument data
-earliestInstrYear = instrData[0]["Date"][0]
-paleoData = [d for d in paleoData if d["Date"][0] < earliestInstrYear and d["Value"]!="NaN"]
+earliestInstrYear = instrData[0]["Date"]
+paleoData = [d for d in paleoData if d["Date"] < earliestInstrYear and d["Value"]!="NaN"]
 
 # convert instrument data to absolute
 for i,d in enumerate(instrData):
     instrData[i]["Abs"] = d["Value"] + BASELINE
 
 # determine the baseline for paleo (1961–1990)
-paleoBaselineValues = [d["Abs"] for d in instrData if 1961 <= d["Date"][0] <= 1990]
+paleoBaselineValues = [d["Abs"] for d in instrData if 1961 <= d["Date"] <= 1990]
 paleoBaseline = mean(paleoBaselineValues)
 print "Paleo baseline: %s" % paleoBaseline
 
@@ -109,10 +150,13 @@ for i,d in enumerate(paleoData):
 # combine the data
 combinedData = paleoData + instrData
 
-# convert date to int
+# filter
+combinedData = [d for d in combinedData if START_YEAR <= d["Date"] <= END_YEAR]
+
+# convert everything to fahrenheit
 for i,d in enumerate(combinedData):
-    # combinedData[i]["Date"] = dateToSeconds(d["Date"])
-    combinedData[i]["Date"] = d["Date"][0]
+    combinedData[i]["Value"] = d["Value"] * 1.8
+    combinedData[i]["Abs"] = d["Abs"] * 1.8 + 32
 
 # plot data
 xs = [d["Date"] for d in combinedData]
@@ -121,9 +165,16 @@ ys = [d["Abs"] for d in combinedData]
 # plt.plot(xs, ys)
 # plt.show()
 
-data = [round(d["Abs"],3) for d in combinedData]
 dataDomain = [xs[0], xs[-1]]
 dataRange = [math.floor(min(ys)), math.ceil(max(ys))]
+
+# get colors
+for i,d in enumerate(combinedData):
+    n = norm(d["Abs"], dataRange[0], dataRange[1])
+    combinedData[i]["Norm"] = n
+    combinedData[i]["Color"] = getColor(GRADIENT, n)
+
+data = [(round(d["Abs"],3), d["Color"]) for d in combinedData]
 
 jsonData = {
     "data": data,

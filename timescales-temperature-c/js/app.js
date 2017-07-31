@@ -13,33 +13,34 @@ var App = (function() {
     var _this = this;
 
     // Set initial scale
-    this.scale = 0;
-    this.time = 1;
+    this.scale = 0.5;
+    this.time = 0.5;
     this.dataKey = this.opt.dataKey;
 
-    // Initialize controls
-    var sliders = {
-      "#scale": {
-        orientation: "vertical", min: 0, max: 1, step: 0.001, value: this.scale,
-        slide: function(e, ui){
-          if (ui.value < 0) return false;
-          _this.onScale(ui.value);
-        }
-      },
-      "#time": {
-        orientation: "horizontal", min: 0, max: 1, step: 0.001, value: this.time,
-        slide: function(e, ui){
-          if (ui.value < 0) return false;
-          _this.onTime(ui.value);
-        }
-      }
-    };
-    var controls = new Controls({sliders: sliders});
+    this.initMode();
 
-    // Initialize viz and spinners
-    this.viz = new DataViz({el: "#pane", enableSound: this.opt.enableSound});
+    // Initialize viz
+    if (this.mode !== 'sender') {
+      this.loadData();
+    }
 
-    this.loadData();
+    this.loadListeners();
+  };
+
+  App.prototype.initMode = function(){
+    var q = UTIL.parseQuery();
+
+    this.mode = 'default';
+
+    if (_.has(q, 'mode')) this.mode = q.mode;
+
+    $('.app').addClass(this.mode);
+
+    // pop out a new window if receiver
+    if (this.mode==='receiver') {
+      var url = window.location.href.split('?')[0] + '?mode=sender';
+      window.open(url);
+    }
   };
 
   App.prototype.loadData = function(){
@@ -51,6 +52,40 @@ var App = (function() {
     });
   };
 
+  App.prototype.loadListeners = function(){
+    var _this = this;
+
+    if (this.mode!=='sender') {
+      crosstab.on('scale.change', function(message) {
+        _this.onScale(message.data);
+      });
+      crosstab.on('time.change', function(message) {
+        _this.onTime(message.data);
+      });
+    }
+
+    if (this.mode!=='receiver') {
+      // Initialize controls
+      var sliders = {
+        "#scale": {
+          orientation: "vertical", min: 0, max: 1, step: 0.001, value: this.scale, gamepad: 0,
+          slide: function(e, ui){
+            // _this.onScale(1-ui.value);
+            crosstab.broadcast('scale.change', 1-ui.value);
+          }
+        },
+        "#time": {
+          orientation: "horizontal", min: 0, max: 1, step: 0.001, value: this.time, gamepad: 1,
+          slide: function(e, ui){
+            // _this.onTime(ui.value);
+            crosstab.broadcast('time.change', ui.value);
+          }
+        }
+      };
+      var controls = new Controls({sliders: sliders});
+    }
+  };
+
   App.prototype.onDataLoaded = function(data){
     var d = data[this.dataKey];
 
@@ -58,33 +93,28 @@ var App = (function() {
     this.domain = d.domain;
     this.range = d.range;
 
-    this.onScale(this.scale);
-    this.onTime(this.time);
+    // Initialize viz
+    this.viz = new DataViz({
+      el: "#pane", enableSound:
+      this.opt.enableSound,
+      data: this.data,
+      domain: this.domain,
+      range: this.range,
+      scale: this.scale,
+      time: this.time
+    });
+
     this.render();
-  };
-
-  App.prototype.onDelta = function() {
-    var domain = this.domain;
-    var d0 = domain[0];
-    var d1 = domain[1];
-
-    var mapped = _.map(this.data, function(d,i){ return {x: i+domain[0], y: d}; });
-    var filtered = _.filter(mapped, function(d){ return d.x >= d0 && d.x <= d1; });
-
-    var values = _.pluck(filtered, 'value');
-    var range = [_.min(values), _.max(values)];
-
-    this.viz.update(filtered, domain, range);
   };
 
   App.prototype.onScale = function(value) {
     this.scale = UTIL.easeInOutSin(value);
-    this.onDelta();
+    this.viz.updateScale(this.scale);
   };
 
   App.prototype.onTime = function(value) {
     this.time = value;
-    this.onDelta();
+    this.viz.updateTime(this.time);
   };
 
   App.prototype.render = function(){

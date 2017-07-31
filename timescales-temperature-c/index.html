@@ -11,17 +11,19 @@
 <body>
   <div class="app">
     <div id="main" class="panes">
+      <div class="title"><h1>How has the average global temperature changed?</h1></div>
       <div id="pane" class="pane"></div>
     </div>
     <div id="controls" class="controls">
       <div class="sliders">
-        <div class="slider">
+        <div class="slider left">
           <label for="scale">Slide to change timescale</label>
           <div id="scale" class="slider-vert scale"></div>
         </div>
-        <div class="slider"></div>
-        <label for="scale">Slide to move time</label>
-        <div id="time" class="slider-horz time"></div>
+        <div class="slider right">
+          <label for="time">Slide to move time</label>
+          <div id="time" class="slider-horz time"></div>
+        </div>
       </div>
 
     </div>
@@ -32,6 +34,7 @@
   <script src="../shared/js/underscore-min.js"></script>
   <script src="../shared/js/pixi.min.js"></script>
   <script src="../shared/js/howler.min.js"></script>
+  <script src="../shared/js/crosstab.js"></script>
   <script src="../shared/js/utils.js"></script>
 
   <script src="js/sprites.js"></script>
