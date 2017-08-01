@@ -6,8 +6,7 @@ var DataViz = (function() {
       el: '#main',
       margin: [0.1, 0.15, 0.1, 0.1],
       enableSound: true,
-      transitionPlotMs: 1000,
-      highlightMs: 200,
+      highlightMs: 1000,
       minDomainCount: 5,
       yAxisStep: 0.1,
       axisTextStyle: {
@@ -199,7 +198,7 @@ var DataViz = (function() {
     var dataMargin = 0.5;
     _.each(data, function(d, i){
       if (d.highlighting) {
-        var hv = d.hightlightValue;
+        var hv = d.highlightValue;
         var p = _this._dataToPoint(d.year, d.value, domain, range);
         var px = UTIL.norm(d.year, domain[0], domain[1]+1);
         var x = i * dataW + mx0 + dataMargin;
@@ -297,7 +296,10 @@ var DataViz = (function() {
     var dataMargin = 0.5;
     _.each(data, function(d, i){
       var value = d.value;
-      if (d.transitioning) value = d.transitionValue;
+      if (d.highlighting) {
+        value = UTIL.lerp(value+0.5, value, UTIL.easeInElastic(d.highlightValue, 0.01));
+        if (isNaN(value)) value = d.value;
+      }
       var p = _this._dataToPoint(d.year, value, domain, range);
       var px = UTIL.norm(d.year, domain[0], domain[1]+1);
       var x = i * dataW + mx0 + dataMargin;
@@ -313,24 +315,11 @@ var DataViz = (function() {
 
     var _this = this;
     var range = this.plotRange;
-    var transitionPlotMs = this.opt.transitionPlotMs;
     var highlightMs = this.opt.highlightMs;
     var transitioning = false;
     var now = new Date();
 
     _.each(this.plotData, function(d, i){
-      if (d.transitioning && d.transitionStart) {
-        var diff = now - d.transitionStart;
-        if (diff >= transitionPlotMs) {
-          diff = transitionPlotMs;
-          _this.plotData[i].transitioning = false;
-        } else {
-          transitioning = true;
-        }
-        var progress = diff / transitionPlotMs;
-        progress = UTIL.easeInElastic(progress, 0.005);
-        _this.plotData[i].transitionValue = UTIL.lerp(range[0], d.value, progress);
-      }
       if (d.highlighting && d.highlightStart) {
         var diff = now - d.highlightStart;
         if (diff >= highlightMs) {
@@ -339,18 +328,25 @@ var DataViz = (function() {
         } else {
           transitioning = true;
         }
-        var progress = diff / transitionPlotMs;
-        _this.plotData[i].hightlightValue = progress;
+        var progress = diff / highlightMs;
+        progress = Math.max(progress, 0);
+        progress = Math.min(progress, 1);
+        _this.plotData[i].highlightValue = progress;
       }
     });
 
     this.transitioning = transitioning;
     this.renderPlot();
-    this.renderHighlight();
+    // this.renderHighlight();
   };
 
   DataViz.prototype.update = function(){
     var _this = this;
+
+    var time = this.time;
+    var prevIndex = this.plotIndex;
+    this.plotIndex = Math.round(time*(this.dataLen-1));
+    this.plotYear = this.data[this.plotIndex];
 
     var minDomainCount = this.opt.minDomainCount;
     var maxDomainCount = this.dataLen;
@@ -404,19 +400,19 @@ var DataViz = (function() {
     // add new indices
     _.each(addIndices, function(index, i){
       var add = _.clone(_this.data[index]);
-      add.transitionStart = new Date();
-      add.transitioning = true;
-      add.transitionValue = 0;
       plotData.push(add);
     });
     plotData = _.sortBy(plotData, 'index');
     this.plotData = plotData;
 
-    // add transition for index
-    var i = this.plotIndex - minIndex;
-    this.plotData[i].highlighting = true;
-    this.plotData[i].highlightStart = new Date();
-    this.plotData[i].hightlightValue = 0;
+    // add transition for index and play sound
+    if (prevIndex !== this.plotIndex) {
+      var i = this.plotIndex - minIndex;
+      this.plotData[i].highlighting = true;
+      this.plotData[i].highlightStart = new Date();
+      this.plotData[i].highlightValue = 0;
+      this.sound && this.sound.play(UTIL.norm(this.plotData[i].value, this.range[0], this.range[1]));
+    }
 
     var values = _.pluck(plotData, "value");
     var yAxisStep = this.opt.yAxisStep;
@@ -438,8 +434,7 @@ var DataViz = (function() {
   };
 
   DataViz.prototype.updateTime = function(time){
-    this.plotIndex = Math.round(time*(this.dataLen-1));
-    this.plotYear = this.data[this.plotIndex];
+    this.time = time;
     this.update();
   };
 
