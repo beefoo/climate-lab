@@ -22,7 +22,7 @@ import sys
 # https://www.ncdc.noaa.gov/sotc/global/201613
 BASELINE = 13.9
 
-START_YEAR = 1700
+START_YEAR = 1880
 END_YEAR = 2016
 PALEO_DATA_FILE = "data/glhad_eiv_composite.csv"
 # INSTRUMENT_DATA_FILE = "data/188001-201705.csv"

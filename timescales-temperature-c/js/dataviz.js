@@ -12,6 +12,10 @@ var DataViz = (function() {
       axisTextStyle: {
         fill: "#d2d1dd",
         fontSize: 18
+      },
+      markerTextStyle: {
+        fill: "#d2d1dd",
+        fontSize: 22
       }
     };
     this.opt = $.extend({}, defaults, options);
@@ -21,9 +25,20 @@ var DataViz = (function() {
   DataViz.prototype.init = function(){
     this.$el = $(this.opt.el);
 
-    this.data = this.opt.data;
     this.domain = this.opt.domain;
     this.range = this.opt.range;
+
+    // re-map data
+    var d0 = this.domain[0];
+    this.data = _.map(this.opt.data, function(d,i){
+      return {
+        year: d0 + i,
+        value: d[0],
+        color: d[1],
+        index: i
+      };
+    });
+
     this.time = this.opt.time;
     this.scale = this.opt.scale;
     this.dataLen = this.data.length;
@@ -36,7 +51,7 @@ var DataViz = (function() {
     this.plotDomain = this.domain.slice(0);
     this.plotRange = this.range.slice(0);
     this.plotIndex = 0;
-    this.plotYear = 0;
+    this.plotYear = {};
 
     this.loadView();
     this.loadListeners();
@@ -57,8 +72,9 @@ var DataViz = (function() {
     this.axes = new PIXI.Graphics();
     this.plot = new PIXI.Graphics();
     this.labels = new PIXI.Graphics();
+    this.marker = new PIXI.Graphics();
 
-    this.app.stage.addChild(this.plot, this.axes, this.labels);
+    this.app.stage.addChild(this.plot, this.axes, this.labels, this.marker);
 
     this.$el.append(this.app.view);
   };
@@ -68,6 +84,7 @@ var DataViz = (function() {
     this.renderAxes();
     this.renderPlot();
     this.renderLabels();
+    this.renderMarker();
   };
 
   DataViz.prototype.render = function(progress){
@@ -86,6 +103,8 @@ var DataViz = (function() {
     var w = this.app.renderer.width;
     var h = this.app.renderer.height;
     var m = this.opt.margin;
+    var mx0 = m[0] * w;
+    var mx1 = m[2] * w;
 
     this.axes.clear();
     while(this.axes.children[0]) {
@@ -100,7 +119,7 @@ var DataViz = (function() {
     var x1 = w - m[2] * w;
     var showEvery = 1;
     if (count > 10) showEvery = 2;
-    this.axes.lineStyle(1, 0x45474c, 0.5);
+    this.axes.lineStyle(1, 0xffffff, 0.333);
     var value = range[0];
     var i=0;
     while(value <= range[1]) {
@@ -113,7 +132,7 @@ var DataViz = (function() {
         label.y = y;
         label.anchor.set(1.0, 0.5);
         this.axes.addChild(label);
-        _this.axes.moveTo(x0, y).lineTo(x1, y);
+        this.axes.moveTo(x0, y).lineTo(x1, y);
       }
       value += yAxisStep;
       i++;
@@ -126,24 +145,31 @@ var DataViz = (function() {
     if (count > 30) showEvery = 10;
     if (count > 80) showEvery = 20;
     value = domain[0];
+    i = 0;
+    var cw = w - mx0 - mx1;
+    var dataW = cw / (count+1);
     while (value <= domain[1]) {
       var delta1 = domain[1] - value;
       var delta2 = value - domain[0];
       var valid = (value === domain[0] || value === domain[1] || value % showEvery === 0) && (delta1 >= showEvery/2 || delta1 <= 0) && (delta2 >= showEvery/2 || delta2 <= 0);
       if (!valid) {
         value++;
+        i++;
         continue;
       }
       var p = _this._dataToPoint(value, range[0], domain, range);
+      var px = UTIL.norm(value, domain[0], domain[1]+1);
+      var x = i * dataW + mx0 + dataW * 0.5;
       var text = value;
       var ts = _.clone(textStyle);
       ts.fontSize = 22;
       var label = new PIXI.Text(text, ts);
-      label.x = p[0];
+      label.x = x;
       label.y = p[1] + m[3] * h / 5;
       label.anchor.set(0.5, 0);
       this.axes.addChild(label);
       value++;
+      i++;
     }
   };
 
@@ -152,6 +178,51 @@ var DataViz = (function() {
     // while(this.labels.children[0]) {
     //   this.labels.removeChild(this.labels.children[0]);
     // }
+  };
+
+  DataViz.prototype.renderMarker = function(){
+    // draw plot marker
+    var domain = this.plotDomain;
+    var range = this.plotRange;
+    var year = this.plotYear;
+    var w = this.app.renderer.width;
+    var h = this.app.renderer.height;
+    var m = this.opt.margin;
+    var mx0 = m[0] * w;
+    var my0 = m[1] * h;
+    var mx1 = m[2] * w;
+    var my1 = m[3] * h;
+
+    this.marker.clear();
+    while(this.marker.children[0]) {
+      this.marker.removeChild(this.marker.children[0]);
+    }
+
+    var cw = w - mx0 - mx1;
+    var count = this.plotData.length
+    var dataW = cw / count;
+    var px = UTIL.norm(year.year, domain[0], domain[1]+1);
+    var i = year.year - domain[0];
+    var x = i * dataW + mx0;
+    if (count % 2 > 0) x += dataW * 0.5
+    this.marker.lineStyle(5, 0xf1a051, 0.7);
+    this.marker.moveTo(x, my0).lineTo(x, h-my1);
+
+    var textStyle = this.opt.markerTextStyle;
+    var text = UTIL.round(year.value, 1) + "°F";
+    var label = new PIXI.Text(text, textStyle);
+    label.x = x + 10;
+    label.y = my0;
+    label.anchor.set(0.0, 0.0);
+    this.marker.addChild(label);
+
+    textStyle = _.clone(textStyle);
+    textStyle.fontSize *= 0.9;
+    label = new PIXI.Text(year.year, textStyle);
+    label.x = x + 10;
+    label.y = my0 + textStyle.fontSize * 1.5;
+    label.anchor.set(0.0, 0.0);
+    this.marker.addChild(label);
   };
 
   DataViz.prototype.renderPlot = function(){
@@ -185,12 +256,6 @@ var DataViz = (function() {
       _this.plot.drawRect(x, y, dataW-dataMargin*2, h-y- my1);
       // _this.plot.drawCircle(x, y, 5)
     });
-
-    // draw plot marker
-    var year = this.plotYear;
-    var p = _this._dataToPoint(year, 0, domain, range);
-    this.plot.lineStyle(3, 0xf1a051, 0.8);
-    this.plot.moveTo(p[0], my0).lineTo(p[0], h-my1);
   };
 
   DataViz.prototype.update = function(){
@@ -200,10 +265,9 @@ var DataViz = (function() {
     var maxDomainCount = this.dataLen;
     var domainCount = Math.round(UTIL.lerp(minDomainCount, maxDomainCount, this.scale));
 
-    var left = Math.ceil(domainCount/2);
-    var right = Math.floor(domainCount/2);
-    var minIndex = this.plotIndex - left;
-    var maxIndex = this.plotIndex + right;
+    var add = Math.round(domainCount/2);
+    var minIndex = this.plotIndex - add;
+    var maxIndex = this.plotIndex + add;
 
     if (minIndex < 0) {
       maxIndex += (minIndex*-1);
@@ -222,14 +286,7 @@ var DataViz = (function() {
     var domain = [d0+minIndex, d0+maxIndex];
     this.plotDomain = domain;
 
-    var plotData = _.filter(this.data, function(d, i){ return i >= minIndex && i<= maxIndex; });
-    this.plotData = _.map(plotData, function(d, i){
-      return {
-        value: d[0],
-        year: domain[0]+i,
-        color: d[1]
-      };
-    });
+    this.plotData = _.filter(this.data, function(d, i){ return i >= minIndex && i<= maxIndex; });
     var values = _.pluck(this.plotData, "value");
 
     var yAxisStep = this.opt.yAxisStep;
@@ -240,6 +297,7 @@ var DataViz = (function() {
     this.renderAxes();
     this.renderPlot();
     this.renderLabels();
+    this.renderMarker();
   };
 
   DataViz.prototype.updateScale = function(scale){
@@ -249,7 +307,7 @@ var DataViz = (function() {
 
   DataViz.prototype.updateTime = function(time){
     this.plotIndex = Math.round(time*(this.dataLen-1));
-    this.plotYear = this.domain[0] + this.plotIndex;
+    this.plotYear = this.data[this.plotIndex];
     this.update();
   };
 
