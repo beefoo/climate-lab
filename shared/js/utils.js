@@ -43,8 +43,9 @@
     return t<.5 ? 4*t*t*t : (t-1)*(2*t-2)*(2*t-2)+1;
   };
 
-  UTIL.easeInElastic = function (t) {
-    return (.04 - .04 / t) * Math.sin(25 * t) + 1;
+  UTIL.easeInElastic = function (t, amount) {
+    amount = amount || 0.04;
+    return (amount - amount / t) * Math.sin(25 * t) + 1;
   },
 
   UTIL.easeInOutElastic = function (t) {
