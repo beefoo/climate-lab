@@ -27,6 +27,8 @@ var DataViz = (function() {
 
     this.domain = this.opt.domain;
     this.range = this.opt.range;
+    this.time = this.opt.time;
+    this.scale = this.opt.scale;
 
     // re-map data
     var d0 = this.domain[0];
@@ -38,9 +40,6 @@ var DataViz = (function() {
         index: i
       };
     });
-
-    this.time = this.opt.time;
-    this.scale = this.opt.scale;
     this.dataLen = this.data.length;
 
     this.sound = false;
@@ -56,7 +55,18 @@ var DataViz = (function() {
     this.loadView();
     this.loadListeners();
 
-    this.updateTime(this.time);
+    this.initTime();
+    this.updateScale(this.scale);
+  };
+
+  DataViz.prototype.initTime = function(){
+    var time = this.time;
+    var domain = this.domain;
+
+    var i = Math.round((domain[1]-domain[0]) * time);
+
+    this.plotIndex = i;
+    this.plotYear = this.data[i];
   };
 
   DataViz.prototype.loadListeners = function(){
@@ -340,22 +350,26 @@ var DataViz = (function() {
     // this.renderHighlight();
   };
 
-  DataViz.prototype.update = function(){
+  DataViz.prototype.updateScale = function(scale){
+    this.scale = scale;
+
     var _this = this;
-
     var time = this.time;
-    var prevIndex = this.plotIndex;
-    this.plotIndex = Math.round(time*(this.dataLen-1));
-    this.plotYear = this.data[this.plotIndex];
 
+    var marker = this.plotYear;
+    var markerYear = marker.year;
+    var markerIndex = marker.index;
     var minDomainCount = this.opt.minDomainCount;
     var maxDomainCount = this.dataLen;
-    var domainCount = Math.round(UTIL.lerp(minDomainCount, maxDomainCount, this.scale));
+    var domainCount = Math.round(UTIL.lerp(minDomainCount, maxDomainCount, scale));
 
-    // add years to the left and right of current marker
-    var add = Math.round(domainCount/2);
-    var minIndex = this.plotIndex - add;
-    var maxIndex = this.plotIndex + add;
+    var anchor = Math.round((domainCount-1) * time);
+    var addLeft = anchor;
+    var addRight = domainCount - addLeft - 1;
+
+    var d0 = this.domain[0];
+    var minIndex = markerIndex - addLeft;
+    var maxIndex = markerIndex + addRight;
 
     // adjust edges
     if (minIndex < 0) {
@@ -369,8 +383,7 @@ var DataViz = (function() {
     minIndex = Math.max(minIndex, 0);
     maxIndex = Math.min(maxIndex, maxDomainCount - 1);
 
-    var prevDomain = this.plotDomain.slice(0);
-    var d0 = this.domain[0];
+    var prevDomain = this.plotDomain;
     var domain = [d0+minIndex, d0+maxIndex];
     this.plotDomain = domain;
 
@@ -405,37 +418,40 @@ var DataViz = (function() {
     plotData = _.sortBy(plotData, 'index');
     this.plotData = plotData;
 
-    // add transition for index and play sound
-    if (prevIndex !== this.plotIndex) {
-      var i = this.plotIndex - minIndex;
-      this.plotData[i].highlighting = true;
-      this.plotData[i].highlightStart = new Date();
-      this.plotData[i].highlightValue = 0;
-      this.sound && this.sound.play(UTIL.norm(this.plotData[i].value, this.range[0], this.range[1]));
-    }
-
     var values = _.pluck(plotData, "value");
     var yAxisStep = this.opt.yAxisStep;
     var minRange = UTIL.floorToNearest(_.min(values), yAxisStep);
     var maxRange = UTIL.ceilToNearest(_.max(values), yAxisStep);
     this.plotRange = [minRange, maxRange];
 
-    this.transitioning = true;
-
+    this.updateTime(this.time, false)
     this.renderAxes();
-    this.transition();
     this.renderLabels();
     this.renderMarker();
+    this.renderPlot();
   };
 
-  DataViz.prototype.updateScale = function(scale){
-    this.scale = scale;
-    this.update();
-  };
-
-  DataViz.prototype.updateTime = function(time){
+  DataViz.prototype.updateTime = function(time, withSound){
     this.time = time;
-    this.update();
+
+    var domain = this.plotDomain;
+    var i = Math.round((domain[1]-domain[0]) * time);
+
+    var prevIndex = this.plotIndex;
+    this.plotIndex = domain[0] + i - this.domain[0];
+    this.plotYear = this.data[this.plotIndex];
+
+    // add transition for index and play sound
+    if (prevIndex !== this.plotIndex && withSound !== false) {
+      this.plotData[i].highlighting = true;
+      this.plotData[i].highlightStart = new Date();
+      this.plotData[i].highlightValue = 0;
+      this.sound && this.sound.play(UTIL.norm(this.plotData[i].value, this.range[0], this.range[1]));
+    }
+
+    this.transitioning = true;
+    this.transition();
+    this.renderMarker();
   };
 
   DataViz.prototype._dataToPoint = function(dx, dy, domain, range){
