@@ -184,52 +184,6 @@ var DataViz = (function() {
     }
   };
 
-  DataViz.prototype.renderHighlight = function(){
-    var _this = this;
-    var data = this.plotData;
-    var domain = this.plotDomain;
-    var range = this.plotRange;
-    var w = this.app.renderer.width;
-    var h = this.app.renderer.height;
-    var m = this.opt.margin;
-    var mx0 = m[0] * w;
-    var my0 = m[1] * h;
-    var mx1 = m[2] * w;
-    var my1 = m[3] * h;
-
-    this.highlight.clear();
-    // while(this.plot.children[0]) {
-    //   this.plot.removeChild(this.plot.children[0]);
-    // }
-
-    var cw = w - mx0 - mx1;
-    var ch = h - my0 - my1;
-    var dataW = cw / data.length;
-    var dataMargin = 0.5;
-    _.each(data, function(d, i){
-      if (d.highlighting) {
-        var hv = d.highlightValue;
-        var p = _this._dataToPoint(d.year, d.value, domain, range);
-        var px = UTIL.norm(d.year, domain[0], domain[1]+1);
-        var x = i * dataW + mx0 + dataMargin;
-        var y = p[1];
-        var pw = dataW-dataMargin*2;
-        var ph = h-y-my1;
-        var scaleY = 1 + hv/2;
-        var scaleX = 1 + hv;
-        var diffW = pw*scaleX - pw;
-        var diffH = ph*scaleY - ph;
-        pw *= scaleX;
-        ph *= scaleY;
-        x -= diffW/2;
-        y -= diffH;
-        _this.plot.beginFill(0xFFFFFF, (1.0-hv) * 0.5);
-        _this.plot.drawRect(x, y, pw, ph);
-      }
-
-    });
-  };
-
   DataViz.prototype.renderLabels = function(){
     // this.labels.clear();
     // while(this.labels.children[0]) {
@@ -256,12 +210,13 @@ var DataViz = (function() {
     }
 
     var cw = w - mx0 - mx1;
-    var count = this.plotData.length
-    var dataW = cw / count;
-    var px = UTIL.norm(year.year, domain[0], domain[1]+1);
-    var i = year.year - domain[0];
-    var x = i * dataW + mx0;
-    if (count % 2 > 0) x += dataW * 0.5
+    // var count = this.plotData.length
+    // var dataW = cw / count;
+    // var px = UTIL.norm(year.year, domain[0], domain[1]+1);
+    // var i = year.year - domain[0];
+    // var x = i * dataW + mx0;
+    // if (count % 2 > 0) x += dataW * 0.5
+    var x = mx0 + cw * this.time;
     this.marker.lineStyle(5, 0xf1a051, 0.7);
     this.marker.moveTo(x, my0).lineTo(x, h-my1);
 
@@ -303,6 +258,7 @@ var DataViz = (function() {
     var cw = w - mx0 - mx1;
     var ch = h - my0 - my1;
     var dataW = cw / data.length;
+
     var dataMargin = 0.5;
     _.each(data, function(d, i){
       var value = d.value;
@@ -443,7 +399,7 @@ var DataViz = (function() {
     this.plotYear = this.data[this.plotIndex];
 
     // add transition for index and play sound
-    if (prevIndex !== this.plotIndex && withSound !== false) {
+    if (prevIndex < this.plotIndex && withSound !== false) {
       this.plotData[i].highlighting = true;
       this.plotData[i].highlightStart = new Date();
       this.plotData[i].highlightValue = 0;
