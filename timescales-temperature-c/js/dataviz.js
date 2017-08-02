@@ -362,6 +362,7 @@ var DataViz = (function() {
     var minDomainCount = this.opt.minDomainCount;
     var maxDomainCount = this.dataLen;
     var domainCount = Math.round(UTIL.lerp(minDomainCount, maxDomainCount, scale));
+    if (domainCount % 2 !== maxDomainCount % 2) domainCount += 1;
 
     var anchor = Math.round((domainCount-1) * time);
     var addLeft = anchor;
