@@ -105,3 +105,69 @@ h2 {
   width: 30px;
   margin-left: -15px;
 }
+
+
+/* Styles for dual mode */
+.app {
+  display: none;
+}
+.app.default,
+.app.sender,
+.app.receiver {
+  display: block;
+}
+
+.app.sender .panes {
+  display: none;
+}
+.app.sender .controls {
+  height: 100%;
+  top: 0;
+  bottom: auto;
+}
+.app.sender .sliders {
+  height: 80%;
+  top: 10%;
+}
+.app.sender .slider.left {
+  width: 30%;
+}
+.app.sender .slider.right {
+  width: 70%;
+  right: 0;
+  left: auto;
+  height: 300px;
+  top: 50%;
+  margin-top: -150px;
+}
+.app.sender .slider-horz {
+  height: 20px;
+}
+.app.sender .slider-vert {
+  width: 20px;
+  height: 80%;
+}
+.app.sender .ui-slider-horizontal .ui-slider-handle {
+  height: 60px;
+  width: 40px;
+  margin-top: -30px;
+}
+.app.sender .ui-slider-vertical .ui-slider-handle {
+  height: 40px;
+  width: 60px;
+  margin-left: -30px;
+}
+.app.sender label {
+  font-size: 1.8rem;
+  margin: 0 0 3rem;
+  display: block;
+}
+
+.app.receiver .panes,
+.app.gamepad .panes {
+  height: 100%;
+}
+.app.receiver .controls,
+.app.gamepad .controls {
+  display: none;
+}
