@@ -1,0 +1,261 @@
+body {
+  overflow: hidden;
+}
+
+.app {
+  background: #212121;
+  color: #fff;
+  letter-spacing: 0.08rem;
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+}
+
+.panes,
+.controls,
+.pane,
+.sliders,
+.slider,
+.label {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+h2 {
+  font-size: 1.2rem;
+  margin: 0 0 1.5rem;
+  color: #80CBC4;
+}
+
+.panes {
+  height: calc(100% - 220px);
+}
+.pane,
+.slider {
+  width: 50%;
+}
+.pane.right,
+.slider.right {
+  left: 50%;
+}
+.pane .temperature {
+  width: 100%;
+  height: auto;
+}
+.pane .key {
+  position: absolute;
+  width: 100%;
+  height: 100px;
+  bottom: -100px;
+  text-align: center;
+  left: 0;
+}
+.pane .key img {
+  display: inline-block;
+  width: 100%;
+  max-width: 600px;
+  height: auto;
+}
+.graph .key img {
+  max-width: 465px;
+  margin-top: 20px;
+}
+.pane .section-label {
+  top: -30px;
+  left: 0;
+  position: absolute;
+  color: #bbb;
+  font-size: 1.2rem;
+  width: 100%;
+  text-align: center;
+}
+.graph .section-label {
+  font-size: 0.9rem;
+}
+.controls {
+  background: #00897b;
+  height: 220px;
+  top: auto;
+  bottom: 0;
+}
+.slider.left {
+  text-align: center;
+}
+
+.map {
+  background: url(../img/worldmap.png) 0 0 no-repeat;
+  background-size: 100% auto;
+}
+.map,
+.graph {
+  width: 50vw;
+  height: 25vw;
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
+}
+.map .helper {
+  width: 100%;
+  height: 0px;
+  border: 2px solid #80CBC4;
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: none;
+  box-sizing: border-box;
+  outline: 1px solid transparent;
+  box-shadow: 0 0 1px rgba(0, 0, 0, 0.05);
+}
+.map .worldmap {
+  position: absolute;
+  width: 100%;
+  height: auto;
+  top: 0;
+  left: 0;
+  z-index: -1;
+}
+/*.map .helper:after {
+  content: "➞";
+  display: block;
+  position: absolute;
+  top: 50%;
+  height: 20px;
+  margin-top: -10px;
+  width: 40px;
+  right: -40px;
+  color: #fff;
+  font-size: 3rem;
+  line-height: 20px;
+}*/
+
+.label {
+  position: absolute;
+  color: #fff;
+  text-align: center;
+  line-height: 1;
+}
+.label small {
+  font-size: 1.4rem;
+  color: #6d6f71;
+  line-height: 1;
+}
+
+.sliders {
+}
+.slider {
+  box-sizing: border-box;
+  padding: 1rem 3rem;
+}
+.slider-horz {
+  width: 100%;
+  height: 10px;
+  position: relative;
+}
+.slider-vert {
+  width: 10px;
+  height: 140px;
+  position: relative;
+}
+
+.ui-slider {
+  background: #004D40;
+  margin: 20px 0 40px;
+}
+.ui-slider.zone {
+  margin: 20px auto 40px;
+}
+.ui-slider .ui-slider-handle {
+  background: #80CBC4;
+  position: absolute;
+  outline-color: #009688;
+  cursor: move;
+  cursor: grab;
+  cursor: -moz-grab;
+  cursor: -webkit-grab;
+}
+.ui-slider .ui-slider-handle:active {
+  cursor: grabbing;
+  cursor: -moz-grabbing;
+  cursor: -webkit-grabbing;
+}
+.ui-slider-horizontal .ui-slider-handle {
+  top: 50%;
+  height: 30px;
+  width: 20px;
+  margin-top: -15px;
+}
+.ui-slider-vertical .ui-slider-handle {
+  left: 50%;
+  height: 20px;
+  width: 30px;
+  margin-left: -15px;
+}
+
+
+/* Styles for dual mode */
+.app {
+  display: none;
+}
+.app.default,
+.app.sender,
+.app.receiver {
+  display: block;
+}
+
+.app.sender .panes {
+  display: none;
+}
+.app.sender .controls {
+  height: 100%;
+  top: 0;
+  bottom: auto;
+}
+.app.sender .sliders {
+  height: 80%;
+  top: 10%;
+}
+.app.sender .slider.left {
+  width: 30%;
+}
+.app.sender .slider.right {
+  width: 70%;
+  right: 0;
+  left: auto;
+  height: 300px;
+  top: 50%;
+  margin-top: -150px;
+}
+.app.sender .slider-horz {
+  height: 20px;
+}
+.app.sender .slider-vert {
+  width: 20px;
+  height: 80%;
+}
+.app.sender .ui-slider-horizontal .ui-slider-handle {
+  height: 60px;
+  width: 40px;
+  margin-top: -30px;
+}
+.app.sender .ui-slider-vertical .ui-slider-handle {
+  height: 40px;
+  width: 60px;
+  margin-left: -30px;
+}
+.app.sender label {
+  font-size: 1.8rem;
+  margin: 0 0 3rem;
+  display: block;
+}
+
+.app.receiver .panes,
+.app.gamepad .panes {
+  height: 100%;
+}
+.app.receiver .controls,
+.app.gamepad .controls {
+  display: none;
+}

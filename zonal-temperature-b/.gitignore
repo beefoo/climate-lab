@@ -1,0 +1,6 @@
+*.nc
+img/frames/*
+!img/frames/.keep
+img/frames-*/*
+*.mp4
+*.webm
