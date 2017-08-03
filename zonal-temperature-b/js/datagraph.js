@@ -3,10 +3,10 @@
 var DataGraph = (function() {
   function DataGraph(options) {
     var defaults = {
-      margin: [0.1, 0.02, 0.1, 0.1],
+      margin: [0.125, 0.1, 0.08, 0.15],
       axisTextStyle: {
         fill: "#d2d1dd",
-        fontSize: 16
+        fontSize: 12
       }
     };
     this.opt = $.extend({}, defaults, options);
@@ -74,7 +74,7 @@ var DataGraph = (function() {
 
   DataGraph.prototype.renderMarker = function(){
     this.marker.clear();
-    this.marker.lineStyle(4, 0x80CBC4, 0.8);
+    this.marker.lineStyle(4, 0xf1a051, 0.8);
 
     var w = this.app.renderer.width;
     var h = this.app.renderer.height;
@@ -145,12 +145,12 @@ var DataGraph = (function() {
     v = domain[0];
     while (v <= domain[1]) {
       // draw label
-      if (v%10===0 || v===domain[1] || v===domain[0]) {
+      if (v%20===0 || v===domain[1] || v===domain[0]) {
         var px = UTIL.norm(v, domain[0], domain[1]);
         var p = _this._dataToPoint(px, range[0]);
         var label = new PIXI.Text(v, textStyle);
         label.x = p[0];
-        label.y = p[1] + 35;
+        label.y = p[1] + 22;
         label.anchor.set(0.5, 1);
         _this.axes.addChild(label);
       }
@@ -173,7 +173,7 @@ var DataGraph = (function() {
     //   this.plot.removeChild(this.plot.children[0]);
     // }
 
-    this.renderPlotLine(data, 2, 0xf1a051);
+    this.renderPlotLine(data, 2, 0xdbd6d6);
   };
 
   DataGraph.prototype.renderPlotLine = function(data, w, color){

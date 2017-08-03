@@ -11,24 +11,24 @@
 <body>
   <div class="app">
     <div id="main" class="panes">
-      <div id="pane-left" class="pane">
+      <div id="pane" class="pane">
         <div id="map" class="map">
           <img id="worldmap" class="worldmap" src="img/worldmap_highlight.png" />
           <!-- <video id="video-temperature" autoplay loop crossorigin="anonymous">
             <source src="https://s3.amazonaws.com/brianfoo-amnh/temperature_1980-2016.mp4" type='video/mp4'>
           </video> -->
           <img id="video-temperature" class="temperature" src="img/map/frame00034.png" />
-          <div class="helper"></div>
-          <!-- <div class="key"><img src="img/zonal_color_key.png" alt="Color key for temperature map" /></div> -->
+          <div class="helper">
+            <div id="graph" class="graph">
+              <!-- <div class="key"><img src="img/zonal_graph_key.png" alt="Color key for temperature graph" /></div> -->
+              <div id="region-label" class="section-label" style="display: none"></div>
+              <div class="section-header"><h2>Temperature changes in this region</h2></div>
+            </div>
+          </div>
+          <div class="key"><img src="img/zonal_color_key.png" alt="Color key for temperature map" /></div>
           <div id="year-label" class="section-label"></div>
-        </div>
-      </div>
-      <div id="pane-right" class="pane right">
-        <div id="graph" class="graph">
-          <!-- <div class="key"><img src="img/zonal_graph_key.png" alt="Color key for temperature graph" /></div> -->
-          <div id="region-label" class="section-label"></div>
-        </div>
 
+        </div>
       </div>
       <div class="label" id="label"><h1>Which regions have the most extreme temperature change?</h1></div>
     </div>
