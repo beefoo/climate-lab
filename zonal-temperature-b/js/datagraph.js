@@ -36,7 +36,13 @@ var DataGraph = (function() {
   };
 
   DataGraph.prototype.lerpData = function(d1, d2, amount){
-    return UTIL.lerpList(d1, d2, amount);
+    var d1v = _.map(d1, function(d){ return d[0]; });
+    var d2v = _.map(d2, function(d){ return d[0]; });
+    var dv = UTIL.lerpList(d1v, d2v, amount);
+    var dc = [];
+    if (amount < 0.5) dc = _.map(d1, function(d){ return d[1]; });
+    else dc = _.map(d2, function(d){ return d[1]; });
+    return _.zip(dv, dc);
   };
 
   DataGraph.prototype.loadListeners = function(){
@@ -173,23 +179,45 @@ var DataGraph = (function() {
     //   this.plot.removeChild(this.plot.children[0]);
     // }
 
-    this.renderPlotLine(data, 2, 0xdbd6d6);
+    this.renderBars(data);
   };
 
-  DataGraph.prototype.renderPlotLine = function(data, w, color){
+  DataGraph.prototype.renderBars = function(data){
     var _this = this;
     var len = data.length;
-    this.plot.lineStyle(w, color);
+    var range = this.range;
+    var w = this.app.renderer.width;
+    var h = this.app.renderer.height;
+    var m = this.opt.margin;
+    var mx0 = m[0] * w;
+    var my0 = m[1] * h;
+    var mx1 = m[2] * w;
+    var my1 = m[3] * h;
+    var cw = w - mx0 - mx1;
+    var ch = h - my0 - my1;
+
+    var barW = cw / len;
+
+    var rangeRatio = range[1] / (range[1]-range[0]);
+    this.plot.lineStyle(1, 0x212121);
 
     _.each(data, function(d, i){
-      var dx = i / (len-1);
-      var p = _this._dataToPoint(dx, d);
+      var value = d[0];
+      var color = d[1];
+      var x = i * barW + mx0;
+      var y = 0;
+      var barH = 0;
 
-      if (i > 0) {
-        _this.plot.lineTo(p[0], p[1]);
+      if (value > 0) {
+        barH = (value / range[1]) * ch * rangeRatio;
+        y = my0 + ch * rangeRatio - barH;
       } else {
-        _this.plot.moveTo(p[0], p[1]);
+        barH = (value / range[0] )* ch * (1-rangeRatio);
+        y = my0 + ch * rangeRatio;
       }
+
+      _this.plot.beginFill(color);
+      _this.plot.drawRect(x, y, barW, barH);
     });
   };
 

@@ -90,6 +90,7 @@ var App = (function() {
 
   App.prototype.onDataLoaded = function(data){
     this.data = data.zoneData;
+
     this.domain = data.domain;
     this.range = data.range;
     var frames = this.data[0].length;

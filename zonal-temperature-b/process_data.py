@@ -32,11 +32,11 @@ OUTPUT_FILE = args.OUTPUT_FILE
 START_YEAR = args.START_YEAR
 END_YEAR = args.END_YEAR
 ZONES = args.ZONES
-# RANGE = (-6, 6) # Celsius
+RANGE = (-6,6) # Celsius
 
 GRADIENT = [
     "#4B94D8", # blue
-    "#D3D3D3", # gray
+    "#6d6d6d", # gray
     "#D83636" #red
 ]
 
@@ -98,7 +98,6 @@ if 1.0*len(lats)/ZONES % 1 > 0:
     print "Warning: zones not a divisor of %s" % len(lats)
 
 # retrieve data from each zone
-maxValue = 0
 data = []
 zoneSize = len(lats) / ZONES
 for zone in range(ZONES):
@@ -116,30 +115,25 @@ for zone in range(ZONES):
                 if len(values) > 0:
                     arr += values
             value = mean(arr)
+            # add data
             zoneData.append(value)
-            aValue = abs(value)
-            if aValue > maxValue:
-                maxValue = aValue
     data.append(list(zoneData))
     print "Zone %s complete" % (zone+1)
 data = list(reversed(data))
 ds.close()
 
-# # add colors
-# for i,values in enumerate(data):
-#     for j,value in enumerate(values):
-#         n = norm(value, RANGE[0], RANGE[1])
-#         color = getColor(GRADIENT, n)
-#         data[i][j] = (value, color)
-
-maxValue = round(maxValue)
-RANGE = [-1*maxValue, maxValue]
-# RANGE = [-6,6]
+# add colors
+for i, zoneData in enumerate(data):
+    zoneColors = []
+    for j, value in enumerate(zoneData):
+        n = norm(value, RANGE[0], RANGE[1])
+        color = getColor(GRADIENT, n)
+        data[i][j] = (value, color)
 
 jsonData = {
     "zoneData": data,
     "domain": [START_YEAR, END_YEAR],
-    "range": RANGE
+    "range": (-2, 6)
 }
 
 # Retrieve existing data if exists
