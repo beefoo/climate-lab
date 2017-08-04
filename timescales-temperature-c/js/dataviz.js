@@ -37,7 +37,8 @@ var DataViz = (function() {
         year: d0 + i,
         value: d[0],
         color: d[1],
-        index: i
+        index: i,
+        active: false
       };
     });
     this.dataLen = this.data.length;
@@ -46,9 +47,10 @@ var DataViz = (function() {
     if (this.opt.enableSound) this.sound = new Sound({});
 
     // init plot
-    this.plotData = [];
     this.plotDomain = [];
+    this.plotDomainPrecise = [];
     this.plotRange = [];
+    this.dataIndex = 0;
     this.plotIndex = 0;
     this.plotYear = {};
 
@@ -65,6 +67,7 @@ var DataViz = (function() {
 
     var i = Math.round((domain[1]-domain[0]) * time);
 
+    this.dataIndex = this.time;
     this.plotIndex = i;
     this.plotYear = this.data[i];
   };
@@ -109,6 +112,7 @@ var DataViz = (function() {
   DataViz.prototype.renderAxes = function(){
     var _this = this;
     var domain = this.plotDomain;
+    var domainp = this.plotDomainPrecise;
     var range = this.plotRange;
     var textStyle = this.opt.axisTextStyle;
     var w = this.app.renderer.width;
@@ -158,7 +162,7 @@ var DataViz = (function() {
     value = domain[0];
     i = 0;
     var cw = w - mx0 - mx1;
-    var dataW = cw / (count+1);
+    var dataW = cw / (domainp[1]-domainp[0]+1);
     while (value <= domain[1]) {
       var delta1 = domain[1] - value;
       var delta2 = value - domain[0];
@@ -169,12 +173,16 @@ var DataViz = (function() {
         continue;
       }
       var p = _this._dataToPoint(value, range[0], domain, range);
-      var px = UTIL.norm(value, domain[0], domain[1]+1);
-      var x = i * dataW + mx0 + dataW * 0.5;
+      var px = UTIL.norm(value, domainp[0], domainp[1]+1);
+      var x = px * cw + mx0 + dataW * 0.5;
       var text = value;
       var ts = _.clone(textStyle);
       ts.fontSize = 22;
       var label = new PIXI.Text(text, ts);
+      if (count > 10) {
+        if (value == domain[0]) x = mx0;
+        else if (value==domain[1]) x = mx0+cw;
+      }
       label.x = x;
       label.y = p[1] + m[3] * h / 5;
       label.anchor.set(0.5, 0);
@@ -193,8 +201,6 @@ var DataViz = (function() {
 
   DataViz.prototype.renderMarker = function(){
     // draw plot marker
-    var domain = this.plotDomain;
-    var range = this.plotRange;
     var year = this.plotYear;
     var w = this.app.renderer.width;
     var h = this.app.renderer.height;
@@ -210,12 +216,6 @@ var DataViz = (function() {
     }
 
     var cw = w - mx0 - mx1;
-    // var count = this.plotData.length
-    // var dataW = cw / count;
-    // var px = UTIL.norm(year.year, domain[0], domain[1]+1);
-    // var i = year.year - domain[0];
-    // var x = i * dataW + mx0;
-    // if (count % 2 > 0) x += dataW * 0.5
     var x = mx0 + cw * this.time;
     this.marker.lineStyle(5, 0xf1a051, 0.7);
     this.marker.moveTo(x, my0).lineTo(x, h-my1);
@@ -239,8 +239,9 @@ var DataViz = (function() {
 
   DataViz.prototype.renderPlot = function(){
     var _this = this;
-    var data = this.plotData;
+    var data = this.data;
     var domain = this.plotDomain;
+    var domainp = this.plotDomainPrecise;
     var range = this.plotRange;
     var w = this.app.renderer.width;
     var h = this.app.renderer.height;
@@ -257,22 +258,32 @@ var DataViz = (function() {
 
     var cw = w - mx0 - mx1;
     var ch = h - my0 - my1;
-    var dataW = cw / data.length;
+    var dataW = cw / (domainp[1]-domainp[0]+1);
 
     var dataMargin = 0.5;
     _.each(data, function(d, i){
-      var value = d.value;
-      if (d.highlighting) {
-        value = UTIL.lerp(value+0.5, value, UTIL.easeInElastic(d.highlightValue, 0.01));
-        if (isNaN(value)) value = d.value;
+      if (d.active) {
+        var value = d.value;
+        if (d.highlighting) {
+          value = UTIL.lerp(value+0.5, value, UTIL.easeInElastic(d.highlightValue, 0.01));
+          if (isNaN(value)) value = d.value;
+        }
+        var p = _this._dataToPoint(d.year, value, domainp, range);
+        var px = UTIL.norm(d.year, domainp[0], domainp[1]+1);
+        var y = p[1];
+        var x = px * cw + mx0;
+        var w = dataW - dataMargin * 2;
+        // clip the sides off the edges
+        if (x < mx0) {
+          w -= (mx0 - x);
+          x = mx0;
+        }
+        if (x > (mx0 + cw - dataW)) {
+          w -= (x - (mx0 + cw - dataW));
+        }
+        _this.plot.beginFill(d.color);
+        _this.plot.drawRect(x+dataMargin, y, w, h-y-my1);
       }
-      var p = _this._dataToPoint(d.year, value, domain, range);
-      var px = UTIL.norm(d.year, domain[0], domain[1]+1);
-      var x = i * dataW + mx0 + dataMargin;
-      var y = p[1];
-      _this.plot.beginFill(d.color);
-      _this.plot.drawRect(x, y, dataW-dataMargin*2, h-y- my1);
-      // _this.plot.drawCircle(x, y, 5)
     });
   };
 
@@ -285,19 +296,19 @@ var DataViz = (function() {
     var transitioning = false;
     var now = new Date();
 
-    _.each(this.plotData, function(d, i){
+    _.each(this.data, function(d, i){
       if (d.highlighting && d.highlightStart) {
         var diff = now - d.highlightStart;
         if (diff >= highlightMs) {
           diff = highlightMs;
-          _this.plotData[i].highlighting = false;
+          _this.data[i].highlighting = false;
         } else {
           transitioning = true;
         }
         var progress = diff / highlightMs;
         progress = Math.max(progress, 0);
         progress = Math.min(progress, 1);
-        _this.plotData[i].highlightValue = progress;
+        _this.data[i].highlightValue = progress;
       }
     });
 
@@ -310,78 +321,56 @@ var DataViz = (function() {
     this.scale = scale;
 
     var _this = this;
-    var time = this.time;
 
-    var marker = this.plotYear;
-    var markerYear = marker.year;
-    var markerIndex = marker.index;
+    var time = this.time;
+    var dataIndex = this.dataIndex;
     var minDomainCount = this.opt.minDomainCount;
     var maxDomainCount = this.dataLen;
-    var domainCount = Math.round(UTIL.lerp(minDomainCount, maxDomainCount, scale));
-    if (domainCount % 2 !== maxDomainCount % 2) domainCount += 1;
+    var domainCount = UTIL.lerp(minDomainCount, maxDomainCount, scale);
 
-    var anchor = Math.round((domainCount-1) * time);
-    var addLeft = anchor;
-    var addRight = domainCount - addLeft - 1;
-
-    var d0 = this.domain[0];
-    var minIndex = markerIndex - addLeft;
-    var maxIndex = markerIndex + addRight;
+    var domainCountP = domainCount / maxDomainCount;
+    var domainStartP = dataIndex - (domainCountP * time);
+    var domainEndP = dataIndex + (domainCountP * (1-time));
 
     // adjust edges
-    if (minIndex < 0) {
-      maxIndex += (minIndex*-1);
-      minIndex = 0;
+    if (domainStartP < 0) {
+      domainEndP -= domainStartP;
+      domainStartP = 0;
     }
-    if (maxIndex >= maxDomainCount) {
-      minIndex -= (maxIndex-maxDomainCount+1)
-      maxIndex = maxDomainCount - 1;
+    if (domainEndP > 1) {
+      domainStartP -= (domainEndP-1)
+      domainEndP = 1;
     }
-    minIndex = Math.max(minIndex, 0);
-    maxIndex = Math.min(maxIndex, maxDomainCount - 1);
 
+    // determine new domain
+    var domain = this.domain;
     var prevDomain = this.plotDomain;
-    var domain = [d0+minIndex, d0+maxIndex];
-    this.plotDomain = domain;
+    var d0 = domain[0];
+    var d1 = domain[1];
+    var domainStart = UTIL.lerp(d0, d1, domainStartP);
+    var domainEnd = UTIL.lerp(d0, d1, domainEndP);
+    var newDomainPrecise = [domainStart, domainEnd];
+    var newDomain = [Math.ceil(domainStart), Math.floor(domainEnd)];
 
-    // determine which indices to add
-    var addIndices = [];
-    if (prevDomain.length && domain[0] < prevDomain[0]) {
-      _(prevDomain[0]-domain[0]).times(function(i){
-        addIndices.push(domain[0] + i - d0);
-      });
-    }
-    if (prevDomain.length && domain[1] > prevDomain[1]) {
-      _(domain[1]-prevDomain[1]).times(function(i){
-        addIndices.push(domain[1] - i - d0);
-      });
-    }
-    if (!prevDomain.length) {
-      _(domain[1]-domain[0]+1).times(function(i){
-        addIndices.push(domain[0] + i - d0);
-      });
-    }
+    this.plotDomain = newDomain;
+    this.plotDomainPrecise = newDomainPrecise;
 
-    // remove anything not in index
-    var plotData = _.filter(this.plotData, function(d, i){
-      return (d.index >= minIndex && d.index <= maxIndex);
+    var values = [];
+    _.each(this.data, function(d, i){
+      if (d.year >= Math.floor(domainStart) && d.year <= Math.ceil(domainEnd)) {
+        _this.data[i].active = true;
+        values.push(d.value);
+      } else {
+        _this.data[i].active = false;
+      }
     });
 
-    // add new indices
-    _.each(addIndices, function(index, i){
-      var add = _.clone(_this.data[index]);
-      plotData.push(add);
-    });
-    plotData = _.sortBy(plotData, 'index');
-    this.plotData = plotData;
-
-    var values = _.pluck(plotData, "value");
     var yAxisStep = this.opt.yAxisStep;
     var minRange = UTIL.floorToNearest(_.min(values), yAxisStep);
     var maxRange = UTIL.ceilToNearest(_.max(values), yAxisStep);
     this.plotRange = [minRange, maxRange];
 
-    this.updateTime(this.time, false)
+    this.updateTime(this.time, false);
     this.renderAxes();
     this.renderLabels();
     this.renderMarker();
@@ -389,21 +378,26 @@ var DataViz = (function() {
   };
 
   DataViz.prototype.updateTime = function(time, withSound){
+    var prevTime = this.time;
     this.time = time;
 
-    var domain = this.plotDomain;
-    var i = Math.round((domain[1]-domain[0]) * time);
-
+    var domain = this.domain;
+    var domainPrecise = this.plotDomainPrecise;
+    var yearPrecise = UTIL.lerp(domainPrecise[0], domainPrecise[1], time);
     var prevIndex = this.plotIndex;
-    this.plotIndex = domain[0] + i - this.domain[0];
+
+    this.dataIndex = UTIL.norm(yearPrecise, domain[0], domain[1]);
+    var plotIndex = Math.round(UTIL.lerp(domain[0], domain[1], this.dataIndex)) - domain[0];
+    this.plotIndex = plotIndex;
     this.plotYear = this.data[this.plotIndex];
+    // console.log(this.plotYear.year)
 
     // add transition for index and play sound
-    if (prevIndex < this.plotIndex && withSound !== false) {
-      this.plotData[i].highlighting = true;
-      this.plotData[i].highlightStart = new Date();
-      this.plotData[i].highlightValue = 0;
-      this.sound && this.sound.play(UTIL.norm(this.plotData[i].value, this.range[0], this.range[1]));
+    if ((prevIndex < plotIndex || time > prevTime && prevTime <= 0)&& withSound !== false) {
+      this.data[plotIndex].highlighting = true;
+      this.data[plotIndex].highlightStart = new Date();
+      this.data[plotIndex].highlightValue = 0;
+      this.sound && this.sound.play(UTIL.norm(this.data[plotIndex].value, this.range[0], this.range[1]));
     }
 
     this.transitioning = true;
