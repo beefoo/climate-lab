@@ -7,7 +7,7 @@ var Sound = (function() {
       soundExt: '.mp3',
       notes: ['Db3', 'Eb3', 'E3', 'Gb3', 'Ab3', 'A3', 'B3', 'Db4', 'E4', 'Gb4', 'Ab4', 'A4', 'B4'],
       stereo: 0.0,
-      waitMs: 100
+      waitMs: 50
     };
     this.opt = $.extend({}, defaults, options);
     this.init();
@@ -40,7 +40,7 @@ var Sound = (function() {
     // don't play same note right after it was played
     var now = new Date();
     var waitMs = this.opt.waitMs;
-    if (!this.sounds[i].lastPlayed || (now-this.sounds[i].lastPlayed) > 100) {
+    if (!this.sounds[i].lastPlayed || (now-this.sounds[i].lastPlayed) > waitMs) {
       // fade out prev sound
       // if (this.sounds[i].prevSound) {
       //   this.sounds[i].player.fade(1.0, 0.0, 10, this.sounds[i].prevSound);

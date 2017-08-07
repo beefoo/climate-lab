@@ -4,7 +4,7 @@ var DataViz = (function() {
   function DataViz(options) {
     var defaults = {
       el: '#main',
-      transitionMs: 3000,
+      transitionMs: 500,
       labelTextStyle: {
         fill: "#ffffff",
         fontSize: 24,
@@ -15,7 +15,6 @@ var DataViz = (function() {
         fontSize: 16,
       },
       plotMargin: [100, 60],
-      active: true,
       rangeIncrement: 0.25,
       domainIncrement: 20,
       sound: {
@@ -35,20 +34,20 @@ var DataViz = (function() {
   }
 
   DataViz.prototype.init = function(){
+    var _this = this;
+
     this.$el = $(this.opt.el);
 
     this.domain = this.opt.domain;
     this.range = this.opt.range;
-    this.active = this.opt.active;
 
-    this.prevData = [];
-    this.lastData = [];
-    this.lastColor = 0;
     this.data = [];
     this.cords = [];
-    this.label = '';
     this.prevProgress = 0;
     this.progress = 0;
+    this.active = true;
+
+    this.initData(this.opt.data);
 
     // load sound
     this.sound = new Sound(this.opt.sound);
@@ -58,42 +57,77 @@ var DataViz = (function() {
     if (this.opt.refData) this.refData = this.opt.refData;
 
     this.loadView();
-    this.setData(this.opt.data);
     this.loadCords();
     this.loadListeners();
   };
 
-  DataViz.prototype.checkForPluck = function(prev, curr) {
-    // don't pluck if going backwards
-    if (prev >= curr) return false;
-
+  DataViz.prototype.initData = function(data){
     var _this = this;
-    var domain = this.domain;
-    var d0 = UTIL.lerp(domain[0], domain[1], prev);
-    var d1 = UTIL.lerp(domain[0], domain[1], curr);
+    var range = this.range;
+    var incr = this.opt.rangeIncrement;
 
-    var ampRange = this.opt.cord.ampRange;
-    var amp = UTIL.lerp(ampRange[0], ampRange[1], curr-prev);
+    // init data
+    _.each(data, function(d, i){
+      data[i].prevProgress = 0;
+      data[i].progress = 0;
+      data[i].transitionStart = false;
+      data[i].data = d.data.slice(0);
 
-    // check to see if we crossed it
-    _.each(this.cords, function(c, i){
-      var intersections = c.intersections;
-      _.each(intersections, function(intersection){
-        if (intersection > d0 && intersection < d1) {
-          _this.cords[c.i].plucked = true;
-          _this.cords[c.i].pluckedAt = new Date();
-          _this.cords[c.i].amplitude = amp;
-        }
-      });
+      // calculate intersections
+      var intersections = [];
+      for (var dy=range[0]; dy<=range[1]; dy+=incr) {
+        var cordIntersections = _this._getIntersections(data[i].data, dy);
+        intersections.push(cordIntersections);
+      }
+      data[i].intersections = intersections;
     });
+
+    this.data = data;
   };
 
-  DataViz.prototype.clearProgress = function(){
-    this.prevProgress = this.progress;
+  DataViz.prototype.addIndex = function(i){
+    // console.log('add',i)
+    this.data[i].transitionStart = new Date();
+    this.data[i].prevProgress = 0;
+    this.data[i].progress = 0;
+    this.data[i].direction = 1;
+
+    this.active = true;
+  };
+
+  DataViz.prototype.checkForPluck = function() {
+    var _this = this;
+    var data = this.data;
+    var domain = this.domain;
+    var ampRange = this.opt.cord.ampRange;
+
+    _.each(data, function(d, i){
+      if (d.progress > d.prevProgress) {
+        var curr = d.progress;
+        var prev = d.prevProgress;
+        var d0 = UTIL.lerp(domain[0], domain[1], prev);
+        var d1 = UTIL.lerp(domain[0], domain[1], curr);
+        var amp = UTIL.lerp(ampRange[0], ampRange[1], curr-prev);
+        var intersections = d.intersections;
+
+        // check to see if we crossed cords
+        _.each(_this.cords, function(c, j){
+          var cIntersections = intersections[c.i];
+          _.each(cIntersections, function(intersection){
+            if (intersection > d0 && intersection < d1) {
+              _this.cords[c.i].plucked = true;
+              _this.cords[c.i].pluckedAt = new Date();
+              _this.cords[c.i].amplitude = amp;
+            }
+          });
+        });
+      }
+    });
   };
 
   DataViz.prototype.loadCords = function(){
     var _this = this;
+    var data = this.data;
     var domain = this.domain;
     var range = this.range;
     var incr = this.opt.rangeIncrement;
@@ -108,16 +142,14 @@ var DataViz = (function() {
       var progress = i/len;
       var pp = _this._dataToPercent(0, dy, domain, range);
       var p = _this._dataToPoint(0, dy, domain, range);
-      var intersections = _this._getIntersections(_this.data, dy);
       var freq = UTIL.lerp(oscRange[0], oscRange[1], progress);
       var tensity = UTIL.lerp(tensityRange[0], tensityRange[1], progress);
-      // console.log(intersections)
+
       _this.cords.push({
         i: i,
         y: p[1],
         py: pp[1],
         dy: dy,
-        intersections: intersections,
         plucked: false,
         pluckedAt: false,
         amplitude: 0,
@@ -144,10 +176,9 @@ var DataViz = (function() {
     this.refPlot = new PIXI.Graphics();
     this.plot = new PIXI.Graphics();
     this.plotProgress = new PIXI.Graphics();
-    this.plotFade = new PIXI.Graphics();
     this.labels = new PIXI.Graphics();
 
-    this.app.stage.addChild(this.axes, this.refPlot, this.plot, this.plotProgress, this.plotFade, this.labels);
+    this.app.stage.addChild(this.axes, this.refPlot, this.plot, this.plotProgress, this.labels);
 
     this.$el.append(this.app.view);
   };
@@ -171,22 +202,26 @@ var DataViz = (function() {
     });
   };
 
+  DataViz.prototype.removeIndex = function(i){
+    // console.log('remove',i)
+    this.data[i].transitionStart = new Date();
+    this.data[i].prevProgress = 1;
+    this.data[i].progress = 1;
+    this.data[i].direction = -1;
+
+    this.active = true;
+  };
+
   DataViz.prototype.render = function(){
     if (this.active) {
       this.transitionData();
-      this.checkForPluck(this.prevProgress, this.progress);
+      this.checkForPluck();
       this.pluck();
       this.renderAxes();
       this.renderProgress();
 
-    // clear progress
-    } else {
-      this.plotProgress.clear();
-      while(this.plotProgress.children[0]) {
-        this.plotProgress.removeChild(this.plotProgress.children[0]);
-      }
+      if (!this.cordsActive && !this.dataActive) this.active = false;
     }
-
   };
 
   DataViz.prototype.renderAxes = function(){
@@ -210,6 +245,7 @@ var DataViz = (function() {
     this.axes.moveTo(x0, y0).lineTo(x0, y0 + ph);
 
     // draw horizontal lines (cords)
+    this.cordsActive = false;
     _.each(this.cords, function(c,i){
       _this.renderCord(c);
     });
@@ -297,6 +333,8 @@ var DataViz = (function() {
       // draw bezier curve
       this.axes.moveTo(x0, c.y).bezierCurveTo(xc - dxBez, c.y + yc, xc + dxBez, c.y + yc, x0 + pw, c.y);
 
+      this.cordsActive = true;
+
     // not oscillating, just draw a straight line
     } else {
       this.axes.moveTo(x0, c.y).lineTo(x0 + pw, c.y);
@@ -325,11 +363,7 @@ var DataViz = (function() {
     var _this = this;
     alpha = alpha || 1;
 
-    // clear labels
-    g.clear();
-    while(g.children[0]) {
-      g.removeChild(g.children[0]);
-    }
+
     g.lineStyle(lineW, color, alpha);
 
     var domain = this.domain;
@@ -346,32 +380,40 @@ var DataViz = (function() {
   };
 
   DataViz.prototype.renderProgress = function(){
-    var len = this.data.length-1;
-    var progress = this.progress;
-    var data = _.filter(this.data, function(v, i){ return (i/len) <= progress; });
+    var _this = this;
+    var colors = this.opt.colors;
+    var data = this.data;
 
-    var color = 0x68f9cc;
-    if (this.className === "human") color = 0xfcb064;
+    // clear progress
+    this.plotProgress.clear();
+    // while(this.plotProgress.children[0]) {
+    //   this.plotProgress.removeChild(this.plotProgress.children[0]);
+    // }
 
-    this.renderLine(this.plotProgress, data, 3, color);
+    _.each(this.data, function(d, i){
+      var progress = d.progress;
+      if (progress > 0) {
+        var data = d.data;
+        var len = data.length-1;
+        var dp = _.filter(data, function(v, j){ return (j/len) <= progress; });
+        var color = colors[i];
 
-    if (!data.length) return false;
+        if (dp.length) {
+          _this.renderLine(_this.plotProgress, dp, 3, color);
+          var pp = dp[dp.length-1];
+          var p = _this._dataToPoint(pp[0], pp[1]);
+          _this.plotProgress.beginFill(color);
+          _this.plotProgress.drawCircle(p[0], p[1], 5);
+          _this.plotProgress.endFill();
+        }
+      }
 
-    this.plotProgress.beginFill(color);
-    var dp = data[data.length-1];
-    var p = this._dataToPoint(dp[0], dp[1]);
-    this.plotProgress.drawCircle(p[0], p[1], 5);
-
-    this.lastData = data;
-    this.lastColor = color;
-
-    if (this.prevData.length && progress < 0.5) {
-      var alpha = 1.0 - progress * 2;
-      this.renderLine(this.plotFade, this.prevData, 3, this.prevColor, alpha);
-    }
+    });
   };
 
   DataViz.prototype.renderRef = function(){
+    return false; // disable for now
+
     if (!this.refData) return false;
 
     // render data
@@ -398,67 +440,45 @@ var DataViz = (function() {
     this.refPlot.addChild(label);
   };
 
-  DataViz.prototype.reset = function() {
-    this.setProgress(0);
-    this.render();
-  };
-
-  DataViz.prototype.setActive = function(active) {
-    this.active = active;
-  };
-
-  DataViz.prototype.setData = function(data){
-    this.label = data.label;
-    this.prevData = this.lastData.slice(0);
-    this.prevColor = this.lastColor;
-    this.data = data.data.slice(0);
-    this.className = data.className;
-
-    // reset progress
-    this.prevProgress = 0;
-    this.progress = 0;
-
-    this.transitionStart = new Date();
-
-    this.loadCords();
-    this.renderAxes();
-    this.renderRef();
-
-    this.renderProgress();
-  };
-
-  DataViz.prototype.setProgress = function(progress) {
-    this.prevProgress = this.progress;
-    this.progress = progress;
-  };
-
   DataViz.prototype.transitionData = function(){
-
-    // transiton start must be defined
-    if (!this.transitionStart) return false;
-
-    // get time since transition start
+    var _this = this;
+    var data = this.data;
     var transitionMs = this.opt.transitionMs;
     var now = new Date();
-    var timeSince = now - this.transitionStart;
 
-    // we are transitioning
-    if (timeSince <= transitionMs) {
-      // set progress for progress line
-      var progress = timeSince / transitionMs;
-      progress = UTIL.easeInOutSin(progress);
-      this.setProgress(progress);
+    this.dataActive = false;
 
+    _.each(data, function(d, i){
+      if (d.transitionStart) {
+        var timeSince = now - d.transitionStart;
+        var prevProgress = d.progress;
+        var direction = d.direction;
+        var progress = 1.0;
 
-      // var data = [];
-      // var d0 = this.prevData;
-      // var d1 = this.data;
-      // _.each(d0, function(v, i){
-      //   var y = UTIL.lerp(v[1], d1[i][1], progress);
-      //   data.push([v[0], y]);
-      // });
-      // this.dataT = data;
-    }
+        // we are transitioning
+        if (timeSince <= transitionMs) {
+          // set progress for progress line
+          var progress = timeSince / transitionMs;
+          progress = UTIL.easeInOutSin(progress);
+        }
+        if (direction < 0) progress = 1.0 - progress;
+
+        progress = Math.min(progress, 1.0);
+        progress = Math.max(progress, 0.0);
+
+        _this.data[i].prevProgress = prevProgress;
+        _this.data[i].progress = progress;
+
+        // done progressing
+        if (direction > 0 && progress >= 1.0 || direction < 0 && progress <= 0.0) {
+          _this.data[i].transitionStart = false;
+        }
+
+        _this.dataActive = true;
+      } else {
+        _this.data[i].prevProgress = d.progress;
+      }
+    });
   };
 
   DataViz.prototype._dataToPercent = function(dx, dy, domain, range){

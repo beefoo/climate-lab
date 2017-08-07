@@ -36,6 +36,11 @@ var App = (function() {
     }
   };
 
+  App.prototype.deselectFactor = function(index) {
+    this.dataViz.removeIndex(index);
+    // this.titles.deactivate(index);
+  };
+
   App.prototype.loadData = function(){
     var _this = this;
 
@@ -52,6 +57,9 @@ var App = (function() {
       crosstab.on('factor.select', function(message) {
         _this.selectFactor(message.data);
       });
+      crosstab.on('factor.deselect', function(message) {
+        _this.deselectFactor(message.data);
+      });
     }
 
     if (this.mode!=='receiver') {
@@ -67,22 +75,28 @@ var App = (function() {
     // load data
     var refData = data.data[0];
     this.data = data.data.slice(1);
+    var colors = this.opt.colors;
 
     // load data viz
-    this.dataViz = new DataViz({"el": "#pane", "data": data.data[1], "domain": data.domain, "range": data.range, "refData": refData});
+    this.dataViz = new DataViz({"el": "#pane", "data": this.data, "domain": data.domain, "range": data.range, "refData": refData, colors: colors});
 
     // load titles
-    this.titles = new Titles({data: this.data, el: "#titles"});
+    // this.titles = new Titles({data: this.data, el: "#titles"});
 
     this.render();
   };
 
   App.prototype.onFactorClick = function($el) {
-    $('.factor-button').removeClass('selected');
-    $el.addClass('selected');
+    var selected = $el.hasClass('selected');
     var index = parseInt($el.attr('data-value'));
 
-    crosstab.broadcast('factor.select', index);
+    if (selected) {
+      $el.removeClass('selected');
+      crosstab.broadcast('factor.deselect', index);
+    } else {
+      $el.addClass('selected');
+      crosstab.broadcast('factor.select', index);
+    }
   };
 
   App.prototype.render = function(){
@@ -94,9 +108,8 @@ var App = (function() {
   };
 
   App.prototype.selectFactor = function(index) {
-    var factorData = this.data[index];
-    this.dataViz.setData(factorData);
-    this.titles.activate(index);
+    this.dataViz.addIndex(index);
+    // this.titles.activate(index);
   };
 
   return App;
