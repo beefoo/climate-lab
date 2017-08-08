@@ -138,8 +138,7 @@ h2 {
 .button-group button:nth-child(2) { background: #FF8200; }
 .button-group button:nth-child(3) { background: #ea4d4d; }
 .human .button-group button:first-child { background: #a8b749; }
-.human .button-group button:nth-child(2) { background: #6faaa8; }
-.human .button-group button:nth-child(3) { background: #5cad51; }
+.human .button-group button:nth-child(2) { background: #5cad51; }
 
 .button-group button.selected,
 .human .button-group button.selected { background: #fff; }
@@ -148,8 +147,7 @@ h2 {
 .button-group button.selected:nth-child(2) { color: #FF8200; }
 .button-group button.selected:nth-child(3) { color: #ea4d4d; }
 .human .button-group button.selected:first-child { color: #a8b749; }
-.human .button-group button.selected:nth-child(2) { color: #6faaa8; }
-.human .button-group button.selected:nth-child(3) { color: #5cad51; }
+.human .button-group button.selected:nth-child(2) { color: #5cad51; }
 
 .button-group button.selected:first-child svg path, .button-group button.selected:first-child svg rect,
 .button-group button.selected:first-child svg circle, .button-group button.selected:first-child svg polygon { fill: #29BECE; }
@@ -160,13 +158,7 @@ h2 {
 .human .button-group button.selected:first-child svg path, .human .button-group button.selected:first-child svg rect,
 .human .button-group button.selected:first-child svg circle, .human .button-group button.selected:first-child svg polygon { fill: #a8b749; }
 .human .button-group button.selected:nth-child(2) svg path, .human .button-group button.selected:nth-child(2) svg rect,
-.human .button-group button.selected:nth-child(2) svg circle, .human .button-group button.selected:nth-child(2) svg polygon { fill: #6faaa8; }
-.human .button-group button.selected:nth-child(3) svg path, .human .button-group button.selected:nth-child(3) svg rect,
-.human .button-group button.selected:nth-child(3) svg circle, .human .button-group button.selected:nth-child(3) svg polygon { fill: #5cad51; }
-
-
-
-
+.human .button-group button.selected:nth-child(2) svg circle, .human .button-group button.selected:nth-child(2) svg polygon { fill: #5cad51; }
 
 
 /* Styles for dual mode */

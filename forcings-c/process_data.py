@@ -25,16 +25,10 @@ END_YEAR = 2005
 BASELINE_YEAR_START = 1880
 BASELINE_YEAR_END = 1910
 RANGE = (-1, 2)
-FORCING_HEADERS = [
-    {"name": "Orbital changes", "className": "natural", "label": "Earth's orbital changes", "title": "Is it the Earth's orbit?", "sub": "The Earth wobbles as it orbits the sun, changing the way sunlight reaches the surface. In the past, these shifts brought us in an out of ice ages—but the effect over the last 125 years is small."},
-    {"name": "Solar", "className": "natural", "label": "Solar temperature", "title": "Is it the sun?", "sub": "The sun's temperature varies over decades and centuries. These changes have had little effect on the Earth's overall climate."},
-    {"name": "Volcanic", "className": "natural", "label": "Volcanic activity", "title": "Is it volcanoes?", "sub": "Erupting volcanoes throw a layer of dust and chemicals into the air. This mix includes aerosols, which can have a short-term cooling effect."},
-    {"name": "Natural", "className": "natural", "label": "All natural factors", "title": "Is it all natural factors combined?", "sub": "If these forces were making the planet warmer, the graph would show that their combined effect matching the rising temperature. Does it?"},
-    {"name": "Land use", "className": "human", "label": "Deforestation", "title": "Is it deforestation?", "sub": "When forests are cleared, the land underneath reflects more sunlight than the darker trees. This light bounces off the Earth’s surface, causing the planet to cool a little."},
-    {"name": "Ozone", "className": "human", "label": "Ozone pollution", "title": "Is it ozone pollution?", "sub": "Ozone has a different effect depending on where it is in the atmosphere. In the higher layers, it blocks light and keeps the planet cool. Lower down, ozone is a pollutant and traps heat near the Earth. Overall, the warming effect isn’t strong."},
-    {"name": "Greenhouse gases", "className": "human", "label": "Greenhouse gases", "title": "Is it greenhouse gases?", "sub": "The rise in heat-trapping greenhouse gases is the only factor that matches the world’s warming since 1880."},
-    {"name": "Human", "className": "human", "label": "All human factors", "title": "Is it all human factors combined?", "sub": "Greenhouse gases warm the atmosphere. Other factors cool it a little. Together they match the observed temperature, particularly since 1950."}
-]
+FORCING_HEADERS = []
+
+with open('data/forcings.json') as f:
+    FORCING_HEADERS = json.load(f)
 
 # Mean of list
 def mean(data):
@@ -104,7 +98,12 @@ def getData(rows, colName, startYear, endYear, baseline):
 rows = []
 rows.append({"label": "Observed global temperature", "data": getData(observed, "Annual_Mean", START_YEAR, END_YEAR, oBaseline)})
 for header in FORCING_HEADERS:
-    rows.append({"label": header["label"], "className": header["className"], "title": header["title"], "sub": header["sub"], "data": getData(forcings, header["name"], START_YEAR, END_YEAR, fBaseline)})
+    item = header.copy()
+    # convert color to int
+    item["color"] = int(header["color"], 16)
+    # add data
+    item["data"] = getData(forcings, header["name"], START_YEAR, END_YEAR, fBaseline)
+    rows.append(item)
 
 jsonOut = {
     "domain": (START_YEAR, END_YEAR),

@@ -38,7 +38,6 @@ var App = (function() {
 
   App.prototype.deselectFactor = function(index) {
     this.dataViz.removeIndex(index);
-    // this.titles.deactivate(index);
   };
 
   App.prototype.loadData = function(){
@@ -80,9 +79,6 @@ var App = (function() {
     // load data viz
     this.dataViz = new DataViz({"el": "#pane", "data": this.data, "domain": data.domain, "range": data.range, "refData": refData, colors: colors});
 
-    // load titles
-    // this.titles = new Titles({data: this.data, el: "#titles"});
-
     this.render();
   };
 
@@ -109,7 +105,6 @@ var App = (function() {
 
   App.prototype.selectFactor = function(index) {
     this.dataViz.addIndex(index);
-    // this.titles.activate(index);
   };
 
   return App;

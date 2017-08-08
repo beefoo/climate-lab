@@ -1,0 +1,48 @@
+[
+  {
+    "name": "Orbital changes",
+    "className": "natural",
+    "label": "Earth's orbital changes",
+    "title": "Is it the Earth's orbit?",
+    "sub": "No. Although changes in Earth's orbit have been linked to climate change in the past, the effect over the last 125 years is small.",
+    "color": "0x29BECE",
+    "x": 0.7,
+    "y": 0.42
+  },{
+    "name": "Solar",
+    "className": "natural",
+    "label": "Solar temperature",
+    "title": "Is it the sun?",
+    "sub": "No. The sun's temperature varies over decades and centuries. But these changes have had little effect on our climate.",
+    "color": "0xFF8200",
+    "x": 0.35,
+    "y": 0.42
+  },{
+    "name": "Volcanic",
+    "className": "natural",
+    "label": "Volcanic activity",
+    "title": "Is it volcanoes?",
+    "sub": "No. Erupting volcanoes have a short-term cooling effect.",
+    "color": "0xea4d4d",
+    "x": 0.25,
+    "y": 0.74
+  },{
+    "name": "Land use",
+    "className": "human",
+    "label": "Deforestation",
+    "title": "Is it deforestation?",
+    "sub": "Actually, no. When forests are cleared, the land underneath reflects more sunlight than the darker trees. This light bounces off Earth's surface, causing the planet to cool a little.",
+    "color": "0xa8b749",
+    "x": 0.6,
+    "y": 0.79
+  },{
+    "name": "Greenhouse gases",
+    "className": "human",
+    "label": "Greenhouse gases",
+    "title": "Is it greenhouse gases?",
+    "sub": "Yes! The rise in heat-trapping greenhouse gases is the only factor that matches the world’s warming since 1880.",
+    "color": "0x5cad51",
+    "x": 0.45,
+    "y": 0.03
+  }
+]

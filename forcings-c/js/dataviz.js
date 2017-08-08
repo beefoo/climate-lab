@@ -7,8 +7,8 @@ var DataViz = (function() {
       transitionMs: 500,
       labelTextStyle: {
         fill: "#ffffff",
-        fontSize: 24,
-        fontWeight: "bold"
+        fontSize: 16,
+        fontWeight: "normal"
       },
       axisTextStyle: {
         fill: "#ffffff",
@@ -187,7 +187,7 @@ var DataViz = (function() {
     this.app.renderer.resize(this.$el.width(), this.$el.height());
     this.renderAxes();
     this.renderRef();
-    // this.renderLabels();
+    this.renderLabels();
     this.renderProgress();
   };
 
@@ -219,6 +219,7 @@ var DataViz = (function() {
       this.pluck();
       this.renderAxes();
       this.renderProgress();
+      this.renderLabels();
 
       if (!this.cordsActive && !this.dataActive) this.active = false;
     }
@@ -343,26 +344,57 @@ var DataViz = (function() {
   };
 
   DataViz.prototype.renderLabels = function(){
+    var _this = this;
+    var w = this.app.renderer.width;
+    var h = this.app.renderer.height;
+    var x0 = this.opt.plotMargin[0];
+    var y0 = this.opt.plotMargin[1];
+    var pw = w - x0 * 2;
+    var ph = h - y0 * 2;
+    var textStyle = this.opt.labelTextStyle;
+
+    var labelPad = 0.01 * pw;
+    var labelW = 0.3 * pw;
+
     // clear labels
     this.labels.clear();
     while(this.labels.children[0]) {
       this.labels.removeChild(this.labels.children[0]);
     }
-    var w = this.app.renderer.width;
-    var textStyle = this.opt.labelTextStyle;
-    var label = new PIXI.Text(this.label, textStyle);
 
-    // center the label
-    label.x = w * 0.5;
-    label.y = 0;
-    label.anchor.set(0.5, 0);
-    this.labels.addChild(label);
+    _.each(this.data, function(d, i){
+      var progress = d.progress;
+      if (progress > 0) {
+        var color = d.color;
+        var x = d.x * pw + x0;
+        var y = d.y * ph + y0;
+        var title = new PIXI.Text(d.title, _.extend({}, textStyle, {fontWeight: "bold"}));
+        var sub = new PIXI.Text(d.sub, _.extend({}, textStyle, {wordWrap: true, wordWrapWidth: labelW-labelPad*2}));
+
+        title.x = x + labelPad;
+        title.y = y + labelPad;
+        title.alpha = progress;
+
+        sub.x = x + labelPad;
+        sub.y = y + labelPad * 4;
+        sub.alpha = progress;
+
+        var labelH = title.height + sub.height + labelPad * 4;
+
+        _this.labels.beginFill(color, progress*0.85);
+        _this.labels.drawRect(x, y, labelW, labelH);
+        _this.labels.endFill();
+
+        _this.labels.addChild(title);
+        _this.labels.addChild(sub);
+      }
+
+    });
   };
 
   DataViz.prototype.renderLine = function(g, data, lineW, color, alpha){
     var _this = this;
     alpha = alpha || 1;
-
 
     g.lineStyle(lineW, color, alpha);
 
@@ -396,7 +428,7 @@ var DataViz = (function() {
         var data = d.data;
         var len = data.length-1;
         var dp = _.filter(data, function(v, j){ return (j/len) <= progress; });
-        var color = colors[i];
+        var color = d.color;
 
         if (dp.length) {
           _this.renderLine(_this.plotProgress, dp, 3, color);
