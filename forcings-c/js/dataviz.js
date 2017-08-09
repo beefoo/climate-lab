@@ -14,7 +14,7 @@ var DataViz = (function() {
         fill: "#ffffff",
         fontSize: 16,
       },
-      plotMargin: [110, 60],
+      plotMargin: [130, 60],
       rangeIncrement: 0.25,
       domainIncrement: 20,
       sound: {
@@ -292,25 +292,26 @@ var DataViz = (function() {
       var p = _this._dataToPoint(domain[0], v);
 
       if (v === 0) {
-        var text = "no change";
-        var label = new PIXI.Text(text, textStyle);
+        var text = "Has no effect on climate";
+        var label = new PIXI.Text(text, _.extend({}, textStyle, {wordWrap: true, wordWrapWidth: x0, align: 'right'}));
         label.x = p[0] - 10;
         label.y = p[1];
         label.anchor.set(1, 0.5);
         _this.axes.addChild(label);
 
       } else {
-        var textF = Math.abs(v) + '°F';
+        var textF = "Makes climate " + Math.abs(v) + '°F';
         if (v > 0) textF += " warmer";
         else textF += " cooler";
         var textC = ''+UTIL.round(v/1.8, 1)+'°C';
         if (v > 0) textC = "+"+textC;
         textC = '('+textC+')';
 
-        var color = "#ff3d3d";
-        if (v < 0) color = "#36adf7";
+        var color = "#f28e8e";
+        if (v > 1) color = "#ff3d3d"
+        if (v < 0) color = "#93d5ff";
 
-        var labelF = new PIXI.Text(textF, _.extend({}, textStyle, {fill: color}));
+        var labelF = new PIXI.Text(textF, _.extend({}, textStyle, {fill: color, wordWrap: true, wordWrapWidth: x0, align: 'right'}));
         labelF.x = p[0] - 10;
         labelF.y = p[1] - 1;
         labelF.anchor.set(1, 1);
