@@ -7,7 +7,7 @@
     "sub": "No. Although changes in Earth's orbit have been linked to climate change in the past, the effect over the last 125 years is small.",
     "color": "0x29BECE",
     "x": 0.7,
-    "y": 0.42
+    "y": 0.34
   },{
     "name": "Solar",
     "className": "natural",
@@ -16,7 +16,7 @@
     "sub": "No. The sun's temperature varies over decades and centuries. But these changes have had little effect on our climate.",
     "color": "0xFF8200",
     "x": 0.35,
-    "y": 0.42
+    "y": 0.34
   },{
     "name": "Volcanic",
     "className": "natural",
@@ -42,7 +42,7 @@
     "title": "Is it greenhouse gases?",
     "sub": "Yes! The rise in heat-trapping greenhouse gases is the only factor that matches the world’s warming since 1880.",
     "color": "0x5cad51",
-    "x": 0.45,
-    "y": 0.03
+    "x": 0.42,
+    "y": 0.01
   }
 ]

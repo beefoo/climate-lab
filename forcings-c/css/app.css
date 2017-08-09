@@ -38,6 +38,7 @@ h2 {
 
 .panes {
   height: calc(100% - 220px);
+  max-height: 700px;
 }
 .pane,
 .main-title {
@@ -186,22 +187,31 @@ h2 {
   margin-top: -100px;
 }
 
-.app.receiver .panes {
+.app.receiver .panes,
+.app.gamepad .panes {
   height: 100%;
   max-height: 700px;
 }
-.app.receiver .controls {
+
+.app.receiver .controls,
+.app.gamepad .controls {
   display: none;
 }
 
 @media only screen and (min-height: 700px) {
-  .app.receiver .panes {
+  .panes {
+    top: 30%;
+    margin-top: -250px;
+  }
+  .app.receiver .panes,
+  .app.gamepad .panes {
     top: 50%;
     margin-top: -350px;
   }
 }
 @media only screen and (min-width: 1800px) {
-  .app.receiver {
+  .app.receiver,
+  .app.gamepad {
     transform: scale(1.3);
   }
 }

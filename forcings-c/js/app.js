@@ -14,10 +14,10 @@ var App = (function() {
 
     this.data = [];
     this.dataIndex = -1;
+    this.gamepad = false;
 
     this.initMode();
     if (this.mode !== 'sender') this.loadData();
-    this.loadListeners();
   };
 
   App.prototype.initMode = function(){
@@ -65,6 +65,45 @@ var App = (function() {
       $('.factor-button').on('click', function(){
         _this.onFactorClick($(this));
       });
+      $(window).keypress(function(e) {
+        _this.onKeydown(e);
+      });
+      $(window).keyup(function(e) {
+        _this.onKeyup(e);
+      });
+    }
+  };
+
+  App.prototype.onKeydown = function(e){
+    // console.log('keydown', e.which);
+    var i = e.which - 49;
+    if (i < 0 || i >= this.data.length) return false;
+    e.preventDefault();
+    // console.log('down', i);
+
+    // go into gamepad mode
+    if (!this.gamepad) {
+      this.gamepad = true;
+      $(".app").addClass("gamepad");
+      this.dataViz.onResize();
+    }
+
+    if (!this.states[i]) {
+      this.states[i] = true;
+      crosstab.broadcast('factor.select', i);
+    }
+  };
+
+  App.prototype.onKeyup = function(e){
+    // console.log('keyup', e.which);
+    var i = e.which - 49;
+    if (i < 0 || i >= this.data.length) return false;
+    e.preventDefault();
+    // console.log('up', i);
+
+    if (this.states[i]) {
+      this.states[i] = false;
+      crosstab.broadcast('factor.deselect', i);
     }
   };
 
@@ -75,11 +114,13 @@ var App = (function() {
     var refData = data.data[0];
     this.data = data.data.slice(1);
     var colors = this.opt.colors;
+    this.states = _.map(this.data, function(d, i){ return false; });
 
     // load data viz
     this.dataViz = new DataViz({"el": "#pane", "data": this.data, "domain": data.domain, "range": data.range, "refData": refData, colors: colors});
 
     this.render();
+    this.loadListeners();
   };
 
   App.prototype.onFactorClick = function($el) {
