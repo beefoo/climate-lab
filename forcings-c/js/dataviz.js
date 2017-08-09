@@ -254,6 +254,7 @@ var DataViz = (function() {
 
     // draw axes labels
     var textStyle = this.opt.axisTextStyle;
+    var subtextStyle = _.extend({}, this.opt.axisTextStyle, {fontSize: textStyle.fontSize*0.8, fill: "#aaaaaa"});
 
     // draw domain labels
 
@@ -274,9 +275,11 @@ var DataViz = (function() {
       var p = _this._dataToPoint(v, range[0]);
       var label = new PIXI.Text(v, textStyle);
 
-      label.y = p[1]+10;
+      label.y = p[1]+16;
       label.x = p[0];
-      label.anchor.set(0.5, 0);
+      label.anchor.set(0, 0);
+
+      if (v===domain[1]) label.anchor.set(1, 0);
 
       _this.axes.addChild(label);
       v++;
@@ -286,15 +289,36 @@ var DataViz = (function() {
 
     v = range[0];
     while (v <= range[1]) {
-
       var p = _this._dataToPoint(domain[0], v);
-      var text = v + '°F';
-      if (v > 0) text = "+"+text;
-      var label = new PIXI.Text(text, textStyle);
-      label.x = p[0] - 10;
-      label.y = p[1];
-      label.anchor.set(1, 0.5);
-      _this.axes.addChild(label);
+
+      if (v === 0) {
+        var text = "no change";
+        var label = new PIXI.Text(text, textStyle);
+        label.x = p[0] - 10;
+        label.y = p[1];
+        label.anchor.set(1, 0.5);
+        _this.axes.addChild(label);
+
+      } else {
+        var textF = v + '°F';
+        if (v > 0) textF = "+"+textF;
+        var textC = ''+UTIL.round(v/1.8, 1)+'°C';
+        if (v > 0) textC = "+"+textC;
+        textC = '('+textC+')'
+
+        var labelF = new PIXI.Text(textF, textStyle);
+        labelF.x = p[0] - 10;
+        labelF.y = p[1] - 1;
+        labelF.anchor.set(1, 1);
+        _this.axes.addChild(labelF);
+
+        var labelC = new PIXI.Text(textC, subtextStyle);
+        labelC.x = p[0] - 10;
+        labelC.y = p[1] + 1;
+        labelC.anchor.set(1, 0);
+        _this.axes.addChild(labelC);
+      }
+
       v++;
     }
 
