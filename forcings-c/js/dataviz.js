@@ -292,7 +292,7 @@ var DataViz = (function() {
       var p = _this._dataToPoint(domain[0], v);
 
       if (v === 0) {
-        var text = "Has no effect on climate";
+        var text = "Average";
         var label = new PIXI.Text(text, _.extend({}, textStyle, {wordWrap: true, wordWrapWidth: x0, align: 'right'}));
         label.x = p[0] - 10;
         label.y = p[1];
@@ -300,9 +300,9 @@ var DataViz = (function() {
         _this.axes.addChild(label);
 
       } else {
-        var textF = "Makes climate " + Math.abs(v) + '°F';
-        if (v > 0) textF += " warmer";
-        else textF += " cooler";
+        var textF = Math.abs(v) + '°F';
+        if (v > 0) textF += " warming";
+        else textF += " cooling";
         var textC = ''+UTIL.round(v/1.8, 1)+'°C';
         if (v > 0) textC = "+"+textC;
         textC = '('+textC+')';
