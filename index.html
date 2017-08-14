@@ -7,6 +7,10 @@
   <link rel="stylesheet" href="shared/css/normalize.css">
   <link rel="stylesheet" href="shared/css/base.css">
   <style>
+  a {
+    color: #00676d;
+    font-weight: bold;
+  }
   .container {
     max-width: 940px;
     margin: 1rem auto;
@@ -16,13 +20,18 @@
     padding: 0 0 0 1.3rem;
   }
   .toc li {
-    margin: 2rem 0;
+    margin: 2rem 0 3rem;
     line-height: 1.6;
   }
   .toc ol {
     list-style-type: lower-latin;
-    margin-top: -1rem;
+    /*margin-top: -1rem;*/
+    margin: 0;
     padding-top: 0;
+  }
+  .toc li li {
+    margin: 1rem 0;
+    line-height: 1.4;
   }
   h1 {
     margin: 0;
@@ -41,43 +50,56 @@
 <body>
   <div class="container">
     <h1>Climate Lab: Table of contents</h1>
+    <p>Return to <a href="https://beefoo.github.io/climate-wall-docs/">Documentation site</a>.
     <h2>Warming World</h2>
     <ol class="toc">
       <li>
         How has the average global temperature changed? (<a href="https://github.com/beefoo/climate-lab/labels/warming-timescales">issues</a>):
         <ol>
-          <li><a href="timescales-temperature-c/">Version 2.0</a> - see and hear observed global temperature data data over time, and can change the time scale from a decade (to see short term noise) to 100+ years (to see long term global trend). You can also use in <a href="timescales-temperature-c/?mode=receiver">multi-window mode</a>.</li>
-          <li><a href="timescales-temperature-b/">Version 1.0</a> - in this version, you can only change scale in a forward direction. You can also use in <a href="timescales-temperature-b/?mode=receiver">multi-window mode</a>.</li>
-          <li class="archived"><a href="timescales-temperature/">Version 0.2</a> <em>(archived)</em></li>
-          <li class="archived"><a href="timescales-co2/">Version 0.1</a> <em>(archived)</em> - see and hear observed CO<sub>2</sub> data over time, and can change the time scale from months to years (to see seasonal patterns) to the past 50 years (to see global trend)</li>
+          <li><a href="timescales-temperature-c/">Version 2.0</a> - bars; zoom and scrub; absolute temperatures used. You can also use in <a href="timescales-temperature-c/?mode=receiver">multi-window mode</a>.</li>
+          <li><a href="timescales-temperature-b/">Version 1.0</a> - bars; only zoom; temperature anomalies used. You can also use in <a href="timescales-temperature-b/?mode=receiver">multi-window mode</a>.</li>
+          <li class="archived"><a href="timescales-temperature/">Version 0.2</a> <em>(archived)</em> - scatter graph; only zoom; time goes backwards</li>
+          <li class="archived"><a href="timescales-co2/">Version 0.1</a> <em>(archived)</em> - CO<sub>2</sub> with annotations; scatter graph; only zoom; time goes backwards</li>
         </ol>
       </li>
       <li>
         Which regions have the most extreme temperature change? (<a href="https://github.com/beefoo/climate-lab/labels/warming-regional">issues</a>):
         <ol>
-          <li><a href="zonal-temperature-b/">Version 2.0</a> - how warming differs around the world. You can also use in <a href="zonal-temperature/?mode=receiver">multi-window mode</a>.</li>
-          <li><a href="zonal-temperature/">Version 1.0</a> - this version has seasonal signals and treats the two panes equally. You can also use in <a href="zonal-temperature/?mode=receiver">multi-window mode</a>.</li>
+          <li><a href="zonal-temperature-b/">Version 2.0</a> - only annual data; map-centric interface; 1950-2016 data. You can also use in <a href="zonal-temperature/?mode=receiver">multi-window mode</a>.</li>
+          <li><a href="zonal-temperature/">Version 1.0</a> - has seasonal signals; two panels; only 1990-2016 data. You can also use in <a href="zonal-temperature/?mode=receiver">multi-window mode</a>.</li>
         </ol>
       <li>
-          What's warming the planet? (<a href="https://github.com/beefoo/climate-lab/labels/warming-forcings">issues</a>)
-          <ol>
-            <li><a href="forcings-c/">Version 2.0</a> (under construction) - explore what drives the climate warmer or cooler. You can also use in <a href="forcings-c/?mode=receiver">multi-window mode</a>.</li>
-            <li><a href="forcings-b/">Version 1.0</a> - combined factors, integrated labels, one factor at a time. You can also use in <a href="forcings-b/?mode=receiver">multi-window mode</a>.</li>
-            <li class="archived"><a href="forcings/">Version 0.1</a> <em>(archived)</em> - knob control with slider for playing graph</li>
-          </ol>
+        What's warming the planet? (<a href="https://github.com/beefoo/climate-lab/labels/warming-forcings">issues</a>)
+        <ol>
+          <li><a href="forcings-c/">Version 2.0</a> - physical buttons enabled; multi-button enabled; no combined factors; no temperature trend; integrated labels. You can also use in <a href="forcings-c/?mode=receiver">multi-window mode</a>.</li>
+          <li><a href="forcings-b/">Version 1.0</a> - combined factors; only one factor at a time; temperature graph. You can also use in <a href="forcings-b/?mode=receiver">multi-window mode</a>.</li>
+          <li class="archived"><a href="forcings/">Version 0.1</a> <em>(archived)</em> - knob control with slider for playing graph</li>
+        </ol>
       </li>
     </ol>
 
     <h2>How Climate Works</h2>
 
     <ol class="toc">
-      <li><a href="globe/">Data on a globe</a> (under construction) - view <a href="https://neo.sci.gsfc.nasa.gov/view.php?datasetId=CERES_NETFLUX_D&date=2016-12-01">net radiation</a> over one year on a globe to see seasonal pattern caused by earth's orbit around the sun</li>
+      <li>
+        How does the Sun's energy drive climate? (<a href="https://github.com/beefoo/climate-lab/labels/system-globe">issues</a>):
+        <ol>
+          <li><a href="javascript: alert('Coming soon!')">Version 1.0</a> - two globes; <a href="https://earthobservatory.nasa.gov/GlobalMaps/view.php?d1=MOD11C1_M_LSTDA&d2=MYD28M">land/sea surface temperature</a> and <a href="https://earthobservatory.nasa.gov/GlobalMaps/view.php?d1=MOD13A2_M_NDVI&d2=MOD10C1_M_SNOW">vegetation/snow cover</a>. You can also use in <a href="orbit-b/?mode=receiver">multi-window mode</a>.</li>
+          <li class="archived"><a href="orbit/">Version 0.1</a> <em>(archived)</em> - <a href="https://neo.sci.gsfc.nasa.gov/view.php?datasetId=CERES_NETFLUX_D&date=2016-12-01">net radiation</a> over one year with annotations</li>
+        </ol>
+      </li>
+
     </ol>
 
     <h2>Consequences of Climate Change</h2>
 
     <ol class="toc">
-      <li><a href="image-slider/">Images of change</a> (under construction) - images of different locations on planet Earth, showing change over time periods ranging from centuries to days</li>
+      <li>
+        How have we observed climate change? (<a href="https://github.com/beefoo/climate-lab/labels/impacts-slider">issues</a>):
+        <ol>
+          <li><a href="image-slider/">Version 1.0</a> - images of different locations on planet Earth, showing change over time periods ranging from centuries to days.</li>
+        </ol>
+      </li>
     </ol>
   </div>
 </body>
