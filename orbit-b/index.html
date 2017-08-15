@@ -1,0 +1,88 @@
+<!doctype html>
+<html class="no-js" lang="">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>Climate Lab / How does the sun's energy drive climate?</title>
+  <link rel="stylesheet" href="../shared/css/normalize.css">
+  <link rel="stylesheet" href="../shared/css/base.css">
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+  <div class="app">
+    <div class="pane">
+      <div id="orbit" class="orbit"></div>
+      <div class="globes">
+        <div id="globe-surface-temperature" class="globe"></div>
+        <div id="globe-vegetation-index" class="globe"></div>
+      </div>
+    </div>
+    <div id="controls" class="controls">
+      <div>
+
+        <div class="sliders">
+          <label for="speed">Change speed</label>
+          <div id="speed" class="slider-horz speed"></div>
+        </div>
+
+        <div class="disc">
+          <button>Trackball placeholder</button>
+        </div>
+
+      </div>
+    </div>
+    <div id="label" class="label"></div>
+  </div>
+
+  <video id="video-surface-temperature" data-target="#globe-surface-temperature" class="video master" webkit-playsinline style="display: none">
+    <source src="video/land_sea_surface_temperature_30fps_30s.mp4" type='video/mp4'>
+  </video>
+
+  <video id="video-vegetation-index" data-target="#globe-vegetation-index" class="video" webkit-playsinline style="display: none">
+    <source src="video/vegetation_index_30fps_30s.mp4" type='video/mp4'>
+  </video>
+
+  <!-- Custom Shader Code for atmospheric glow -->
+  <script id="vertexShaderGlow" type="x-shader/x-vertex">
+  varying vec3 vNormal;
+  void main()
+  {
+      vNormal = normalize( normalMatrix * normal );
+      gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+  }
+  </script>
+
+  <!-- fragment shader a.k.a. pixel shader -->
+  <script id="fragmentShaderGlow" type="x-shader/x-vertex">
+  uniform float c;
+  uniform float p;
+  varying vec3 vNormal;
+  void main()
+  {
+  	float intensity = pow( c - dot( vNormal, vec3( 0.0, 0.0, 1.0 ) ), p );
+  	gl_FragColor = vec4( 0.97, 0.9, 0.67, 0 ) * intensity;
+  }
+  </script>
+
+  <script src="../shared/js/jquery-3.2.1.min.js"></script>
+  <script src="../shared/js/jquery-ui-1.12.1.custom.slider.min.js"></script>
+  <script src="../shared/js/underscore-min.js"></script>
+  <script src="../shared/js/three.min.js"></script>
+  <script src="../shared/js/three/OrbitControls.js"></script>
+  <script src="../shared/js/three/EffectComposer.js"></script>
+  <script src="../shared/js/three/RenderPass.js"></script>
+  <script src="../shared/js/three/ShaderPass.js"></script>
+  <script src="../shared/js/three/MaskPass.js"></script>
+  <script src="../shared/js/three/CopyShader.js"></script>
+  <script src="../shared/js/three/AdditiveBlendShader.js"></script>
+  <script src="../shared/js/utils.js"></script>
+
+  <script src="js/config.js"></script>
+  <script src="js/globe.js"></script>
+  <script src="js/orbit.js"></script>
+  <script src="js/label.js"></script>
+  <script src="js/annotations.js"></script>
+  <script src="js/controls.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,7 @@
+img/net-radiation/*
+img/earthmap10k.jpg
+!img/net-radiation/.keep
+*.mp4
+*.ogv
+*.mov
+*.ai
