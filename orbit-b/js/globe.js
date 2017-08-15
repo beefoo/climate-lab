@@ -92,7 +92,9 @@ var Globe = (function() {
     // this.scene.add(lightHelper);
 
     // init controls
-    this.controls = new THREE.OrbitControls(this.camera, this.renderer.domElement);
+    // this.controls = new THREE.OrbitControls(this.camera, this.renderer.domElement);
+    this.controls = new THREE.OrbitControls(this.camera, $('#orbit-control')[0]);
+
 
     // load textures asynchronously
     var earthPromise = $.Deferred();
