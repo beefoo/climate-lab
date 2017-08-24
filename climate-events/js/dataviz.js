@@ -22,7 +22,7 @@ var DataViz = (function() {
         fontSize: 44,
         fontWeight: "bold"
       },
-      graphUnitWidth: 0.001
+      graphUnitWidth: 0.00105
     };
     this.opt = $.extend({}, defaults, options);
     this.init();
@@ -119,16 +119,34 @@ var DataViz = (function() {
       this.graph.removeChild(this.graph.children[0]);
     }
 
+    var i = this.time * (this.dataLen - 1);
+    var delta = i - this.yearIndex;
+
     var counts = this.data[this.yearIndex].counts.slice(0).reverse();
     var categories = this.categories.slice(0).reverse();
     var graphHeight = h * m[3] * 0.5;
+    var widths = [];
+
+    if (delta > 0) {
+      var amount = delta;
+      var counts2 = this.data[this.yearIndex+1].counts.slice(0).reverse();
+      widths = _.map(UTIL.lerpList(counts, counts2, amount), function(c){ return graphUnitWidth * c; });
+
+    } else if (delta < 0) {
+      var amount = 1.0 - Math.abs(delta);
+      var counts0 = this.data[this.yearIndex-1].counts.slice(0).reverse();
+      widths = _.map(UTIL.lerpList(counts0, counts, amount), function(c){ return graphUnitWidth * c; });
+
+    } else {
+      widths = _.map(counts, function(c){ return graphUnitWidth * c; });
+    }
 
     var x = w * m[0];
     var y = h - graphHeight - h * 0.02;
 
     _.each(categories, function(c, i){
       var count = counts[i];
-      var width = graphUnitWidth * count;
+      var width = widths[i];
 
       _this.graph.beginFill(c.color);
       _this.graph.drawRect(x, y, width, graphHeight);
