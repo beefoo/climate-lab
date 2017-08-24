@@ -55,15 +55,18 @@ h2 {
 }
 .orbit {
   top: 60px;
-  width: 30%;
+  width: 20%;
   left: 50%;
-  margin-left: -15%;
+  margin-left: -10%;
   height: calc(25% - 60px);
 }
 .globes {
   top: auto;
   bottom: 0;
   height: calc(75% - 60px);
+  width: 80%;
+  left: 50%;
+  margin-left: -40%;
 }
 .globe {
   width: 50%;

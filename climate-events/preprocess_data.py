@@ -16,7 +16,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('-dir', dest="DIR", default="data/raw", help="Input directory")
 parser.add_argument('-start', dest="START_YEAR", default=1980, type=int, help="Start year")
 parser.add_argument('-end', dest="END_YEAR", default=2016, type=int, help="End year")
-parser.add_argument('-out', dest="OUTPUT_FILE", default="data/processed_data.json", help="JSON output file")
+parser.add_argument('-out', dest="OUTPUT_FILE", default="data/preprocessed_data.json", help="JSON output file")
 
 args = parser.parse_args()
 
@@ -39,6 +39,7 @@ while year <= args.END_YEAR:
                 "deathToll": el["deathToll"],
                 "econLosses": el["econLossesInflationAdj"]
             } for el in d["aggregations"]["eventfamily"]]
+        eventFamilies = sorted(eventFamilies, key=lambda event: event["id"])
         eventFamiliesLookup = dict((str(el["id"]), i) for i, el in enumerate(eventFamilies))
 
         # retrieve events
