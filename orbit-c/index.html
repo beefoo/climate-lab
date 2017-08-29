@@ -1,0 +1,63 @@
+<!doctype html>
+<html class="no-js" lang="">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>Climate Lab / How does the sun's energy drive climate?</title>
+  <link rel="stylesheet" href="../shared/css/normalize.css">
+  <link rel="stylesheet" href="../shared/css/base.css">
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+  <div class="app">
+    <div class="pane">
+      <div class="title"><h1>How does the sun's energy drive climate?</h1></div>
+      <div id="orbit" class="orbit">
+        <img src="img/orbit_spring-01.png" data-value="march" class="orbit-image active" />
+        <img src="img/orbit_summer-01.png" data-value="june" class="orbit-image" />
+        <img src="img/orbit_fall-01.png" data-value="september" class="orbit-image" />
+        <img src="img/orbit_winter-01.png" data-value="december" class="orbit-image" />
+      </div>
+      <div class="globes">
+        <div id="globe-net-radiation" class="globe" data-value="net_radiation"></div>
+        <div id="globe-surface-temperature" class="globe" data-value="surface_temperature"></div>
+        <div id="globe-vegetation-index" class="globe" data-value="vegetation_index"></div>
+        <div id="globe-co2" class="globe" data-value="co2"></div>
+      </div>
+    </div>
+    <div id="controls" class="controls">
+      <div>
+        <div class="buttons">
+          <div class="button-row">
+            <button data-value="march" class="select-season selected">Spring</button>
+          </div>
+          <div class="button-row">
+            <button data-value="june" class="select-season">Summer</button>
+            <button data-value="december" class="select-season">Winter</button>
+          </div>
+          <div class="button-row">
+            <button data-value="september" class="select-season">Fall</button>
+          </div>
+        </div>
+        <div id="orbit-control" class="disc">
+          <button>Trackball</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script src="../shared/js/jquery-3.2.1.min.js"></script>
+  <script src="../shared/js/underscore-min.js"></script>
+  <script src="../shared/js/three.min.js"></script>
+  <script src="../shared/js/three/OrbitControls.js"></script>
+  <script src="../shared/js/crosstab.js"></script>
+  <script src="../shared/js/utils.js"></script>
+
+  <script src="js/config.js"></script>
+  <script src="js/globe.js"></script>
+  <script src="js/orbit.js"></script>
+  <script src="js/annotations.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

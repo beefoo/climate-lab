@@ -1,0 +1,144 @@
+body {
+  overflow: hidden;
+}
+
+.app {
+  background: #000;
+  color: #fff;
+  letter-spacing: 0.08rem;
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+}
+
+.globe,
+.globes,
+.orbit,
+.controls,
+.label,
+.annotations,
+.pane,
+.buttons,
+.disc,
+.disc button {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.title {
+  text-align: center;
+}
+
+h2 {
+  font-size: 1.2rem;
+  margin: 0 0 1.5rem;
+  color: #80CBC4;
+}
+
+.pane {
+  height: calc(100% - 200px);
+}
+.controls {
+  background: #00897b;
+  height: 200px;
+  top: auto;
+  bottom: 0;
+}
+.label {
+  width: 100%;
+  height: 40px;
+  text-align: center;
+  top: 20px;
+  left: 0;
+  font-size: 2rem;
+  font-weight: bold;
+  color: #fff;
+}
+.orbit {
+  top: 100px;
+  height: calc(45% - 100px);
+  text-align: center;
+}
+.orbit img {
+  display: none;
+  height: 100%;
+  width: auto;
+}
+.orbit img.active {
+  display: inline-block;
+}
+.globes {
+  top: auto;
+  bottom: 0;
+  height: 55%;
+}
+.globe {
+  width: 25%;
+}
+.globe:nth-child(2) {
+  left: 25%;
+}
+.globe:nth-child(3) {
+  left: 50%;
+}
+.globe:nth-child(4) {
+  left: 75%;
+}
+
+.buttons {
+  width: 400px;
+  left: 50%;
+  margin-left: -325px;
+  margin-top: 1rem;
+  text-align: center;
+}
+.buttons button {
+  display: inline-block;
+  margin: 1rem 1rem 0 0;
+  width: 120px;
+  border: 3px solid transparent;
+  color: #fff;
+  outline-color: #ccc;
+  background: #00695C;
+  cursor: pointer;
+  padding: 0.3rem 0.6rem;
+  box-sizing: border-box;
+  box-shadow: 0 1px 1px rgba(0,0,0,0.5);
+}
+.buttons button:hover,
+.buttons button.selected {
+  border: 3px solid white;
+}
+.buttons button:last-child {
+  margin-right: 0;
+}
+.disc {
+  width: 180px;
+  height: 180px;
+  left: 50%;
+  top: 50%;
+  margin-left: 100px;
+  margin-top: -90px;
+}
+.disc button {
+  display: block;
+  width: 90%;
+  height: 90%;
+  left: 50%;
+  top: 50%;
+  margin-left: -45%;
+  margin-top: -45%;
+  border-radius: 50%;
+  border: none;
+  background: #00695C;
+  color: #fff;
+  outline-color: #009688;
+  letter-spacing: 1px;
+  cursor: move;
+  cursor: grab;
+  cursor: -moz-grab;
+  cursor: -webkit-grab;
+}
