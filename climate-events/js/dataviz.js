@@ -4,12 +4,12 @@ var DataViz = (function() {
   function DataViz(options) {
     var defaults = {
       el: '#main',
-      margin: [0.02, 0, 0.01, 0.1],
+      margin: [0.02, 0, 0.01, 0.01],
       map: 'img/BlankMap-Equirectangular-01.png',
       axesLabelEvery: 5,
       dotRadius: 0.002,
       graphTextStyle: {
-        fill: "#1a1a1a",
+        fill: "#ffffff",
         fontSize: 24,
         fontWeight: "bold"
       },
@@ -22,7 +22,8 @@ var DataViz = (function() {
         fontSize: 44,
         fontWeight: "bold"
       },
-      graphUnitWidth: 0.00105
+      graphWidth: 0.18,
+      graphUnitHeight: 0.00105
     };
     this.opt = $.extend({}, defaults, options);
     this.init();
@@ -99,7 +100,7 @@ var DataViz = (function() {
     this.renderGraph();
     this.renderKey();
     this.renderPlot();
-
+    this.renderLabels();
   };
 
   DataViz.prototype.render = function(){
@@ -110,7 +111,8 @@ var DataViz = (function() {
     var _this = this;
     var w = this.app.renderer.width;
     var h = this.app.renderer.height;
-    var graphUnitWidth = this.opt.graphUnitWidth * w;
+    var graphUnitHeight = this.opt.graphUnitHeight * h;
+    var graphWidth = this.opt.graphWidth * w;
     var graphTextStyle = this.opt.graphTextStyle;
     var m = this.opt.margin;
 
@@ -124,42 +126,42 @@ var DataViz = (function() {
 
     var counts = this.data[this.yearIndex].counts.slice(0).reverse();
     var categories = this.categories.slice(0).reverse();
-    var graphHeight = h * m[3] * 0.5;
-    var widths = [];
+    var graphUnitWidth = graphWidth / categories.length;
+    var heights = [];
 
     if (delta > 0) {
       var amount = delta;
       var counts2 = this.data[this.yearIndex+1].counts.slice(0).reverse();
-      widths = _.map(UTIL.lerpList(counts, counts2, amount), function(c){ return graphUnitWidth * c; });
+      heights = _.map(UTIL.lerpList(counts, counts2, amount), function(c){ return graphUnitHeight * c; });
 
     } else if (delta < 0) {
       var amount = 1.0 - Math.abs(delta);
       var counts0 = this.data[this.yearIndex-1].counts.slice(0).reverse();
-      widths = _.map(UTIL.lerpList(counts0, counts, amount), function(c){ return graphUnitWidth * c; });
+      heights = _.map(UTIL.lerpList(counts0, counts, amount), function(c){ return graphUnitHeight * c; });
 
     } else {
-      widths = _.map(counts, function(c){ return graphUnitWidth * c; });
+      heights = _.map(counts, function(c){ return graphUnitHeight * c; });
     }
 
-    var x = w * m[0];
-    var y = h - graphHeight - h * 0.02;
+    var x0 = w * m[0];
+    var y0 = h - h * m[3];
 
     _.each(categories, function(c, i){
       var count = counts[i];
-      var width = widths[i];
+      var height = heights[i];
+
+      var x = x0 + graphUnitWidth * i;
+      var y = y0 - height;
 
       _this.graph.beginFill(c.color);
-      _this.graph.drawRect(x, y, width, graphHeight);
+      _this.graph.drawRect(x, y, graphUnitWidth, height);
       _this.graph.endFill();
 
       var label = new PIXI.Text(count, graphTextStyle);
-      label.x = x + width / 2;
-      label.y = y + graphHeight / 2;
-      label.alpha = 0.7;
-      label.anchor.set(0.5, 0.5);
+      label.x = x + graphUnitWidth / 2;
+      label.y = y - 0.0001 * h;
+      label.anchor.set(0.5, 1);
       _this.graph.addChild(label);
-
-      x += width;
     });
 
   };
@@ -172,6 +174,7 @@ var DataViz = (function() {
     var keyTextStyle = this.opt.keyTextStyle;
     var categories = this.categories;
     var radius = this.opt.dotRadius * w * 2;
+    var graphWidth = this.opt.graphWidth * w;
 
     this.key.clear();
     while(this.key.children[0]) {
@@ -179,11 +182,12 @@ var DataViz = (function() {
     }
 
     var rowHeight = h * 0.03;
-    var marginX = h * m[0];
-    var marginY = h * m[3];
+    var marginX = w * m[0];
+    var marginY = h * m[3] + h * 0.01;
+
     _.each(categories, function(c, i){
       var color = c.color;
-      var x = marginX * 2.5;
+      var x = marginX * 2 + graphWidth;
       var y = h - (marginY + rowHeight * i);
 
       _this.key.beginFill(color);
@@ -226,6 +230,7 @@ var DataViz = (function() {
     var h = this.app.renderer.height;
     var m = this.opt.margin;
     var labelTextStyle = this.opt.labelTextStyle;
+    var graphWidth = this.opt.graphWidth * w;
 
     this.labels.clear();
     while(this.labels.children[0]) {
@@ -234,8 +239,8 @@ var DataViz = (function() {
 
     var year = this.domain[0] + this.yearIndex;
     var label = new PIXI.Text(year, labelTextStyle);
-    label.x = w * m[0];
-    label.y = h * 0.725;
+    label.x = w * m[0] * 1.6 + graphWidth;
+    label.y = h * 0.8;
     label.anchor.set(0, 0);
     this.labels.addChild(label);
   };
