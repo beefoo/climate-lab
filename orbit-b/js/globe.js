@@ -127,7 +127,7 @@ var Globe = (function() {
     });
 
     // equator
-    var eqGeo = new THREE.CircleGeometry(0.55, 64);
+    var eqGeo = new THREE.CircleGeometry(0.51, 64);
     eqGeo.vertices.shift();
     eqGeo.vertices.push(eqGeo.vertices[0].clone());
     var eqMat = new THREE.LineBasicMaterial( { color: 0x00f6ff } );

@@ -13,8 +13,19 @@
     <div class="pane">
       <div id="orbit" class="orbit"></div>
       <div class="globes">
-        <div id="globe-surface-temperature" class="globe"></div>
-        <div id="globe-vegetation-index" class="globe"></div>
+        <div>
+          <div id="globe-net-radiation" class="globe">
+            <h2>Net radiation</h2>
+          </div>
+        </div>
+        <div>
+          <div id="globe-surface-temperature" class="globe">
+            <h2>Surface temperature</h2>
+          </div>
+          <div id="globe-vegetation-index" class="globe">
+            <h2>Vegetation</h2>
+          </div>
+        </div>
       </div>
     </div>
     <div id="controls" class="controls">
@@ -34,7 +45,12 @@
     <div id="label" class="label"></div>
   </div>
 
-  <video id="video-surface-temperature" data-target="#globe-surface-temperature" class="video master" webkit-playsinline crossorigin="anonymous" style="display: none">
+  <video id="video-net-radiation" data-target="#globe-net-radiation" class="video master" webkit-playsinline crossorigin="anonymous" style="display: none">
+    <source src="https://s3.amazonaws.com/brianfoo-amnh/net_radiation_30fps_30s.mp4" type='video/mp4'>
+    <!-- <source src="video/land_sea_surface_temperature_30fps_30s.mp4" type='video/mp4'> -->
+  </video>
+
+  <video id="video-surface-temperature" data-target="#globe-surface-temperature" class="video" webkit-playsinline crossorigin="anonymous" style="display: none">
     <source src="https://s3.amazonaws.com/brianfoo-amnh/land_sea_surface_temperature_30fps_30s.mp4" type='video/mp4'>
     <!-- <source src="video/land_sea_surface_temperature_30fps_30s.mp4" type='video/mp4'> -->
   </video>

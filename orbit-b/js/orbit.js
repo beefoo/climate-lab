@@ -28,7 +28,7 @@ var Orbit = (function() {
 
   Orbit.prototype.loadGlow = function(){
     var w = this.$el.width();
-    var h = w;
+    var h = this.$el.height();
     var viewAngle = this.opt.viewAngle;
     var aspect = w / h;
     var near = this.opt.near;
@@ -85,7 +85,7 @@ var Orbit = (function() {
   Orbit.prototype.loadView = function(){
     var _this = this;
     var w = this.$el.width();
-    var h = w;
+    var h = this.$el.height();
 
     // init renderer
     this.renderer = new THREE.WebGLRenderer();
@@ -195,7 +195,7 @@ var Orbit = (function() {
 
   Orbit.prototype.onResize = function(){
     var w = this.$el.width();
-    var h = w;
+    var h = this.$el.height();
 
 		this.renderer.setSize(w, h);
 		this.camera.aspect = w / h;

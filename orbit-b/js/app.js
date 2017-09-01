@@ -31,7 +31,7 @@ var App = (function() {
 
     this.orbit = new Orbit({el: "#orbit"});
     this.label = new Label({el: "#label"});
-    var speed = 0.5;
+    var speed = 0.25;
 
     // Initialize controls
     var sliders = {

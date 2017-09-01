@@ -13,6 +13,7 @@ body {
 
 .globe,
 .globes,
+.globes > div,
 .orbit,
 .controls,
 .label,
@@ -54,25 +55,39 @@ h2 {
   color: #fff;
 }
 .orbit {
-  top: 60px;
-  width: 20%;
-  left: 50%;
-  margin-left: -10%;
-  height: calc(25% - 60px);
+  width: 40%;
+  height: 50%;
+  top: 50%;
+  margin-top: -15%;
 }
 .globes {
-  top: auto;
-  bottom: 0;
-  height: calc(75% - 60px);
-  width: 80%;
-  left: 50%;
-  margin-left: -40%;
+  width: 60%;
+  height: 80%;
+  top: 50%;
+  margin-top: -20%;
+  left: 40%;
+}
+.globes > div {
+  height: 50%;
+}
+.globes > div:last-child {
+  top: 50%;
 }
 .globe {
   width: 50%;
 }
-.globe:last-child {
+.globe:nth-child(2) {
   left: 50%;
+}
+.globes > div:first-child .globe {
+  left: 50%;
+  margin-left: -25%;
+}
+.globe h2 {
+  display: block;
+  position: absolute;
+  top: 5%;
+  right: 60%;
 }
 
 .disc {
