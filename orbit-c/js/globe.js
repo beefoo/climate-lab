@@ -18,11 +18,8 @@ var Globe = (function() {
     this.$el = this.opt.$el;
     this.ready = false;
     this.season = this.opt.season;
-    this.seasons = this.opt.seasons;
-    this.value = this.opt.value;
-    this.image = 'img/'+this.value+'_'+this.season+'.png';
+    this.data = this.opt.data;
 
-    this.loadImages();
     this.loadView();
   };
 
@@ -34,14 +31,70 @@ var Globe = (function() {
     return this.ready;
   };
 
-  Globe.prototype.loadImages = function(){
-    var value = this.value;
+  Globe.prototype.loadPoints = function(){
 
-    _.each(this.seasons, function(season, i){
-      var url = 'img/'+value+'_'+season+'.png';
-      var img = new Image();
-      img.src=url;
-    });
+    if (this.points) {
+      this.scene.remove(this.points);
+    }
+
+    var _this = this;
+    var data = this.data[this.season];
+    var geo = new THREE.Geometry();
+    var sphereRadius = 0.5;
+
+    var pointD = sphereRadius / 200;
+    var pointGeo = new THREE.BoxGeometry(pointD, pointD, pointD);
+    pointGeo.applyMatrix(new THREE.Matrix4().makeTranslation(0,0,0));
+    var point = new THREE.Mesh(pointGeo);
+    var i = 0;
+
+    // add points from data
+    for (i=0; i<data.length; i+=4) {
+      var lat = data[i];
+      var lng = data[i + 1];
+      var size = data[i + 2];
+      var color = new THREE.Color(data[i + 3]);
+
+      var phi = (90 - lat) * Math.PI / 180;
+      var theta = (180 - lng) * Math.PI / 180;
+
+      point.position.x = sphereRadius * Math.sin(phi) * Math.cos(theta);
+      point.position.y = sphereRadius * Math.cos(phi);
+      point.position.z = sphereRadius * Math.sin(phi) * Math.sin(theta);
+
+      point.lookAt(_this.earth.position);
+
+      point.scale.z = Math.max(size * 5, 0.1); // avoid non-invertible matrix
+      point.scale.x = Math.max(size * 5, 0.1);
+      point.scale.y = Math.max(size * 5, 0.1);
+      point.updateMatrix();
+
+      for (var j = 0; j < point.geometry.faces.length; j++) {
+        point.geometry.faces[j].color = color;
+      }
+      if(point.matrixAutoUpdate){
+        point.updateMatrix();
+      }
+      geo.merge(point.geometry, point.matrix);
+    }
+
+    if (geo.morphTargets.length < 8) {
+      console.log('Morph padding');
+      var padding = 8 - geo.morphTargets.length;
+      for(var i=0; i<=padding; i++) {
+        geo.morphTargets.push({'name': 'morphPadding'+i, vertices: geo.vertices});
+      }
+    }
+
+    // create points
+    this.points = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({
+      color: 0xffffff,
+      vertexColors: THREE.FaceColors,
+      morphTargets: true
+    }));
+
+    this.scene.add(this.points);
+
   };
 
   Globe.prototype.loadView = function(){
@@ -51,13 +104,39 @@ var Globe = (function() {
     var image = this.image;
 
     // init renderer
-    this.renderer = new THREE.WebGLRenderer({alpha: true});
+    this.renderer = new THREE.WebGLRenderer({alpha: true, antialias: true});
     this.renderer.setClearColor(0x000000, 0);
     this.renderer.setSize(w, h);
     this.$el.append(this.renderer.domElement);
 
     // init scene
     this.scene = new THREE.Scene();
+
+    var earthShader = {
+      uniforms: {
+        'texture': { type: 't', value: null }
+      },
+      vertexShader: [
+        'varying vec3 vNormal;',
+        'varying vec2 vUv;',
+        'void main() {',
+          'gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );',
+          'vNormal = normalize( normalMatrix * normal );',
+          'vUv = uv;',
+        '}'
+      ].join('\n'),
+      fragmentShader: [
+        'uniform sampler2D texture;',
+        'varying vec3 vNormal;',
+        'varying vec2 vUv;',
+        'void main() {',
+          'vec3 diffuse = texture2D( texture, vUv ).xyz;',
+          'float intensity = 1.05 - dot( vNormal, vec3( 0.0, 0.0, 1.0 ) );',
+          'vec3 atmosphere = vec3( 1.0, 1.0, 1.0 ) * pow( intensity, 3.0 );',
+          'gl_FragColor = vec4( diffuse + atmosphere, 1.0 );',
+        '}'
+      ].join('\n')
+    };
 
     // init camera
     var viewAngle = this.opt.viewAngle;
@@ -71,48 +150,35 @@ var Globe = (function() {
     var aLight = new THREE.AmbientLight(0x888888);
     this.scene.add(aLight);
 
-    // directional light
-    // this.dLight = new THREE.DirectionalLight(0xcccccc, 1);
-    // var xy = UTIL.translatePoint([0,0], 0, this.opt.orbitRadius);
-    // this.dLight.position.set(xy[0],xy[1],0);
-    // this.scene.add(this.dLight);
-
-    // light helper
-    // var lightHelper = new THREE.DirectionalLightHelper(this.dLight, 1);
-    // this.scene.add(lightHelper);
-
     // init controls
     // this.controls = new THREE.OrbitControls(this.camera, this.renderer.domElement);
     this.controls = new THREE.OrbitControls(this.camera, $('#orbit-control')[0]);
 
     // load textures asynchronously
     var earthPromise = $.Deferred();
-    var countryPromise = $.Deferred();
 
     // init globe with image texture
-    var geometry = new THREE.SphereGeometry(0.5, 64, 64);
+    var geometry = new THREE.SphereGeometry(0.5, 40, 30);
     var material = new THREE.MeshBasicMaterial();
+
+    var uniforms = THREE.UniformsUtils.clone(earthShader.uniforms);
+    var material = new THREE.ShaderMaterial({
+      uniforms: uniforms,
+      vertexShader: earthShader.vertexShader,
+      fragmentShader: earthShader.fragmentShader
+    });
     this.earth = new THREE.Mesh(geometry, material);
+    this.earth.rotation.y = Math.PI;
+
     var textureLoader = new THREE.TextureLoader();
-    textureLoader.load(image, function (texture) {
-      _this.earth.material.map = texture;
-      _this.earth.material.map.needsUpdate = true;
+    textureLoader.load('img/world.png', function (texture) {
+      _this.earth.material.uniforms['texture'].value = texture;
+      // _this.earth.material.map.needsUpdate = true;
       earthPromise.resolve();
     });
 
-    // load country texture
-    var cGeo = geometry.clone();
-    var cMat = new THREE.MeshPhongMaterial({transparent: true, opacity: 0.5});
-    this.countries = new THREE.Mesh(cGeo, cMat);
-    var cTextureLoader = new THREE.TextureLoader();
-    cTextureLoader.load('img/BlankMap-Equirectangular.png', function (texture) {
-      _this.countries.material.map = texture;
-      _this.countries.material.map.needsUpdate = true;
-      countryPromise.resolve();
-    });
-
     // equator
-    var eqGeo = new THREE.CircleGeometry(0.55, 64);
+    var eqGeo = new THREE.CircleGeometry(0.51, 64);
     eqGeo.vertices.shift();
     eqGeo.vertices.push(eqGeo.vertices[0].clone());
     var eqMat = new THREE.LineBasicMaterial( { color: 0x00f6ff } );
@@ -137,11 +203,12 @@ var Globe = (function() {
     this.earth.add(southArrow);
 
     this.scene.add(this.earth);
-    this.scene.add(this.countries);
     this.scene.add(equator);
 
+    this.loadPoints();
+
     // wait for textures to load
-    $.when(earthPromise, countryPromise).done(function() {
+    $.when(earthPromise).done(function() {
       _this.ready = true;
     });
   };
@@ -165,15 +232,11 @@ var Globe = (function() {
   };
 
   Globe.prototype.selectSeason = function(season){
-    this.season = season;
+    if (season === this.season) return false;
 
-    var _this = this;
-    var image = 'img/'+this.value+'_'+this.season+'.png';
-    var textureLoader = new THREE.TextureLoader();
-    textureLoader.load(image, function (texture) {
-      _this.earth.material.map = texture;
-      _this.earth.material.map.needsUpdate = true;
-    });
+    this.season = season;
+    this.loadPoints();
+
   };
 
   return Globe;

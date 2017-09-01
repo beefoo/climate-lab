@@ -17,17 +17,11 @@ var App = (function() {
     this.season = season;
     var seasons = $('.select-season').map(function() { return $(this).attr('data-value'); }).get();
     this.seasons = seasons;
-
-    $('.globe').each(function(){
-      var $el = $(this);
-      _this.globes.push(new Globe({$el: $el, season: season, seasons: seasons, value: $el.attr('data-value')}));
-    });
+    this.dataKeys = $('.globe').map(function() { return $(this).attr('data-value'); }).get();
 
     this.orbit = new Orbit({el: "#orbit", season: season});
-
     this.initMode();
-    this.loadListeners();
-    this.render();
+    this.loadData();
   };
 
   App.prototype.initMode = function(){
@@ -44,6 +38,15 @@ var App = (function() {
       var url = window.location.href.split('?')[0] + '?mode=sender';
       window.open(url);
     }
+  };
+
+  App.prototype.loadData = function(){
+    var _this = this;
+
+    $.getJSON(this.opt.dataUrl, function(data) {
+      console.log('Data loaded.');
+      _this.onDataLoaded(data);
+    });
   };
 
   App.prototype.loadListeners = function(){
@@ -70,6 +73,31 @@ var App = (function() {
         _this.onKeyup(e);
       });
     }
+  };
+
+  App.prototype.onDataLoaded = function(data){
+    var _this = this;
+    var season = this.season;
+    var seasons = this.seasons;
+    var dataKeys = this.dataKeys;
+    var dataLookup = {};
+
+    _.each(dataKeys, function(key){
+      var d = {};
+      _.each(seasons, function(season){
+        d[season] = data[key+"_"+season];
+      });
+      dataLookup[key] = d;
+    });
+
+    $('.globe').each(function(){
+      var $el = $(this);
+      var key = $el.attr('data-value');
+      _this.globes.push(new Globe({$el: $el, season: season, seasons: seasons, value: key, data: dataLookup[key]}));
+    });
+
+    this.loadListeners();
+    this.render();
   };
 
   App.prototype.onKeydown = function(e){
