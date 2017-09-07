@@ -1,0 +1,30 @@
+body {
+  overflow: hidden;
+}
+
+.app {
+  background: #212121;
+  color: #fff;
+  letter-spacing: 0.08rem;
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+}
+.core,
+.timeline {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+}
+
+.core {
+  height: 60%;
+}
+
+.timeline {
+  height: 40%;
+  top: auto;
+  bottom: 0;
+}
