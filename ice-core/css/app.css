@@ -3,7 +3,7 @@ body {
 }
 
 .app {
-  background: #212121;
+  background: #000000;
   color: #fff;
   letter-spacing: 0.08rem;
   width: 100vw;
@@ -20,11 +20,11 @@ body {
 }
 
 .core {
-  height: 60%;
+  height: 70%;
 }
 
 .timeline {
-  height: 40%;
+  height: 30%;
   top: auto;
   bottom: 0;
 }
