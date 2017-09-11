@@ -41,6 +41,10 @@ var App = (function() {
       offsetX = UTIL.lim(offsetX, 0, 1);
       _this.updateOffsetX(offsetX);
     });
+
+    $.subscribe('core.load', function(e, i){
+      _this.loadCore(i);
+    });
   };
 
   App.prototype.onResize = function(){
