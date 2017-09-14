@@ -13,7 +13,10 @@ body {
 }
 .core,
 .content,
-.nav {
+.nav,
+.mask,
+.labels,
+.label {
   position: absolute;
   width: 100%;
   height: 100%;
@@ -27,7 +30,7 @@ body {
 .core img {
   position: absolute;
   top: 0;
-  left: 0;
+  left: 30%;
   height: 100%;
   width: auto;
 }
@@ -37,6 +40,43 @@ body {
 .core-layer.selected {
   display: block;
   animation: fadeIn 1s;
+}
+
+.mask {
+  width: 40%;
+  left: 50%;
+  margin-left: -20%;
+  box-sizing: border-box;
+  border-left: 5px solid rgba(0,0,0,0.5);
+  border-right: 5px solid rgba(0,0,0,0.5);
+  overflow: hidden;
+}
+
+.labels {
+  width: 40%;
+  top: 10%;
+  height: 16.125%;
+  left: 50%;
+  box-sizing: border-box;
+  margin-left: -20%;
+  border-left: 5px solid rgba(60,60,60,0.5);
+  border-right: 5px solid rgba(60,60,60,0.5);
+  color: #8c9393;
+  font-size: 1.4rem;
+  line-height: 1.5;
+}
+.label {
+  width: 400px;
+  left: -420px;
+  text-align: right;
+}
+.label span {
+  font-size: 1.2rem;
+}
+.label.right {
+  left: auto;
+  right: -420px;
+  text-align: left;
 }
 
 .content {

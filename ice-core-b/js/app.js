@@ -13,7 +13,7 @@ var App = (function() {
     this.offsetX = 0;
 
     this.cores = this.opt.cores;
-    this.core = new Core({el: "#core", offsetX: this.offsetX});
+    this.core = new Core({el: "#core", offsetX: this.offsetX, yearsAgo: this.opt.yearsAgo, depth: this.opt.depth});
     this.nav = new Nav();
 
     this.loadListeners();

@@ -12,8 +12,14 @@
   <div class="app">
     <div id="core" class="core">
       <img id="base" src="img/GISP2D-1841-1.jpg" />
-      <img data-id="seasons" src="img/GISP2D-1841-1_seasons.png" class="core-layer" />
-      <img data-id="particles" src="img/GISP2D-1841-1_particles.png" class="core-layer" />
+      <div id="mask" class="mask">
+        <img data-id="seasons" src="img/GISP2D-1841-1_seasons.png" class="core-layer" />
+        <img data-id="particles" src="img/GISP2D-1841-1_particles.png" class="core-layer" />
+      </div>
+      <div class="labels">
+        <div id="label-left" class="label left"></div>
+        <div id="label-right" class="label right"></div>
+      </div>
     </div>
     <div id="content" class="content">
       <div data-id="seasons" class="core-layer">
