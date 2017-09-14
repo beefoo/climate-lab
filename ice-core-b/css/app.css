@@ -1,0 +1,102 @@
+body {
+  overflow: hidden;
+}
+
+.app {
+  background: #000000;
+  color: #fff;
+  letter-spacing: 0.08rem;
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+  overflow: hidden;
+}
+.core,
+.content,
+.nav {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+}
+
+.core {
+  height: calc(100% - 300px);
+}
+.core img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: auto;
+}
+.core-layer {
+  display: none;
+}
+.core-layer.selected {
+  display: block;
+  animation: fadeIn 1s;
+}
+
+.content {
+  height: 200px;
+  top: auto;
+  bottom: 100px;
+  box-sizing: border-box;
+  padding: 1rem 3rem;
+  font-size: 1.3rem;
+  line-height: 1.5;
+}
+
+.nav {
+  height: 100px;
+  top: auto;
+  bottom: 0;
+}
+.nav button {
+  display: block;
+  float: left;
+  width: 33.3333333%;
+  height: 100px;
+  line-height: 100px;
+  text-align: center;
+  border: none;
+  font-size: 2rem;
+  color: #fff;
+  background: none;
+  cursor: pointer;
+  box-sizing: border-box;
+  border-top: 2px solid #366b6d;
+  /*border-bottom: 5px solid #366b6d;*/
+}
+.nav button.selected {
+  background: #8ec7c9;
+  color: #0f4446;
+}
+.nav button.selected:after {
+  content: " ✓";
+}
+
+.red {
+  color: #ff7676;
+}
+.orange {
+  color: #ffaa00;
+}
+.yellow {
+  color: #ffff00;
+}
+.green {
+  color: #3fe053;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}

@@ -1,0 +1,44 @@
+<!doctype html>
+<html class="no-js" lang="">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>Climate Lab / Paleoclimate wall ice core interactive</title>
+  <link rel="stylesheet" href="../shared/css/normalize.css">
+  <link rel="stylesheet" href="../shared/css/base.css">
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+  <div class="app">
+    <div id="core" class="core">
+      <img id="base" src="img/GISP2D-1841-1.jpg" />
+      <img data-id="seasons" src="img/GISP2D-1841-1_seasons.png" class="core-layer" />
+      <img data-id="particles" src="img/GISP2D-1841-1_particles.png" class="core-layer" />
+    </div>
+    <div id="content" class="content">
+      <div data-id="seasons" class="core-layer">
+        If we want to reconstruct past air temperatures, one of the most critical parameters is the age of the ice being analysed. Fortunately, ice cores preserve annual layers, making it simple to date the ice. Seasonal differences in the snow properties create layers – just like rings in trees. This section of the ice core contains 28 annual layers with <span class="orange">summer layers</span> sandwiched between darker <span class="green">winter layers</span>. The thickness of the annual layers in ice cores can be used to derive a precipitation rate, which is essential parameter for many past climate studies.
+      </div>
+      <div data-id="particles" class="core-layer">
+        Sometimes researchers are studying actual <span class="orange">bubbles</span>  of the early atmosphere, trapped in the ice as it formed. Scientists run melted samples through various instruments
+        to find tiny pieces of pollution, like sulfates, traces of metals, or natural aerosols like <span class="yellow">dust</span>  or <span class="red">volcanic ash</span> . After analyzing enough ice core slices, a researcher can look for patterns to track changes in the atmosphere's composition and temperature.
+      </div>
+    </div>
+    <div id="nav" class="nav clearfix">
+      <button class="selected">Hide all</button>
+      <button data-target='[data-id="seasons"]'>Highlight seasonal layers</button>
+      <button data-target='[data-id="particles"]'>Highlight air bubbles and particles</button>
+    </div>
+  </div>
+
+  <script src="../shared/js/jquery-3.2.1.min.js"></script>
+  <script src="../shared/js/jquery.mousewheel.min.js"></script>
+  <script src="../shared/js/underscore-min.js"></script>
+  <script src="../shared/js/utils.js"></script>
+
+  <script src="js/core.js"></script>
+  <script src="js/nav.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
