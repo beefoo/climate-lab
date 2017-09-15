@@ -49,6 +49,7 @@ body {
   box-sizing: border-box;
   border-left: 5px solid rgba(0,0,0,0.5);
   border-right: 5px solid rgba(0,0,0,0.5);
+  box-shadow: 0 20vh 10vh 10vh rgba(255, 255, 255, 0.1) inset;
   overflow: hidden;
 }
 
@@ -77,6 +78,7 @@ body {
   left: auto;
   right: -420px;
   text-align: left;
+
 }
 
 .content {
