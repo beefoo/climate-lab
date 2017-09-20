@@ -1,0 +1,48 @@
+<!doctype html>
+<html class="no-js" lang="">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>Climate Lab / Paleoclimate wall ice core interactive</title>
+  <link rel="stylesheet" href="../shared/css/normalize.css">
+  <link rel="stylesheet" href="../shared/css/base.css">
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+  <div class="app">
+    <div id="core" class="core">
+      <img id="base" src="img/ice_core_3m.jpg" />
+      <div class="core-layers">
+        <img id="seasons" src="img/layer_seasons.png" class="core-layer" />
+        <img id="air" src="img/layer_air.png" class="core-layer" />
+        <img id="accum" src="img/layer_air.png" class="core-layer" />
+      </div>
+      <div class="labels">
+        <div id="label" class="label"></div>
+      </div>
+    </div>
+    <div id="content" class="content">
+      <img src="img/content_ice_core.png" class="content-image active" data-layer="" />
+      <img src="img/content_scale.png" class="content-image" data-layer="" />
+      <img src="img/content_seasons.png" class="content-image" data-layer="#seasons" />
+      <img src="img/content_accum.png" class="content-image" data-layer="#accum" />
+      <img src="img/content_parts.png" class="content-image" data-layer="" />
+      <img src="img/content_bubbles.png" class="content-image" data-layer="#air" />
+      <img src="img/content_co2.png" class="content-image" data-layer="#air" />
+      <img src="img/content_temperature.png" class="content-image" data-layer="" />
+      <img src="img/content_clean_air.png" class="content-image" data-layer="" />
+      <img src="img/content_dust.png" class="content-image" data-layer="" />
+      <img src="img/content_lead.png" class="content-image" data-layer="" />
+    </div>
+  </div>
+
+  <script src="../shared/js/jquery-3.2.1.min.js"></script>
+  <script src="../shared/js/jquery.mousewheel.min.js"></script>
+  <script src="../shared/js/underscore-min.js"></script>
+  <script src="../shared/js/utils.js"></script>
+
+  <script src="js/core.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

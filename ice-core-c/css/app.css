@@ -1,0 +1,118 @@
+body {
+  overflow: hidden;
+}
+
+.app {
+  background: #000000;
+  color: #fff;
+  letter-spacing: 0.08rem;
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+  overflow: hidden;
+}
+.core,
+.content,
+.nav,
+.mask,
+.labels,
+.label,
+.core-layers {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+}
+
+.core {
+  height: 16.52cm;
+  top: 50%;
+  margin-top: -8.26cm;
+}
+.core img {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  height: 100%;
+  width: auto;
+}
+.core-layer {
+  display: none;
+}
+.core-layer.selected {
+  display: block;
+  animation: fadeIn 1s;
+}
+
+.labels {
+  width: 0.5rem;
+  margin-left: -0.25rem;
+  left: 50%;
+  box-sizing: border-box;
+  background: rgba(255,229,0,0.8);
+  color: #8c9393;
+  font-size: 1.4rem;
+  line-height: 1.5;
+}
+.label {
+  width: 400px;
+  left: auto;
+  right: -420px;
+  text-align: left;
+}
+.label span {
+  font-size: 1.2rem;
+}
+
+.content {
+  width: 33.333333%;
+  height: auto;
+  top: 50%;
+  transform: translateY(-50%);
+  left: 5%;
+  box-sizing: border-box;
+  padding: 2rem;
+  background: rgba(47, 48, 51, 0.9);
+  border-radius: 1rem;
+}
+.content-image {
+  display: none;
+  width: 100%;
+  height: auto;
+}
+.content-image.active {
+  display: block;
+  animation: fadeIn 1s;
+}
+
+.red {
+  color: #ff7676;
+}
+.orange {
+  color: #ffaa00;
+}
+.yellow {
+  color: #ffff00;
+}
+.green {
+  color: #3fe053;
+}
+
+@media screen and (max-height: 17cm) {
+  .core {
+    height: 96%;
+    top: 2%;
+    margin-top: 0;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
