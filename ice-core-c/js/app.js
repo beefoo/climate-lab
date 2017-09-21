@@ -14,6 +14,7 @@ var App = (function() {
 
     this.cores = this.opt.cores;
     this.core = new Core({el: "#core", offsetX: this.offsetX, yearsAgo: this.opt.yearsAgo, depth: this.opt.depth});
+    this.content = new Content();
 
     this.loadListeners();
   };
@@ -41,6 +42,7 @@ var App = (function() {
   App.prototype.updateOffsetX = function(offsetX){
     this.offsetX = offsetX;
     this.core.updateOffsetX(offsetX);
+    this.content.updateOffsetX(offsetX);
   };
 
   return App;

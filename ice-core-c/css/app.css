@@ -40,7 +40,7 @@ body {
 .core-layer {
   display: none;
 }
-.core-layer.selected {
+.core-layer.active {
   display: block;
   animation: fadeIn 1s;
 }
@@ -73,7 +73,7 @@ body {
   left: 5%;
   box-sizing: border-box;
   padding: 2rem;
-  background: rgba(47, 48, 51, 0.9);
+  background: rgba(47, 48, 51, 0.98);
   border-radius: 1rem;
 }
 .content-image {
@@ -114,5 +114,15 @@ body {
 
   to {
     opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
   }
 }

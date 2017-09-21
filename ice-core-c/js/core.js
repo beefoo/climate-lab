@@ -25,11 +25,6 @@ var Core = (function() {
     this.baseWidth = this.$base.width();
   };
 
-  Core.prototype.selectLayer = function(el){
-    $('.core-layer').removeClass('selected');
-    $(el).addClass('selected');
-  };
-
   Core.prototype.updateOffsetX = function(offsetX){
     this.offsetX = offsetX;
 
