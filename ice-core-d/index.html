@@ -1,0 +1,43 @@
+<!doctype html>
+<html class="no-js" lang="">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>Climate Lab / Paleoclimate wall ice core interactive</title>
+  <link rel="stylesheet" href="../shared/css/normalize.css">
+  <link rel="stylesheet" href="../shared/css/base.css">
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+  <div class="app">
+    <div id="content" class="content">
+      <img src="img/content_bottom.png" class="content-image active" data-depth="2800" />
+      <img src="img/content_lower.png" class="content-image" data-depth="2685" />
+      <img src="img/content_dust.png" class="content-image" data-depth="2300" />
+      <img src="img/content_middle.png" class="content-image" data-depth="2000" />
+      <img src="img/content_co2.png" class="content-image" data-depth="1800" />
+      <img src="img/content_dryas.png" class="content-image" data-depth="1713" />
+      <img src="img/content_holocene.png" class="content-image" data-depth="1680" />
+      <img src="img/content_air_bubbles.png" class="content-image" data-depth="1300" />
+      <img src="img/content_accumulation.png" class="content-image" data-depth="900" />
+      <img src="img/content_lead.png" class="content-image" data-depth="450" />
+      <img src="img/content_top.png" class="content-image" data-depth="100" />
+      <img src="img/content_clean_air.png" class="content-image" data-depth="11" />
+
+    </div>
+    <div id="timeline" class="timeline"></div>
+  </div>
+
+  <script src="../shared/js/jquery-3.2.1.min.js"></script>
+  <script src="../shared/js/jquery.mousewheel.min.js"></script>
+  <script src="../shared/js/underscore-min.js"></script>
+  <script src="../shared/js/pixi.min.js"></script>
+  <script src="../shared/js/ba-tiny-pubsub.min.js"></script>
+  <script src="../shared/js/utils.js"></script>
+
+  <script src="js/timeline.js"></script>
+  <script src="js/content.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

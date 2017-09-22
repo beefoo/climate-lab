@@ -1,0 +1,61 @@
+body {
+  overflow: hidden;
+}
+
+.app {
+  background: #000000;
+  color: #fff;
+  letter-spacing: 0.08rem;
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+}
+.content,
+.timeline {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+}
+
+.content {
+  height: 60vh;
+  width: 100vh;
+  top: auto;
+  bottom: 29vh;
+  left: 50%;
+  margin-left: -50vh;
+  box-sizing: border-box;
+  background: rgba(47, 48, 51, 0.98);
+  border-radius: 1rem;
+  padding: 50px;
+}
+
+.timeline {
+  height: 30vh;
+  top: auto;
+  bottom: 0;
+}
+
+.content-image {
+  display: none;
+  width: 100%;
+  height: auto;
+  /*top: 50%;
+  transform: translateY(-50%);*/
+}
+.content-image.active {
+  display: block;
+  animation: fadeIn 1s;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
