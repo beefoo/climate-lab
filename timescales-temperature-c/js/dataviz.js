@@ -13,6 +13,10 @@ var DataViz = (function() {
         fill: "#d2d1dd",
         fontSize: 18
       },
+      axisSubtextStyle: {
+        fill: "#7f7f87",
+        fontSize: 15
+      },
       markerTextStyle: {
         fill: "#d2d1dd",
         fontSize: 22
@@ -115,6 +119,7 @@ var DataViz = (function() {
     var domainp = this.plotDomainPrecise;
     var range = this.plotRange;
     var textStyle = this.opt.axisTextStyle;
+    var subtextStyle = this.opt.axisSubtextStyle;
     var w = this.app.renderer.width;
     var h = this.app.renderer.height;
     var m = this.opt.margin;
@@ -133,7 +138,8 @@ var DataViz = (function() {
     var x0 = w * m[0];
     var x1 = w - m[2] * w;
     var showEvery = 1;
-    if (count > 10) showEvery = 2;
+    if (count > 20) showEvery = 4;
+    else if (count > 10) showEvery = 2;
     this.axes.lineStyle(1, 0xffffff, 0.333);
     var value = range[0];
     var i=0;
@@ -141,12 +147,23 @@ var DataViz = (function() {
       if (i % showEvery === 0) {
         var p = _this._dataToPoint(0, value, domain, range);
         var y = p[1];
-        var text = UTIL.round(value, 1) + "°F";
+        var df = UTIL.round(value, 1);
+        var dc = UTIL.round((value-32) * 5 / 9.0, 1);
+
+        var text = df + "°F";
         var label = new PIXI.Text(text, textStyle);
         label.x = x0 - 20;
         label.y = y;
-        label.anchor.set(1.0, 0.5);
+        label.anchor.set(1.0, 1.0);
+
+        var subtext = "(" + dc + " °C)";
+        var sublabel = new PIXI.Text(subtext, subtextStyle);
+        sublabel.x = x0 - 20;
+        sublabel.y = y;
+        sublabel.anchor.set(1.0, 0);
+
         this.axes.addChild(label);
+        this.axes.addChild(sublabel);
         this.axes.moveTo(x0, y).lineTo(x1, y);
       }
       value += yAxisStep;
@@ -177,15 +194,21 @@ var DataViz = (function() {
       var x = px * cw + mx0 + dataW * 0.5;
       var text = value;
       var ts = _.clone(textStyle);
+      var xAnchor = 0.5;
       ts.fontSize = 22;
       var label = new PIXI.Text(text, ts);
       if (count > 10) {
-        if (value == domain[0]) x = mx0;
-        else if (value==domain[1]) x = mx0+cw;
+        if (value == domain[0]) {
+          x = mx0;
+          xAnchor = 0;
+        } else if (value==domain[1]) {
+          x = mx0+cw;
+          xAnchor = 1;
+        }
       }
       label.x = x;
       label.y = p[1] + m[3] * h / 5;
-      label.anchor.set(0.5, 0);
+      label.anchor.set(xAnchor, 0);
       this.axes.addChild(label);
       value++;
       i++;
@@ -221,7 +244,9 @@ var DataViz = (function() {
     this.marker.moveTo(x, my0).lineTo(x, h-my1);
 
     var textStyle = this.opt.markerTextStyle;
-    var text = UTIL.round(year.value, 1) + "°F";
+    var df = UTIL.round(year.value, 1);
+    var dc = UTIL.round((year.value-32) * 5 / 9.0, 1);
+    var text = df + "°F ("+dc+" °C)";
     var label = new PIXI.Text(text, textStyle);
     label.x = x + 10;
     label.y = my0;
