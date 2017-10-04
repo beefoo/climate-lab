@@ -14,6 +14,7 @@ body {
 .panes,
 .controls,
 .pane,
+.messages,
 .sliders,
 .slider {
   position: absolute;
@@ -33,7 +34,15 @@ h2 {
 }
 
 .panes {
-  height: calc(100% - 200px);
+  height: calc(100% - 300px);
+}
+.messages {
+  height: 100px;
+  top: auto;
+  bottom: 200px;
+  text-align: center;
+  font-size: 1.4rem;
+  color: #f1a051;
 }
 .controls {
   background: #00897b;
@@ -165,7 +174,11 @@ h2 {
 
 .app.receiver .panes,
 .app.gamepad .panes {
-  height: 100%;
+  height: calc(100% - 100px);
+}
+.app.receiver .messages,
+.app.gamepad .messages {
+  bottom: 0;
 }
 .app.receiver .controls,
 .app.gamepad .controls {

@@ -7,7 +7,6 @@ var DataViz = (function() {
       margin: [0.1, 0.15, 0.1, 0.1],
       enableSound: true,
       highlightMs: 1000,
-      minDomainCount: 5,
       yAxisStep: 0.1,
       axisTextStyle: {
         fill: "#d2d1dd",
@@ -140,7 +139,7 @@ var DataViz = (function() {
     var showEvery = 1;
     if (count > 20) showEvery = 4;
     else if (count > 10) showEvery = 2;
-    this.axes.lineStyle(1, 0xffffff, 0.333);
+    this.axes.lineStyle(1, 0xffffff, 0.2);
     var value = range[0];
     var i=0;
     while(value <= range[1]) {

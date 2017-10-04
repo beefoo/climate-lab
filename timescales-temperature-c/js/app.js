@@ -95,13 +95,22 @@ var App = (function() {
 
     // Initialize viz
     this.viz = new DataViz({
-      el: "#pane", enableSound:
-      this.opt.enableSound,
+      el: "#pane",
+      enableSound: this.opt.enableSound,
       data: this.data,
       domain: this.domain,
       range: this.range,
       scale: this.scale,
-      time: this.time
+      time: this.time,
+      minDomainCount: this.opt.minDomainCount
+    });
+
+    this.messages = new Messages({
+      el: "#messages",
+      messages: this.opt.messages,
+      scale: this.scale,
+      domain: this.domain,
+      minDomainCount: this.opt.minDomainCount
     });
 
     this.render();
@@ -110,6 +119,7 @@ var App = (function() {
   App.prototype.onScale = function(value) {
     this.scale = UTIL.easeInOutSin(value);
     this.viz.updateScale(this.scale);
+    this.messages.updateScale(this.scale);
   };
 
   App.prototype.onTime = function(value) {
