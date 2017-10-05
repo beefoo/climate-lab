@@ -59,6 +59,7 @@ var DataViz = (function() {
     this.loadView();
     this.loadCords();
     this.loadListeners();
+    this.renderRef();
   };
 
   DataViz.prototype.initData = function(data){
@@ -171,7 +172,7 @@ var DataViz = (function() {
   };
 
   DataViz.prototype.loadView = function(){
-    this.app = new PIXI.Application(this.$el.width(), this.$el.height(), {transparent : true});
+    this.app = new PIXI.Application(this.$el.width(), this.$el.height(), {transparent : true, antialias: true});
     this.axes = new PIXI.Graphics();
     this.refPlot = new PIXI.Graphics();
     this.plot = new PIXI.Graphics();
@@ -485,20 +486,21 @@ var DataViz = (function() {
   };
 
   DataViz.prototype.renderRef = function(){
-    return false; // disable for now
+    // return false; // disable for now
 
     if (!this.refData) return false;
 
     // render data
     var data = this.refData.data;
-    this.renderLine(this.refPlot, data, 2, 0xa6acb2);
+    this.renderLine(this.refPlot, data, 2, 0x36383a);
 
     // draw dot
     var dp = data[data.length-1];
     var p = this._dataToPoint(dp[0], dp[1]);
     this.refPlot.lineStyle(0, 0xffffff);
-    this.refPlot.beginFill(0x6d6f71);
-    this.refPlot.drawCircle(p[0], p[1], 4);
+    // this.refPlot.beginFill(0x6d6f71);
+    // this.refPlot.drawCircle(p[0], p[1], 4);
+    // this.refPlot.endFill();
 
     // render label
     var text = this.refData.label;
