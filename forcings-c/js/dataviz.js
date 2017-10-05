@@ -262,26 +262,37 @@ var DataViz = (function() {
     var range = this.range;
     var domainIncrement = this.opt.domainIncrement;
     var v = domain[0];
+    var tickEvery = 10;
     while (v <= domain[1]) {
 
       var delta = domain[1]-v;
       var tooClose = delta <= 5 && delta > 0;
 
-      if (v % domainIncrement !== 0 && v !== domain[0] && v !== domain[1] || tooClose) {
-        v++;
-        continue;
+      var showLabel = !(v % domainIncrement !== 0 && v !== domain[0] && v !== domain[1] || tooClose);
+      var showTick = (v % tickEvery === 0);
+      var p;
+
+      if (showLabel || showTick) {
+        p = _this._dataToPoint(v, range[0]);
       }
 
-      var p = _this._dataToPoint(v, range[0]);
-      var label = new PIXI.Text(v, textStyle);
+      if (showLabel) {
+        var label = new PIXI.Text(v, textStyle);
 
-      label.y = p[1]+16;
-      label.x = p[0];
-      label.anchor.set(0, 0);
+        label.y = p[1]+16;
+        label.x = p[0];
+        label.anchor.set(0.5, 0);
 
-      if (v===domain[1]) label.anchor.set(1, 0);
+        if (v===domain[0]) label.anchor.set(0, 0);
+        else if (v===domain[1]) label.anchor.set(1, 0);
 
-      _this.axes.addChild(label);
+        _this.axes.addChild(label);
+      }
+
+      if (showTick) {
+        _this.axes.moveTo(p[0], p[1]).lineTo(p[0], p[1] + 8);
+      }
+
       v++;
     }
 
