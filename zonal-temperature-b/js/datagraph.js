@@ -3,10 +3,15 @@
 var DataGraph = (function() {
   function DataGraph(options) {
     var defaults = {
-      margin: [0.125, 0.1, 0.08, 0.15],
+      margin: [0.125, 0.12, 0.04, 0.15],
       axisTextStyle: {
-        fill: "#d2d1dd",
+        fill: "#8f8f9b",
         fontSize: 12
+      },
+      markerTextStyle: {
+        fill: "#f1a051",
+        fontSize: 14,
+        fontWeight: "bold"
       }
     };
     this.opt = $.extend({}, defaults, options);
@@ -23,8 +28,6 @@ var DataGraph = (function() {
 
     this.loadView();
     this.loadListeners();
-
-    this.updateTime(this.time);
   };
 
   DataGraph.prototype.initData = function(data, domain, range){
@@ -32,6 +35,7 @@ var DataGraph = (function() {
     this.domain = domain;
     this.range = range;
 
+    this.updateTime(this.time);
     this.renderAxes();
   };
 
@@ -78,25 +82,6 @@ var DataGraph = (function() {
 
   };
 
-  DataGraph.prototype.renderMarker = function(){
-    this.marker.clear();
-    this.marker.lineStyle(4, 0xf1a051, 0.8);
-
-    var w = this.app.renderer.width;
-    var h = this.app.renderer.height;
-    var margin = this.opt.margin;
-    var marginX0 = margin[0] * w;
-    var marginY0 = margin[1] * h;
-    var marginX1 = margin[2] * w;
-    var marginY1 = margin[3] * h;
-    var cw = w - marginX0 - marginX1;
-    var ch = h - marginY0 - marginY1;
-    var x = cw * this.time + marginX0;
-
-    this.marker.moveTo(x, marginY0);
-    this.marker.lineTo(x, marginY0 + ch);
-  };
-
   DataGraph.prototype.renderAxes = function(){
     var _this = this;
 
@@ -134,8 +119,11 @@ var DataGraph = (function() {
 
       // draw label
       if (v%2===0) {
-        var text = v + '°F';
+        var df = v;
+        var dc = Math.round(v * 5 / 9.0);
+        var text = df + '°F';
         if (v > 0) text = "+"+text;
+        else if (v===0) text = "average";
         var label = new PIXI.Text(text, textStyle);
         label.x = p[0] - 10;
         label.y = p[1];
@@ -155,9 +143,12 @@ var DataGraph = (function() {
         var px = UTIL.norm(v, domain[0], domain[1]);
         var p = _this._dataToPoint(px, range[0]);
         var label = new PIXI.Text(v, textStyle);
+        var ax = 0.5;
+        if (v===domain[0]) ax = 0;
+        else if (v===domain[1]) ax = 1;
         label.x = p[0];
         label.y = p[1] + 22;
-        label.anchor.set(0.5, 1);
+        label.anchor.set(ax, 1);
         _this.axes.addChild(label);
       }
       v++;
@@ -169,7 +160,78 @@ var DataGraph = (function() {
 
   };
 
+  DataGraph.prototype.renderMarker = function(){
+    this.marker.clear();
+    while(this.marker.children[0]) {
+      this.marker.removeChild(this.marker.children[0]);
+    }
 
+    this.marker.lineStyle(4, 0xf1a051, 0.8);
+
+    var w = this.app.renderer.width;
+    var h = this.app.renderer.height;
+    var margin = this.opt.margin;
+    var marginX0 = margin[0] * w;
+    var marginY0 = margin[1] * h;
+    var marginX1 = margin[2] * w;
+    var marginY1 = margin[3] * h;
+    var cw = w - marginX0 - marginX1;
+    var ch = h - marginY0 - marginY1;
+    var x = cw * this.time + marginX0;
+
+    this.marker.moveTo(x, marginY0);
+    this.marker.lineTo(x, marginY0 + ch);
+
+    var zones = this.data.length;
+    var data = this.data[Math.round((zones-1) * this.zone)]
+    var domain = this.domain;
+    var year = Math.round(UTIL.lerp(domain[0], domain[1], this.time))
+    var yearIndex = year - domain[0];
+    var value = data[yearIndex][0];
+    var color = data[yearIndex][1];
+    var textStyle = this.opt.markerTextStyle;
+
+    var text = year;
+    var label = new PIXI.Text(text, textStyle);
+    var ly = marginY0 * 0.8;
+    label.x = x - 2;
+    label.y = ly;
+    label.anchor.set(1, 1);
+
+    var df = UTIL.round(value, 1);
+    var dc = UTIL.round(value * 5 / 9.0, 1);
+    if (value > 0){
+      df = "+" + df;
+      dc = "+" + dc;
+    }
+    text = df + "°F ("+dc+" °C)";
+    textStyle = _.clone(textStyle);
+    textStyle.fill = color;
+    textStyle.fontSize *= 0.9;
+    var label2 = new PIXI.Text(text, textStyle);
+    label2.x = x + 2;
+    label2.y = ly;
+    label2.anchor.set(0, 1);
+
+    var lw = label.width;
+    var lw2 = label2.width;
+    var left = x - marginX0;
+    var right = cw + marginX0 - x;
+
+    if (lw > left) {
+      var delta = lw - left;
+      label.x += delta;
+      label2.x += delta;
+
+    } else if (lw2 > right) {
+      var delta = lw2 - right;
+      label.x -= delta;
+      label2.x -= delta;
+    }
+
+    this.marker.addChild(label);
+    this.marker.addChild(label2);
+  };
 
   DataGraph.prototype.renderPlot = function(){
     var data = this.zoneData;

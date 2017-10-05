@@ -3,7 +3,7 @@ body {
 }
 
 .app {
-  background: #212121;
+  background: #000;
   color: #fff;
   letter-spacing: 0.08rem;
   width: 100vw;
@@ -40,9 +40,9 @@ h2 {
   left: 50%;
 }
 .pane {
-  width: 1200px;
+  width: 1280px;
   left: 50%;
-  margin-left: -600px;
+  margin-left: -640px;
 }
 .pane .temperature {
   width: 100%;
@@ -66,7 +66,7 @@ h2 {
   top: -40px;
   left: 0;
   position: absolute;
-  color: #bbb;
+  color: #f1a051;
   font-size: 2rem;
   width: 100%;
   text-align: center;
@@ -110,7 +110,7 @@ h2 {
 .map .helper:after {
   content: " ";
   display: block;
-  background: #212121;
+  background: #000;
   width: 2px;
   height: 100%;
   position: absolute;
@@ -129,8 +129,8 @@ h2 {
 .graph {
   position: absolute;
   top: 50%;
-  right: -400px;
-  width: 400px;
+  right: -480px;
+  width: 480px;
   height: 240px;
   margin-top: -100px;
   border: 2px solid #777c7b;
