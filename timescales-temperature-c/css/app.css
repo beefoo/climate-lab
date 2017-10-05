@@ -3,7 +3,7 @@ body {
 }
 
 .app {
-  background: #212121;
+  background: #000;
   color: #fff;
   letter-spacing: 0.08rem;
   width: 100vw;
@@ -41,6 +41,11 @@ h2 {
   top: auto;
   bottom: 200px;
   text-align: center;
+}
+.messages > div {
+  display: inline-block;
+  background: #2a2a2a;
+  padding: 0.6rem 1.2rem;
 }
 .messages p {
   font-size: 1.3rem;

@@ -39,7 +39,7 @@ var Messages = (function() {
     if (!message) {
       message = this.messages[this.messages.length-1];
     }
-    message = "<p class=\"highlight\">You are viewing <strong>" + Math.round(years) + " years</strong> of global temperature records.</p><p>" + message.text + "</p>";
+    message = "<div><p class=\"highlight\">You are viewing <strong>" + Math.round(years) + " years</strong> of global temperature records.</p><p>" + message.text + "</p></div>";
     this.$el.html(message);
   };
 

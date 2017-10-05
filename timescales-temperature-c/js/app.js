@@ -83,6 +83,10 @@ var App = (function() {
         }
       };
       var controls = new Controls({sliders: sliders});
+
+      $.subscribe('window.resize', function(){
+        _this.onResize();
+      });
     }
   };
 
@@ -114,6 +118,10 @@ var App = (function() {
     });
 
     this.render();
+  };
+
+  App.prototype.onResize = function(){
+    this.viz.onResize();
   };
 
   App.prototype.onScale = function(value) {

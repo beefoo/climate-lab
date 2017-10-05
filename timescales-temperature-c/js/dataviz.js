@@ -4,7 +4,7 @@ var DataViz = (function() {
   function DataViz(options) {
     var defaults = {
       el: '#main',
-      margin: [0.1, 0.15, 0.1, 0.1],
+      margin: [0.1, 0.15, 0.1, 0.15],
       enableSound: true,
       highlightMs: 1000,
       yAxisStep: 0.1,
@@ -212,6 +212,14 @@ var DataViz = (function() {
       value++;
       i++;
     }
+
+    var lw = h * 0.0075;
+    var lh = m[3] * h * 0.2;
+    var ly0 = h - lw * 0.5 - m[3]*h*0.4;
+    var ly1 = h - lw * 0.5 - lh;
+    this.axes.lineStyle(lw, 0x2a2a2a, 1);
+    this.axes.moveTo(mx0, ly0).lineTo(mx0, ly1).lineTo(mx0+cw, ly1).lineTo(mx0+cw, ly0);
+    this.axes.moveTo(mx0 + cw*0.5, ly1).lineTo(mx0 + cw*0.5, h);
   };
 
   DataViz.prototype.renderLabels = function(){

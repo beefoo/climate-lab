@@ -28,6 +28,7 @@ var Controls = (function() {
     var _this = this;
     $(".app").addClass("gamepad");
     this.gamepad = gamepad;
+    $.publish('window.resize', true);
     this.pollGamepad();
   };
 
