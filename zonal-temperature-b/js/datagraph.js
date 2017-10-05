@@ -137,19 +137,29 @@ var DataGraph = (function() {
     // draw x axis
     var domain = this.domain;
     v = domain[0];
+    var tickEvery = 5;
+    this.axes.lineStyle(1, 0x56585c);
     while (v <= domain[1]) {
+      var showLabel = (v%20===0 || v===domain[1] || v===domain[0]);
+      var showTick = (v%tickEvery===0);
+      var px, p;
+      if (showLabel || showTick) {
+        px = UTIL.norm(v, domain[0], domain[1]);
+        p = _this._dataToPoint(px, range[0]);
+      }
       // draw label
-      if (v%20===0 || v===domain[1] || v===domain[0]) {
-        var px = UTIL.norm(v, domain[0], domain[1]);
-        var p = _this._dataToPoint(px, range[0]);
+      if (showLabel) {
         var label = new PIXI.Text(v, textStyle);
         var ax = 0.5;
         if (v===domain[0]) ax = 0;
         else if (v===domain[1]) ax = 1;
         label.x = p[0];
-        label.y = p[1] + 22;
+        label.y = p[1] + my1 * 0.8;
         label.anchor.set(ax, 1);
         _this.axes.addChild(label);
+      }
+      if (showTick) {
+        this.axes.moveTo(p[0], p[1]).lineTo(p[0], p[1] + my1 * 0.15);
       }
       v++;
     }
@@ -323,6 +333,7 @@ var DataGraph = (function() {
 
     this.zone = value;
     this.renderPlot();
+    this.renderMarker();
   };
 
   DataGraph.prototype._dataToPoint = function(dx, dy, domain, range){
