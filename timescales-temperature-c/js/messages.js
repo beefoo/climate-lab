@@ -32,14 +32,15 @@ var Messages = (function() {
   };
 
   Messages.prototype.render = function(){
-    var year = this.domainCount;
+    var years = this.domainCount;
     var message = _.find(this.messages, function(m){
-      return year < m.years;
+      return years < m.years;
     });
     if (!message) {
       message = this.messages[this.messages.length-1];
     }
-    this.$el.text(message.text);
+    message = "<p class=\"highlight\">You are viewing <strong>" + Math.round(years) + " years</strong> of global temperature records.</p><p>" + message.text + "</p>";
+    this.$el.html(message);
   };
 
   return Messages;
