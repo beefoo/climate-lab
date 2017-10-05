@@ -105,11 +105,7 @@ var DataViz = (function() {
   };
 
   DataViz.prototype.render = function(){
-
-
     this.transition();
-
-
   };
 
   DataViz.prototype.renderAxes = function(){
@@ -172,43 +168,60 @@ var DataViz = (function() {
     // draw x axis
     count = domain[1] - domain[0];
     showEvery = 1;
-    if (count > 10) showEvery = 5;
-    if (count > 30) showEvery = 10;
-    if (count > 80) showEvery = 20;
+    var tickEvery = 1;
+    if (count > 10) {
+      showEvery = 5;
+      tickEvery = 1;
+    }
+    if (count > 30) {
+      showEvery = 10;
+      tickEvery = 5;
+    }
+    if (count > 80) {
+      showEvery = 20;
+      tickEvery = 5;
+    }
     value = domain[0];
     i = 0;
     var cw = w - mx0 - mx1;
     var dataW = cw / (domainp[1]-domainp[0]+1);
+    this.axes.lineStyle(4, 0x444444, 1);
     while (value <= domain[1]) {
       var delta1 = domain[1] - value;
       var delta2 = value - domain[0];
-      var valid = (value === domain[0] || value === domain[1] || value % showEvery === 0) && (delta1 >= showEvery/2 || delta1 <= 0) && (delta2 >= showEvery/2 || delta2 <= 0);
-      if (!valid) {
-        value++;
-        i++;
-        continue;
+      var showLabel = (value === domain[0] || value === domain[1] || value % showEvery === 0) && (delta1 >= showEvery/2 || delta1 <= 0) && (delta2 >= showEvery/2 || delta2 <= 0);
+      var showTick = (value % tickEvery === 0);
+
+      var p, px, x;
+
+      if (showLabel || showTick) {
+        p = _this._dataToPoint(value, range[0], domain, range);
+        px = UTIL.norm(value, domainp[0], domainp[1]+1);
+        x = px * cw + mx0 + dataW * 0.5;
       }
-      var p = _this._dataToPoint(value, range[0], domain, range);
-      var px = UTIL.norm(value, domainp[0], domainp[1]+1);
-      var x = px * cw + mx0 + dataW * 0.5;
-      var text = value;
-      var ts = _.clone(textStyle);
-      var xAnchor = 0.5;
-      ts.fontSize = 22;
-      var label = new PIXI.Text(text, ts);
-      if (count > 10) {
-        if (value == domain[0]) {
-          x = mx0;
-          xAnchor = 0;
-        } else if (value==domain[1]) {
-          x = mx0+cw;
-          xAnchor = 1;
+      if (showLabel) {
+        var text = value;
+        var ts = _.clone(textStyle);
+        var xAnchor = 0.5;
+        ts.fontSize = 22;
+        var label = new PIXI.Text(text, ts);
+        if (count > 10) {
+          if (value == domain[0]) {
+            x = mx0;
+            xAnchor = 0;
+          } else if (value==domain[1]) {
+            x = mx0+cw;
+            xAnchor = 1;
+          }
         }
+        label.x = x;
+        label.y = p[1] + m[3] * h / 5;
+        label.anchor.set(xAnchor, 0);
+        this.axes.addChild(label);
       }
-      label.x = x;
-      label.y = p[1] + m[3] * h / 5;
-      label.anchor.set(xAnchor, 0);
-      this.axes.addChild(label);
+      if (showTick) {
+        this.axes.moveTo(x, p[1]).lineTo(x, p[1]+ m[3] * h / 8);
+      }
       value++;
       i++;
     }
