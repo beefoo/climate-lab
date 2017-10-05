@@ -25,12 +25,11 @@ var DataMap = (function() {
 
   DataMap.prototype.initTime = function(domain) {
     this.domain = domain;
-    var frameCount = domain[1]-domain[0]+1;
 
     // preload images
-    for (var frame=1; frame<=frameCount; frame++) {
+    for (var year=domain[0]; year<=domain[1]; year++) {
       var img =  new Image();
-      img.src = this.opt.imageDir + 'frame' + UTIL.pad(frame, 5) + '.png';
+      img.src = this.opt.imageDir + 'frame' + year + '.png';
     }
 
     this.updateTime(this.time);
@@ -70,10 +69,8 @@ var DataMap = (function() {
     this.time = value;
 
     var domain = this.domain;
-    var years = domain[1]-domain[0];
-    var frame = Math.round(years * value) + 1;
-    frame = UTIL.pad(frame, 5);
-    this.$img[0].src = this.opt.imageDir + 'frame' + frame + '.png';
+    var year = Math.round(UTIL.lerp(domain[0], domain[1], value));
+    this.$img[0].src = this.opt.imageDir + 'frame' + year + '.png';
   };
 
   DataMap.prototype.updateZone = function(value){
