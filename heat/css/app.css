@@ -1,0 +1,85 @@
+body {
+  overflow: hidden;
+}
+
+.app {
+  background: #000;
+  color: #fff;
+  letter-spacing: 0.08rem;
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+  overflow: hidden;
+}
+
+.globes,
+.calendar,
+.globe-container,
+.globe-title,
+.globe-key {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+h2 {
+  font-size: 1.2rem;
+  margin: 0 0 1.5rem;
+  color: #80CBC4;
+}
+
+.calendar {
+  width: 100vw;
+  height: 20vh;
+}
+
+.globes {
+  width: 80vh;
+  height: 80vh;
+  bottom: -40vh;
+  top: auto;
+  left: 50%;
+  margin-left: -40vh;
+  overflow: visible;
+  transform-origin: 50% 50%;
+  transition: transform 0.5s ease-in-out;
+  /*background: green;*/
+}
+
+.globe {
+  position: absolute;
+  width: 70vh;
+  height: 70vh;
+  transform-origin: 50% 50%;
+  transition: transform 0.5s ease-in-out;
+  /*background: blue;*/
+}
+#globe1 {
+  left: -35vh;
+  top: -35vh;
+}
+#globe2 {
+  right: -35vh;
+  top: -35vh;
+}
+#globe3 {
+  right: -35vh;
+  bottom: -35vh;
+}
+#globe4 {
+  left: -35vh;
+  bottom: -35vh;
+}
+.globe-container {
+  width: 100%;
+  height: 100%;
+}
+.globe-title {
+  top: 10%;
+  width: 33.3333%;
+}
+.globe-title h2 {
+  color: #ddd;
+  font-weight: normal;
+  font-size: 1.5rem;
+}
