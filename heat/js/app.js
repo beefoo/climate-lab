@@ -54,6 +54,17 @@ var App = (function() {
         default: return; // exit this handler for other keys
       }
     });
+
+    // Initialize controls
+    var sliders = {
+      "#rotate": {
+        min: 0, max: 1, step: 0.001, value: 0, gamepad: 1,
+        slide: function(e, ui){
+          _this.onRotate(ui.value);
+        }
+      }
+    };
+    var controls = new Controls({sliders: sliders});
   };
 
   App.prototype.nextGlobe = function(direction){
@@ -76,6 +87,12 @@ var App = (function() {
       globe.onResize();
     });
     this.calendar.onResize();
+  };
+
+  App.prototype.onRotate = function(amount){
+    _.each(this.globes, function(globe){
+      globe.rotate(amount);
+    });
   };
 
   App.prototype.render = function(){

@@ -60,11 +60,6 @@ var Globe = (function() {
     return this.promise;
   };
 
-  Globe.prototype.loadVideo = function(videoUrl){
-    var _this = this;
-
-  };
-
   Globe.prototype.loadView = function(){
     var _this = this;
     var w = this.$el.width();
@@ -132,6 +127,7 @@ var Globe = (function() {
       _this.countries.material.map.needsUpdate = true;
       countryPromise.resolve();
     });
+    this.earth.add(this.countries);
 
     // equator
     var eqGeo = new THREE.CircleGeometry(0.5001, 64);
@@ -159,14 +155,13 @@ var Globe = (function() {
     var southArrow = new THREE.ArrowHelper(dir, origin, length, hex);
     this.earth.add(southArrow);
 
-    this.scene.add(this.earth);
-    this.scene.add(this.countries);
-    earthPromise.resolve();
+    // create earth helper
+    this.earthHelper = new THREE.Object3D();
+    this.earthHelper.rotateZ(-23.5 * Math.PI / 180);
+    this.earthHelper.add(this.earth);
+    this.scene.add(this.earthHelper);
 
-    // tilt
-    this.earth.rotateZ(-23.5 * Math.PI / 180);
-    this.countries.rotateZ(-23.5 * Math.PI / 180);
-    // equator.rotateZ(-23.5 * Math.PI / 180);
+    earthPromise.resolve();
 
     // wait for textures to load
     $.when(earthPromise, countryPromise).done(function() {
@@ -191,6 +186,10 @@ var Globe = (function() {
 
     this.renderer.render(this.scene, this.camera);
     this.controls.update();
+  };
+
+  Globe.prototype.rotate = function(amount){
+    this.earth.rotation.y = amount*360 * Math.PI / 180;
   };
 
   Globe.prototype.setProgress = function(progress){

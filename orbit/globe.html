@@ -29,29 +29,47 @@
 
     var light  = new THREE.DirectionalLight( 0xffffff, 1 )
     light.position.set(5,5,5)
-    scene.add( light )
+    scene.add( light );
+
+    // load textures asynchronously
+    var earthPromise = $.Deferred();
+    var countryPromise = $.Deferred();
 
     var earthGeo = new THREE.SphereGeometry(0.25, 32, 32);
     var earthMat = new THREE.MeshBasicMaterial();
     var earth = new THREE.Mesh(earthGeo, earthMat);
     scene.add(earth);
 
-    var earthTextureLoader = new THREE.TextureLoader();
-    earthTextureLoader.load('img/surface_temperature.png', function (texture) {
-      earth.material.map = texture;
-      earth.material.map.needsUpdate = true;
-      renderer.render( scene, camera );
-    });
+    var cGeo = earthGeo.clone();
+    var cMat = new THREE.MeshPhongMaterial({transparent: true, opacity: 0.9});
+    var countries = new THREE.Mesh(cGeo, cMat);
+    scene.add(countries);
 
     var controls = new THREE.OrbitControls(camera, renderer.domElement);
 
     function animate(){
+      renderer.render(scene, camera);
       controls.update();
       requestAnimationFrame(function(){ animate(); });
     }
 
-    animate();
+    var earthTextureLoader = new THREE.TextureLoader();
+    earthTextureLoader.load('img/surface_temperature.png', function (texture) {
+      earth.material.map = texture;
+      earth.material.map.needsUpdate = true;
+      earthPromise.resolve();
+    });
 
+    var cTextureLoader = new THREE.TextureLoader();
+    cTextureLoader.load('img/BlankMap-Equirectangular_white.png', function (texture) {
+      countries.material.map = texture;
+      countries.material.map.needsUpdate = true;
+      countryPromise.resolve();
+    });
+
+    $.when(earthPromise, countryPromise).done(function() {
+      animate();
+    });
 
   </script>
 
