@@ -1,0 +1,50 @@
+<!doctype html>
+<html class="no-js" lang="">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>Climate Lab / What can we see about global temperature at different timescales?</title>
+  <link rel="stylesheet" href="../shared/css/normalize.css">
+  <link rel="stylesheet" href="../shared/css/base.css">
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+  <div class="app">
+    <div id="main" class="panes">
+      <div class="title"><h1>What can we see about global temperature at different timescales?</h1></div>
+      <div id="pane" class="pane"></div>
+    </div>
+    <div id="messages" class="messages"></div>
+    <div id="controls" class="controls">
+      <div class="sliders">
+        <div class="slider left">
+          <label for="scale">Slide to change timescale</label>
+          <div id="scale" class="slider-vert scale"></div>
+        </div>
+        <div class="slider right">
+          <label for="time">Slide to move time</label>
+          <div id="time" class="slider-horz time"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="../shared/js/jquery-3.2.1.min.js"></script>
+  <script src="../shared/js/jquery-ui-1.12.1.custom.slider.min.js"></script>
+  <script src="../shared/js/underscore-min.js"></script>
+  <script src="../shared/js/pixi.min.js"></script>
+  <script src="../shared/js/howler.min.js"></script>
+  <script src="../shared/js/ba-tiny-pubsub.min.js"></script>
+  <script src="../shared/js/crosstab.js"></script>
+  <script src="../shared/js/utils.js"></script>
+
+  <script src="js/sprites.js"></script>
+  <script src="js/sound.js"></script>
+  <script src="js/dataviz.js"></script>
+  <script src="js/controls.js"></script>
+  <script src="js/messages.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
