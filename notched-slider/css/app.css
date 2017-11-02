@@ -1,0 +1,78 @@
+body {
+  background: #000;
+  overflow: hidden;
+}
+
+.pane {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 50%;
+  height: 100%;
+}
+.pane.right {
+  left: 50%;
+}
+.pane.left {
+  background: #00897b;
+}
+
+.canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.slider {
+  width: 10px;
+  height: 50vh;
+  box-sizing: border-box;
+  padding: 1rem 2rem;
+  position: absolute;
+  left: 50%;
+  top: 25vh;
+  margin-left: -5px;
+}
+.slider-vert {
+  width: 20px;
+  height: 50vh;
+  position: relative;
+}
+
+.ui-slider {
+  background: #004D40;
+  margin: 40px 0 80px;
+}
+.ui-slider .ui-slider-handle {
+  background: #80CBC4;
+  position: absolute;
+  outline-color: #009688;
+  cursor: move;
+  cursor: grab;
+  cursor: -moz-grab;
+  cursor: -webkit-grab;
+}
+.ui-slider .ui-slider-handle:active {
+  cursor: grabbing;
+  cursor: -moz-grabbing;
+  cursor: -webkit-grabbing;
+}
+.ui-slider-horizontal .ui-slider-handle {
+  top: 50%;
+  height: 60px;
+  width: 40px;
+  margin-top: -30px;
+}
+.ui-slider-vertical {
+  margin-left: auto;
+  margin-right: auto;
+}
+.ui-slider-vertical .ui-slider-handle {
+  left: 50%;
+  height: 40px;
+  width: 60px;
+  margin-left: -30px;
+  margin-bottom: -20px;
+}

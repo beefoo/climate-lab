@@ -49,6 +49,14 @@ var App = (function() {
       _this.nextBranch(1);
     });
 
+    $(document).on('mousewheel', function(e) {
+      if (e.deltaY > 0) {
+        _this.nextBranch(-1);
+      } else {
+        _this.nextBranch(1);
+      }
+    });
+
     $(document).keydown(function(e) {
       switch(e.which) {
         case 37: // left
