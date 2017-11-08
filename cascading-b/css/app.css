@@ -1,0 +1,106 @@
+body {
+  background: #000;
+  overflow: hidden;
+}
+
+.svg-wrapper {
+  position: absolute;
+  width: 160vh;
+  height: 100vh;
+  top: -60vh;
+  left: 50%;
+  margin-left: -80vh;
+}
+
+.svg-container {
+  transform-origin: 50% 50%;
+  transition: transform 0.5s ease-in-out;
+}
+
+#center,
+#nodetext > g {
+  transform-origin: 50% 50%;
+  transition: transform 1s ease-in-out, opacity 1s ease-in-out;
+}
+#nodes > g {
+  opacity: 0.1;
+  transition: opacity 1s ease-in-out;
+}
+#nodetext > g {
+  opacity: 0.1;
+}
+#linktext > g {
+  transform-origin: 50% 50%;
+  opacity: 0;
+  transition: opacity 2s ease-in;
+  visibility: hidden;
+}
+#nodes > g.active,
+#nodetext > g.active,
+#linktext > g.active {
+  opacity: 1;
+}
+#nodes > g.active circle {
+  transform-origin: 50% 50%;
+  animation: pulse 0.5s ease-in-out;
+}
+#linktext > g.active {
+  visibility: visible;
+}
+
+#nodes > g.active path,
+#nodes > g.active line {
+  animation: dash 30s linear infinite;
+}
+
+#nodes > #a1.active path, #nodes > #a2.active path, #nodes > #a3.active path, #nodes > #a4.active path, #nodes > #a5.active path,
+#nodes > #d1.active path, #nodes > #e1.active path, #nodes > #e2.active path, #nodes > #e3.active path,
+#nodes > #a1.active line, #nodes > #a2.active line, #nodes > #a3.active line, #nodes > #a4.active line, #nodes > #a5.active line,
+#nodes > #d1.active line, #nodes > #e1.active line, #nodes > #e2.active line, #nodes > #e3.active line {
+  animation-duration: 10s;
+}
+
+
+
+/* loops */
+#e4.active path,
+#a6.active path {
+  fill: #826c00;
+}
+#e4.active,
+#a6.active {
+  transform-origin: 50% 50%;
+  animation: rotating 9s linear infinite;
+}
+
+@keyframes dash {
+  to {
+    stroke-dashoffset: -1000;
+  }
+}
+
+@keyframes pulse {
+  from {
+    transform: scale3d(1, 1, 1);
+    fill: #232323;
+  }
+
+  50% {
+    transform: scale3d(1.2, 1.2, 1.2);
+    fill: #666666;
+  }
+
+  to {
+    transform: scale3d(1, 1, 1);
+    fill: ##232323;
+  }
+}
+
+@keyframes rotating {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(-360deg);
+  }
+}
