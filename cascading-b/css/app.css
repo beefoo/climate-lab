@@ -45,6 +45,7 @@ body {
   animation: pulse 0.5s ease-in-out;
 }
 #linktext > g.active {
+  transition: transform 1.5s ease-in-out;
   visibility: visible;
 }
 

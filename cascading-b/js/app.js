@@ -18,6 +18,7 @@ var App = (function() {
     this.index = -1;
     this.rotation = 0;
     this.timeouts = [];
+    this.allNodes = _.uniq(_.flatten(_.pluck(this.branches, "nodes"), true));
 
     this.nextBranch(1);
     this.loadListeners();
@@ -63,6 +64,7 @@ var App = (function() {
   App.prototype.nextBranch = function(direction){
     var _this = this;
     var nodeAnimation = this.opt.nodeAnimation;
+    var allNodes = this.allNodes;
 
     var index = this.index;
     index += direction;
@@ -79,7 +81,7 @@ var App = (function() {
 
     var nodes = nextBranch.nodes;
 
-    $('#nodes > g, #nodetext > g, #linktext > g').removeClass('active');
+    // $('#nodes > g, #nodetext > g, #linktext > g').removeClass('active');
     $('#svg-container').css('transform', 'rotate('+rotation+'deg)');
     $('#center, #nodetext > g, #linktext > g').css('transform', 'rotate('+(-rotation)+'deg)');
 
@@ -88,13 +90,22 @@ var App = (function() {
     });
 
     var timeouts = [];
+    var j = 0;
 
-    _.each(nodes, function(node, i){
-      var s = (i+1) * nodeAnimation;
-      var timeout = setTimeout(function(){
-        $('#'+node+', #'+node+'nt, #'+node+'lt').addClass('active');
-      }, s);
-      timeouts.push(timeout);
+    _.each(allNodes, function(node, i){
+      if (_.indexOf(nodes, node) >= 0) {
+        if (!$('#'+node).hasClass('active')) {
+          j += 1;
+          var s = j * nodeAnimation;
+          var timeout = setTimeout(function(){
+            $('#'+node+', #'+node+'nt, #'+node+'lt').addClass('active');
+          }, s);
+          timeouts.push(timeout);
+        }
+
+      } else {
+        $('#'+node+', #'+node+'nt, #'+node+'lt').removeClass('active');
+      }
     });
 
     this.timeouts = timeouts;
