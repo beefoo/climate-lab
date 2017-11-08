@@ -1,0 +1,33 @@
+body {
+  overflow: hidden;
+}
+
+.wrapper {
+  position: absolute;
+  background: #000;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  overflow-y: auto;
+}
+
+.graph {
+  position: absolute;
+  width: 100vw;
+  height: 100vw;
+}
+
+.node circle {
+  fill: #d12c2c;
+  stroke: #000;
+  stroke-width: 2px;
+}
+.node text {
+  fill: #fff;
+  font-size: 1rem;
+}
+
+.link {
+  stroke: #fff;
+  stroke-width: 2px;
+}
