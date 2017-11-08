@@ -106,7 +106,8 @@ var App = (function() {
       range: this.range,
       scale: this.scale,
       time: this.time,
-      minDomainCount: this.opt.minDomainCount
+      minDomainCount: this.opt.minDomainCount,
+      annotations: this.opt.annotations
     });
 
     this.messages = new Messages({

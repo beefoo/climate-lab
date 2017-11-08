@@ -8,6 +8,9 @@ var DataViz = (function() {
       enableSound: true,
       highlightMs: 1000,
       yAxisStep: 0.1,
+      annTextStyle: {
+        fill: "#d2d1dd"
+      },
       axisTextStyle: {
         fill: "#d2d1dd",
         fontSize: 18
@@ -26,12 +29,19 @@ var DataViz = (function() {
   }
 
   DataViz.prototype.init = function(){
+    var _this = this;
     this.$el = $(this.opt.el);
 
     this.domain = this.opt.domain;
     this.range = this.opt.range;
     this.time = this.opt.time;
     this.scale = this.opt.scale;
+    this.annotations = this.opt.annotations;
+
+    // add indices to annotations
+    _.each(this.annotations, function(ann, i){
+      _this.annotations[i].index = i;
+    });
 
     // re-map data
     var d0 = this.domain[0];
@@ -88,10 +98,21 @@ var DataViz = (function() {
     this.axes = new PIXI.Graphics();
     this.plot = new PIXI.Graphics();
     this.highlight = new PIXI.Graphics();
-    this.labels = new PIXI.Graphics();
+    this.ann = new PIXI.Graphics();
     this.marker = new PIXI.Graphics();
 
-    this.app.stage.addChild(this.plot, this.highlight, this.axes, this.labels, this.marker);
+    this.app.stage.addChild(this.plot, this.highlight, this.axes, this.ann, this.marker);
+
+    // load annotation images
+    var images = [];
+    _.each(this.annotations, function(ann){
+      if ("image" in ann) {
+        images.push(new PIXI.Sprite.fromImage(ann["image"]));
+      } else {
+        images.push(false);
+      }
+    });
+    this.images = images;
 
     this.$el.append(this.app.view);
   };
@@ -100,12 +121,80 @@ var DataViz = (function() {
     this.app.renderer.resize(this.$el.width(), this.$el.height());
     this.renderAxes();
     this.renderPlot();
-    this.renderLabels();
+    this.renderAnnotations();
     this.renderMarker();
   };
 
   DataViz.prototype.render = function(){
     this.transition();
+  };
+
+  DataViz.prototype.renderAnnotations = function(){
+    this.ann.clear();
+    while(this.ann.children[0]) {
+      this.ann.removeChild(this.ann.children[0]);
+    }
+
+    var _this = this;
+    var data = this.data;
+    var domain = this.plotDomain;
+    var domainp = this.plotDomainPrecise;
+    var range = this.plotRange;
+    var textStyle = this.opt.annTextStyle;
+    var w = this.app.renderer.width;
+    var h = this.app.renderer.height;
+    var m = this.opt.margin;
+    var images = this.images;
+    var imageRatio = 480 / 300;
+    var dataMargin = 0.5;
+
+    var mx0 = m[0] * w;
+    var my0 = m[1] * h;
+    var mx1 = m[2] * w;
+    var my1 = m[3] * h;
+    var cw = w - mx0 - mx1;
+    var ch = h - my0 - my1;
+    var dataW = cw / (domainp[1]-domainp[0]+1);
+    var margin = dataW * 0.5;
+
+    var annotations = _.filter(this.annotations, function(ann){
+      return ("year" in ann && ann["year"] >= domain[0] && ann["year"] <= domain[1] || "yearRange" in ann && false);
+    });
+
+    _.each(annotations, function(ann, i){
+      var year = ann["year"];
+      var d = _.find(data, function(d){ return d.year === year; });
+      if (d && d.active) {
+        var value = d.value;
+        if (d.highlighting) {
+          value = UTIL.lerp(value+0.5, value, UTIL.easeInElastic(d.highlightValue, 0.01));
+          if (isNaN(value)) value = d.value;
+        }
+        var p = _this._dataToPoint(year, value, domainp, range);
+        var px = UTIL.norm(year, domainp[0], domainp[1]+1);
+        var y = p[1];
+        var x = px * cw + mx0;
+        var dw = dataW - dataMargin * 2;
+        var dh = dw / imageRatio;
+
+        if ("image" in ann) {
+          var image = images[ann.index];
+          image.anchor.set(0, 1.0);
+          image.width = dw;
+          image.height = dh;
+          image.x = x;
+          image.y = y - margin;
+          if (y - margin - dh < 0) {
+            image.y = dh;
+          }
+          _this.ann.addChild(image);
+          _this.ann.lineStyle(dw*0.02, 0xEEEEEE);
+          _this.ann.moveTo(x+dw/2, y);
+          _this.ann.lineTo(x+dw/2, y-margin);
+        }
+
+      }
+    });
   };
 
   DataViz.prototype.renderAxes = function(){
@@ -125,6 +214,9 @@ var DataViz = (function() {
     while(this.axes.children[0]) {
       this.axes.removeChild(this.axes.children[0]);
     }
+
+    textStyle.fontSize = h * 0.0225;
+    subtextStyle.fontSize = h * 0.02;
 
     // draw y axis
     var delta = range[1] - range[0];
@@ -202,8 +294,8 @@ var DataViz = (function() {
       if (showLabel) {
         var text = value;
         var ts = _.clone(textStyle);
+        ts.fontSize *= 1.2;
         var xAnchor = 0.5;
-        ts.fontSize = 22;
         var label = new PIXI.Text(text, ts);
         if (count > 10) {
           if (value == domain[0]) {
@@ -235,13 +327,6 @@ var DataViz = (function() {
     this.axes.moveTo(mx0 + cw*0.5, ly1).lineTo(mx0 + cw*0.5, h);
   };
 
-  DataViz.prototype.renderLabels = function(){
-    // this.labels.clear();
-    // while(this.labels.children[0]) {
-    //   this.labels.removeChild(this.labels.children[0]);
-    // }
-  };
-
   DataViz.prototype.renderMarker = function(){
     // draw plot marker
     var year = this.plotYear;
@@ -264,6 +349,7 @@ var DataViz = (function() {
     this.marker.moveTo(x, my0).lineTo(x, h-my1);
 
     var textStyle = this.opt.markerTextStyle;
+    textStyle.fontSize = h * 0.0275;
     var df = UTIL.round(year.value, 1);
     var dc = UTIL.round((year.value-32) * 5 / 9.0, 1);
     var text = df + "°F ("+dc+" °C)";
@@ -359,6 +445,7 @@ var DataViz = (function() {
 
     this.transitioning = transitioning;
     this.renderPlot();
+    this.renderAnnotations();
     // this.renderHighlight();
   };
 
@@ -417,7 +504,7 @@ var DataViz = (function() {
 
     this.updateTime(this.time, false);
     this.renderAxes();
-    this.renderLabels();
+    this.renderAnnotations();
     this.renderMarker();
     this.renderPlot();
   };
@@ -432,6 +519,7 @@ var DataViz = (function() {
     var prevIndex = this.plotIndex;
 
     this.dataIndex = UTIL.norm(yearPrecise, domain[0], domain[1]);
+    // console.log(domainPrecise, yearPrecise, this.dataIndex)
     var plotIndex = Math.round(UTIL.lerp(domain[0], domain[1], this.dataIndex)) - domain[0];
     this.plotIndex = plotIndex;
     this.plotYear = this.data[this.plotIndex];
