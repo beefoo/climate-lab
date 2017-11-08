@@ -50,9 +50,9 @@ var App = (function() {
       .attr('height', h);
 
     var simulation = d3.forceSimulation(nodes)
-      .force("charge", d3.forceManyBody().strength(-100))
+      .force("charge", d3.forceManyBody().strength(-200))
       .force("collide", d3.forceCollide().radius(function(d){ return d.radius*2; }))
-      .force("link", d3.forceLink().id(function(d) { return d.id; }).distance(h/2))
+      .force("link", d3.forceLink().id(function(d) { return d.id; }).distance(h/4))
       .force("center", d3.forceCenter(w/2, h/2))
       .force("x", d3.forceX(function(d){ return positions[d.groupId][0] * w; }))
       .force("y", d3.forceY(function(d){ return positions[d.groupId][1] * h; }));
