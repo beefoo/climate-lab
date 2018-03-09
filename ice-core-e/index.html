@@ -1,0 +1,67 @@
+<!doctype html>
+<html class="no-js" lang="">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>Climate Lab / Paleoclimate wall ice core interactive</title>
+  <link rel="stylesheet" href="../shared/css/normalize.css">
+  <link rel="stylesheet" href="../shared/css/base.css">
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+  <div class="app">
+    <div class="ice-core"></div>
+    <div id="timeline-indicator" class="timeline-indicator"></div>
+    <div class="content">
+      <div class="globe">
+        <img id="globe-image" src="img/sea_ice/frame_00000.png" />
+      </div>
+      <div class="text">
+        <h2>Ice core ipsum dolor</h2>
+        <p>1680 meters below the surface, 12,800 years ago... lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt magna aliqua.</p>
+        <div id="node" class="node"></div>
+      </div>
+      <div class="dashboard">
+        <div class="row header">
+          <div class="left"><span id="years-ago">19,000</span> years ago</div>
+          <div class="right"><span id="depth">1,860</span> meters below surface</div>
+        </div>
+        <div class="row">
+          <div class="col">
+            <h2>CO₂</h2>
+            <div class="dd">
+              <div class="value"><small class="indicator">▼</small><span id="co2">216</span><small>ppm</small></div>
+              <div class="label">less CO₂ than today</div>
+            </div>
+          </div>
+          <div class="col">
+            <h2>Temperature</h2>
+            <div class="dd dd-temperature">
+              <div class="value"><small class="indicator">▼</small><span id="temperature">5.4</span><small>°C</small></div>
+              <div class="label">cooler than today</div>
+            </div>
+          </div>
+          <div class="col">
+            <h2>Sea level</h2>
+            <div class="dd">
+              <div class="value"><small class="indicator">▼</small><span id="sea_level">120.2</span><small>m</small></div>
+              <div class="label">lower than today</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- /content -->
+
+    <div id="timeline" class="timeline"><img id="timeline-image" src="img/timeline.png" /></div>
+  </div>
+
+  <script src="../shared/js/jquery-3.2.1.min.js"></script>
+  <script src="../shared/js/jquery.mousewheel.min.js"></script>
+  <script src="../shared/js/underscore-min.js"></script>
+  <script src="../shared/js/pixi.min.js"></script>
+  <script src="../shared/js/utils.js"></script>
+
+  <script src="js/app.js"></script>
+</body>
+</html>

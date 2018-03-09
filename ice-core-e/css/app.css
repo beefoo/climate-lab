@@ -1,0 +1,163 @@
+body {
+  overflow: hidden;
+  font-size: 16px;
+}
+
+.app {
+  background: #000000;
+  color: #fff;
+  width: 100vw;
+  height: 100vh;
+  position: absolute;
+  top: 0;
+  left: 0;
+  letter-spacing: 0.05rem;
+}
+
+h2 {
+  font-weight: normal;
+  letter-spacing: 0.06rem;
+}
+p {
+  line-height: 1.6;
+}
+
+.ice-core,
+.content,
+.timeline,
+.timeline-indicator {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.ice-core {
+  width: 100vw;
+  height: 100vh;
+  background: url(../img/ice_core.png) no-repeat;
+  background-position: center 20%;
+  background-size: 100% auto;
+}
+
+.content {
+  height: 70vh;
+  top: 5vh;
+  width: 64vw;
+  left: 50%;
+  margin-left: -32vw;
+}
+
+.globe,
+.text,
+.dashboard {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 48%;
+}
+.globe {
+  height: 65%;
+}
+.globe img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.text {
+  top: auto;
+  bottom: 0;
+  background: #3a3f3f;
+  box-sizing: border-box;
+  padding: 0.5rem 1rem;
+  box-shadow: 2px 2px 2px rgba(0,0,0,0.4);
+}
+.text .node {
+  width: 28px;
+  height: 28px;
+  border-radius: 14px;
+  background: #8caaba;
+  position: absolute;
+  left: 50%;
+  margin-left: -14px;
+  bottom: -14px;
+}
+.text h2 {
+  margin-top: 0.5rem;
+  font-size: 1.3rem;
+}
+.dashboard {
+  left: auto;
+  right: 0;
+  top: 30%;
+  background: #262f33;
+  box-shadow: 2px 2px 2px rgba(0,0,0,0.4);
+}
+.row {}
+.row:after {
+  clear: both;
+  content: "";
+  display: table;
+}
+.header {
+  padding: 0.5rem 1rem;
+  background: #0d1214;
+  color: #7e7f7f;
+  font-size: 0.8rem;
+}
+.left {
+  float: left;
+}
+.right {
+  float: right;
+}
+.col {
+  float: left;
+  width: 33.3333333333%;
+  box-sizing: border-box;
+  padding: 0 1rem 1rem;
+}
+.dashboard h2 {
+  color: #b5b5b5;
+  padding-bottom: 0.5rem;
+  border-bottom: 0.2rem solid #0d1214;
+  margin-bottom: 1rem;
+}
+.dashboard .dd {
+  color: #8cc63f;
+}
+.dashboard .dd.dd-temperature {
+  color: #6abfea;
+}
+.dashboard .dd .value {
+  font-size: 1.6rem;
+}
+.dashboard .dd .indicator {
+  display: inline-block;
+  margin-right: 0.3rem;
+}
+.dashboard .dd .label {
+  font-size: 0.8rem;
+  margin-top: 0.3rem;
+}
+
+.timeline {
+  width: 100vw;
+  height: 15vh;
+  top: auto;
+  bottom: 2.5vh;
+  overflow: hidden;
+}
+.timeline img {
+  display: block;
+  height: 100%;
+  width: auto;
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+.timeline-indicator {
+  top: 75vh;
+  height: 12.1764705882vh;
+  width: 100vw;
+}
