@@ -23,6 +23,7 @@ p {
 }
 
 .ice-core,
+.ice-core-blur,
 .content,
 .timeline,
 .timeline-indicator {
@@ -31,12 +32,18 @@ p {
   left: 0;
 }
 
+.ice-core-blur,
 .ice-core {
   width: 100vw;
   height: 100vh;
   background: url(../img/ice_core.png) no-repeat;
   background-position: center 20%;
   background-size: 100% auto;
+  transition: opacity 0.5s;
+}
+.ice-core-blur {
+  background-image: url(../img/ice_core_blur.png);
+  opacity: 0.8;
 }
 
 .content {

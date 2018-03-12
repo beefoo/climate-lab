@@ -1,0 +1,133 @@
+<!doctype html>
+<html class="no-js" lang="">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>Climate Lab / Paleoclimate wall ice core interactive</title>
+  <link rel="stylesheet" href="../shared/css/normalize.css">
+  <link rel="stylesheet" href="../shared/css/base.css">
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+  <div class="app">
+    <div class="ice-core-blur"></div>
+    <div id="ice-core" class="ice-core"></div>
+
+    <div class="dashboard">
+      <div class="row">
+        <div class="col">
+          <h2>Ice extent</h2>
+        </div>
+        <div class="col">
+          <h2>Time period</h2>
+          <div class="dd dd-time">
+            <div class="value"><span id="years-ago">19,000</span> years ago</div>
+          </div>
+        </div>
+        <div class="col">
+          <h2>CO₂</h2>
+          <div class="icon">
+            <svg id="icon-co2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 99.74 76">
+              <g>
+                <circle class="cls-1" cx="50.77" cy="46.1"/>
+                <path class="cls-1" d="M15.48,12A15.06,15.06,0,0,0,.56,30.09a15,15,0,0,0,15.69,12,15.19,15.19,0,0,0,8.84-3.6,1.66,1.66,0,0,1,2-.12l4.12,2.75a1.66,1.66,0,0,1,.63,2A19.71,19.71,0,0,0,63.78,64.46a1.66,1.66,0,0,1,2.06-.17l4,2.67a1.66,1.66,0,0,1,.67,1.84,15.06,15.06,0,0,0,6.17,16.73h0A15.05,15.05,0,0,0,93.24,60.38h0a15.06,15.06,0,0,0-18.1,1.17,1.66,1.66,0,0,1-2,.12L69.3,59.12a1.66,1.66,0,0,1-.63-2,19.74,19.74,0,0,0-7.55-23.54h0a19.74,19.74,0,0,0-24.4,2.15,1.66,1.66,0,0,1-2.07.17L30.42,33.1a1.66,1.66,0,0,1-.67-1.84,15.06,15.06,0,0,0-6.16-16.77h0A15.16,15.16,0,0,0,15.49,12h0Z" transform="translate(-0.26 -12)"/>
+              </g>
+            </svg>
+          </div>
+          <div class="dd dd-co2">
+            <div class="value"><small class="indicator">▼</small><span id="co2">216</span><small>ppm</small></div>
+            <div class="label">less CO₂ than today</div>
+          </div>
+        </div>
+        <div class="col">
+          <h2>Temperature</h2>
+          <div class="icon">
+            <svg id="icon-temperature" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 41.1 100">
+              <path class="cls-1" d="M61.85,63V12.33a12.33,12.33,0,1,0-24.66,0V63a20.55,20.55,0,1,0,24.66,0Zm-24,7,.19-.24ZM49.52,5.48a6.85,6.85,0,0,1,6.85,6.85V42.81H42.67V12.33A6.85,6.85,0,0,1,49.52,5.48Z" transform="translate(-28.97)"/>
+            </svg>
+          </div>
+          <div class="dd dd-temperature">
+            <div class="value"><small class="indicator">▼</small><span id="temperature">5.4</span><small>°C</small></div>
+            <div class="label">cooler than today</div>
+          </div>
+        </div>
+        <div class="col">
+          <h2>Sea level</h2>
+          <div class="icon">
+            <svg id="icon-sealevel" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 73">
+              <path class="cls-1" d="M97.94,26.68c-2.35.71-4.64.39-7.43-1.32s-5.74-4.73-9-9.45c-1.74-2.73-4-2.31-5.45-.16-5.72,8.32-10.61,11.34-14.54,11.19S53.35,23.45,48.89,16c-1.7-2.72-4.11-2.54-5.68.1-4.47,7.37-8.76,10.68-12.64,10.82s-8.73-2.85-14.39-11c-1.54-2.54-3.91-2.43-5.59.05h0C6.74,21.53,3.2,24.73.17,26.1L0,26.2V87H100V26.72A2.65,2.65,0,0,0,97.94,26.68Z" transform="translate(0 -14)"/>
+            </svg>
+          </div>
+          <div class="dd dd-sealevel">
+            <div class="value"><small class="indicator">▼</small><span id="sea_level">120.2</span><small>m</small></div>
+            <div class="label">lower than today</div>
+          </div>
+        </div>
+        <div class="col">
+          <h2>Human population</h2>
+          <div class="icon">
+            <svg id="icon-population" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 73">
+              <g>
+                <g>
+                  <ellipse class="cls-1" cx="14.22" cy="8.51" rx="8.52" ry="8.51"/>
+                  <path class="cls-1" d="M28.44,53.54A5.47,5.47,0,0,1,23,59H5.47A5.47,5.47,0,0,1,0,53.54V33.81a5.47,5.47,0,0,1,5.47-5.46H23a5.47,5.47,0,0,1,5.47,5.46Z" transform="translate(0 -9)"/>
+                  <path class="cls-1" d="M21.64,87.79A4.22,4.22,0,0,1,17.43,92H11A4.22,4.22,0,0,1,6.8,87.79V59.31A4.22,4.22,0,0,1,11,55.09h6.41a4.22,4.22,0,0,1,4.22,4.21Z" transform="translate(0 -9)"/>
+                </g>
+                <g>
+                  <ellipse class="cls-1" cx="50" cy="8.51" rx="8.52" ry="8.51"/>
+                  <path class="cls-1" d="M64.22,53.54A5.47,5.47,0,0,1,58.75,59H41.25a5.47,5.47,0,0,1-5.47-5.46V33.81a5.47,5.47,0,0,1,5.47-5.46h17.5a5.47,5.47,0,0,1,5.47,5.46Z" transform="translate(0 -9)"/>
+                  <path class="cls-1" d="M57.42,87.79A4.21,4.21,0,0,1,53.21,92H46.8a4.22,4.22,0,0,1-4.22-4.21V59.31a4.22,4.22,0,0,1,4.22-4.21h6.41a4.21,4.21,0,0,1,4.22,4.21Z" transform="translate(0 -9)"/>
+                </g>
+                <g>
+                  <ellipse class="cls-1" cx="85.78" cy="8.51" rx="8.52" ry="8.51"/>
+                  <path class="cls-1" d="M100,53.54A5.47,5.47,0,0,1,94.53,59H77a5.47,5.47,0,0,1-5.47-5.46V33.81A5.47,5.47,0,0,1,77,28.34h17.5A5.47,5.47,0,0,1,100,33.81Z" transform="translate(0 -9)"/>
+                  <path class="cls-1" d="M93.21,87.79A4.22,4.22,0,0,1,89,92H82.58a4.22,4.22,0,0,1-4.22-4.21V59.31a4.22,4.22,0,0,1,4.22-4.21H89a4.22,4.22,0,0,1,4.22,4.21Z" transform="translate(0 -9)"/>
+                </g>
+              </g>
+            </svg>
+          </div>
+          <div class="dd">
+            <div class="value"><span id="population">1</span> million</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- / dashboard -->
+
+    <div class="globe">
+      <img id="globe-image" src="img/sea_ice/frame_00000.png" />
+    </div>
+
+    <div id="timeline" class="timeline">
+      <div id="timeline-canvas" class="timeline-canvas"></div>
+    </div>
+
+    <div id="content1" class="content active">
+      <h2>Ice core ipsum dolor</h2>
+      <p>
+        <img id="content_image" src="img/content_ice_core.jpg" />
+      </p>
+      <p id="content_text">1800 meters below the surface, 15,000 years ago... Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.</p>
+      <div id="node" class="node"></div>
+    </div>
+    <div id="content2" class="content">
+      <h2>Ice ipsum dolor</h2>
+      <p>
+        <img id="content_image" src="img/content_ice.jpg" />
+      </p>
+      <p id="content_text">1200 meters below the surface, 15,000 years ago... Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.</p>
+      <div class="node"></div>
+    </div>
+    <!-- /content -->
+
+  </div>
+
+  <script src="../shared/js/jquery-3.2.1.min.js"></script>
+  <script src="../shared/js/jquery.mousewheel.min.js"></script>
+  <script src="../shared/js/underscore-min.js"></script>
+  <script src="../shared/js/pixi.min.js"></script>
+  <script src="../shared/js/utils.js"></script>
+
+  <script src="js/app.js"></script>
+</body>
+</html>

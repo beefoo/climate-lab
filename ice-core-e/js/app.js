@@ -22,6 +22,8 @@ var App = (function() {
     var _this = this;
     var scrollStep = this.opt.scrollStep;
     var offsetX = 0.0;
+    var scrolling = false;
+    var timeout = false;
 
     $(window).on('resize', function(e){
       _this.onResize();
@@ -30,7 +32,13 @@ var App = (function() {
 
     $(window).mousewheel(function(e) {
       var delta = e.deltaY * scrollStep * -1;
-
+      scrolling = true;
+      if (timeout) clearTimeout(timeout);
+      $('#ice-core').css('opacity', 0);
+      timeout = setTimeout(function(){
+        scrolling = false;
+        $('#ice-core').css('opacity', 1);
+      }, 1000);
       offsetX += delta;
       offsetX = UTIL.lim(offsetX, 0, 1);
       _this.onScroll(offsetX);
@@ -90,12 +98,13 @@ var App = (function() {
     var x1 = this.timelineNodeX + deltaX;
     var y0 = 0;
     var y1 = h;
-    var xmid = x0;
+    var xmid = (x1 - x0) / 2 + x0;
     var ymid = (y1 - y0) / 2 + y0;
     this.indicator.clear();
     this.indicator.lineStyle(w * 0.005, 0x61859e);
     this.indicator.moveTo(x0, y0);
-    this.indicator.quadraticCurveTo(xmid, ymid, x1, y1);
+    this.indicator.quadraticCurveTo(x0, ymid, xmid, ymid);
+    this.indicator.quadraticCurveTo(x1, ymid, x1, y1);
     this.offsetX = offsetX;
   };
 
