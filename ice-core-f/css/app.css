@@ -50,7 +50,7 @@ p {
 
 .dashboard {
   width: 100vw;
-  height: 12vh;
+  height: 15.5vh;
   background: #262f33;
 }
 .row {}
@@ -69,6 +69,16 @@ p {
 }
 .col:first-child {
   width: 20%;
+}
+.row.header {
+  background: #1a1f21;
+  color: #7a7777;
+}
+.row.header .col {
+  height: 3.5vh;
+  line-height: 3.5vh;
+  border-color: #000;
+  font-size: 1.2vh;
 }
 .dashboard h2 {
   color: #b5b5b5;
@@ -125,7 +135,7 @@ p {
 .globe {
   width: 18vw;
   left: 2vw;
-  top: 2vh;
+  top: 3vh;
 }
 .globe img {
   display: block;

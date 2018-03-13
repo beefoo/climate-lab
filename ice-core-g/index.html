@@ -14,6 +14,11 @@
     <div id="ice-core" class="ice-core"></div>
 
     <div class="dashboard">
+      <div class="row header">
+        <div class="col" style="width: 20%"></div>
+        <div class="col" style="width: 32%">From Greenland ice core record</div>
+        <div class="col" style="width: 48%">From global record</div>
+      </div>
       <div class="row">
         <div class="col">
           <h2>Ice extent</h2>
@@ -22,6 +27,18 @@
           <h2>Time period</h2>
           <div class="dd dd-time">
             <div class="value"><span id="years-ago">19,000</span> years ago</div>
+          </div>
+        </div>
+        <div class="col">
+          <h2>Temperature</h2>
+          <div class="icon">
+            <svg id="icon-temperature" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 41.1 100">
+              <path class="cls-1" d="M61.85,63V12.33a12.33,12.33,0,1,0-24.66,0V63a20.55,20.55,0,1,0,24.66,0Zm-24,7,.19-.24ZM49.52,5.48a6.85,6.85,0,0,1,6.85,6.85V42.81H42.67V12.33A6.85,6.85,0,0,1,49.52,5.48Z" transform="translate(-28.97)"/>
+            </svg>
+          </div>
+          <div class="dd dd-temperature">
+            <div class="value"><small class="indicator">▼</small><span id="temperature">5.4</span><small>°C</small></div>
+            <div class="label">cooler than today</div>
           </div>
         </div>
         <div class="col">
@@ -37,18 +54,6 @@
           <div class="dd dd-co2">
             <div class="value"><small class="indicator">▼</small><span id="co2">216</span><small>ppm</small></div>
             <div class="label">less CO₂ than today</div>
-          </div>
-        </div>
-        <div class="col">
-          <h2>Temperature</h2>
-          <div class="icon">
-            <svg id="icon-temperature" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 41.1 100">
-              <path class="cls-1" d="M61.85,63V12.33a12.33,12.33,0,1,0-24.66,0V63a20.55,20.55,0,1,0,24.66,0Zm-24,7,.19-.24ZM49.52,5.48a6.85,6.85,0,0,1,6.85,6.85V42.81H42.67V12.33A6.85,6.85,0,0,1,49.52,5.48Z" transform="translate(-28.97)"/>
-            </svg>
-          </div>
-          <div class="dd dd-temperature">
-            <div class="value"><small class="indicator">▼</small><span id="temperature">5.4</span><small>°C</small></div>
-            <div class="label">cooler than today</div>
           </div>
         </div>
         <div class="col">
