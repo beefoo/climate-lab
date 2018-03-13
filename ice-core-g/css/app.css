@@ -182,8 +182,8 @@ p {
   position: absolute;
   left: 0;
   top: 0;
-  height: 22.5vh;
-  width: 258vh;
+  height: 100%;
+  width: 100%;
 }
 
 .timeline-indicator {
