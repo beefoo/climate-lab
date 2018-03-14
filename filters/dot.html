@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>Dot filter</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="stylesheet" href="../shared/css/normalize.css">
+    <link rel="stylesheet" href="css/app.css">
+  </head>
+  <body>
+
+    <div id="app" class="app"></div>
+
+    <script type="x-shader/x-fragment" id="graph-fragment-shader">
+    precision mediump float;
+
+    varying vec2 vTextureCoord;
+    uniform sampler2D uSampler;
+    uniform vec4 filterArea;
+
+    uniform vec2 size;
+    uniform vec2 spacing;
+    uniform float progress;
+    uniform float threshold;
+
+    vec2 mapCoord(vec2 coord) {
+      coord *= filterArea.xy;
+      coord += filterArea.zw;
+      return coord;
+    }
+
+    vec2 unmapCoord(vec2 coord) {
+      coord -= filterArea.zw;
+      coord /= filterArea.xy;
+      return coord;
+    }
+
+    vec2 dotMap(vec2 coord, vec2 size, vec2 spacing) {
+      vec2 total = size + spacing;
+      vec2 radius = total / 2.0;
+      vec2 centerOfDot = floor( coord / total ) * total + radius;
+      return centerOfDot;
+    }
+
+    void main(void) {
+      vec4 fromColor = texture2D(uSampler, vTextureCoord);
+      vec4 toColor = vec4(0.0, 0.0, 0.0, 0.0);
+
+      vec2 mappedCoord = mapCoord(vTextureCoord);
+      vec2 dotCoord = dotMap(mappedCoord, size, spacing);
+      float d = distance(mappedCoord, dotCoord);
+      dotCoord = unmapCoord(dotCoord);
+
+      // only color if pixel lies within the dot
+      // float fromRadius = (size.x + spacing.x) * 0.5;
+      // fromRadius = sqrt(fromRadius*fromRadius + fromRadius*fromRadius);
+      // float toRadius = size.x * 0.5;
+      // float radius = mix(fromRadius, toRadius, progress);
+      float radius = size.x * 0.5;
+      if (d < radius) {
+        vec4 dotColor = texture2D(uSampler, dotCoord);
+        float average = (dotColor.r + dotColor.g + dotColor.b) / 3.0;
+        // only show dot if above certain brightness or yellow color
+        if (average > threshold && !(dotColor.r > 0.5 && dotColor.g > 0.5 && dotColor.b < 0.25)) {
+          toColor = vec4(average, average, average, fromColor.a);
+        }
+      }
+
+      gl_FragColor = mix(fromColor, toColor, progress);
+    }
+    </script>
+
+    <script src="../shared/js/jquery-3.2.1.min.js"></script>
+    <script src="../shared/js/underscore-min.js"></script>
+    <script src="../shared/js/pixi-4.7.0.min.js"></script>
+    <script src="../shared/js/utils.js"></script>
+
+    <script src="js/app.js"></script>
+  </body>
+</html>
