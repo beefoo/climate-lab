@@ -1,0 +1,180 @@
+# EPICA Dome C Ice Core Termination I d13CO2 Data
+# -----------------------------------------------------------------------
+#                World Data Center for Paleoclimatology, Boulder
+#                                   and
+#                      NOAA Paleoclimatology Program
+# -----------------------------------------------------------------------
+# NOTE: PLEASE CITE ORIGINAL REFERENCE WHEN USING THIS DATA!!!!!
+#
+#
+# NAME OF DATA SET: EPICA Dome C Ice Core Termination I d13CO2 Data
+# LAST UPDATE: 7/2010 (Original receipt by WDC Paleo)
+#
+# CONTRIBUTORS: Lourantou, A., J.V. Lavric, P. K�hler, J.-M. Barnola,
+# D. Paillard, E. Michel, D. Raynaud, and J. Chappellaz.
+#
+# IGBP PAGES/WDCA CONTRIBUTION SERIES NUMBER: 2010-058
+#
+# WDC PALEO CONTRIBUTION SERIES CITATION:
+# Lourantou, A., et al. 2010.
+# EPICA Dome C Ice Core Termination I d13CO2 Data.
+# IGBP PAGES/World Data Center for Paleoclimatology
+# Data Contribution Series # 2010-058.
+# NOAA/NCDC Paleoclimatology Program, Boulder CO, USA.
+#
+#
+# ORIGINAL REFERENCE:
+# Lourantou, A., J.V. Lavric, P. K�hler, J.-M. Barnola,
+# D. Paillard, E. Michel, D. Raynaud, and J. Chappellaz. 2010.
+# Constraint of the CO2 rise by new atmospheric carbon isotopic
+# measurements during the last deglaciation.
+# Global Biogeochem. Cycles, 24, GB2015.
+# doi:10.1029/2009GB003545
+#
+# ABSTRACT:
+# The causes of the ~80 ppmv increase of atmospheric carbon dioxide (CO2)
+# during the last glacial-interglacial climatic transition remain debated.
+# We analyzed the parallel evolution of CO2 and its stable carbon isotopic
+# ratio (d13CO2) in the European Project for Ice Coring in Antarctica (EPICA)
+# Dome C ice core to bring additional constraints.  Agreeing well but largely
+# improving the Taylor Dome ice core record of lower resolution, our d13CO2
+# record is characterized by a W shape, with two negative d13CO2 excursions
+# of 0.5� during Heinrich 1 and Younger Dryas events, bracketing a positive
+# d13CO2 peak during the B�lling/Aller�d warm period. The comparison with
+# marine records and the outputs of two C cycle box models suggest that
+# changes in Southern Ocean ventilation drove most of the CO2 increase,
+# with additional contributions from marine productivity changes on the
+# initial CO2 rise and d13CO2 decline and from rapid vegetation buildup
+# during the CO2 plateau of the B�lling/Aller�d.
+#
+#
+# ADDITIONAL REFERENCES:
+# Smith, H.J., H. Fischer, M. Wahlen, D. Mastroianni, and B. Deck. 1999.
+# Dual modes of the carbon cycle since the Last Glacial Maximum.
+# Nature, vol. 400, No. 6741, pp. 248�250, doi:10.1038/22291.
+#
+# Monnin, E., A. Inderm�hle, A. D�llenbach, J. Fl�ckiger, B. Stauffer,
+# T.F. Stocker, D. Raynaud, and J.-M. Barnola. 2001.
+# Atmospheric CO2  concentrations over the last glacial Termination.
+# Science, Vol. 291, No. 5501, pp. 112�114, doi:10.1126/science.291.5501.112.
+#
+#
+#
+# GEOGRAPHIC REGION: Antarctica
+# PERIOD OF RECORD: 22 - 8 KYrBP
+#
+#
+# FUNDING SOURCES:
+# This work is a contribution to the European Project for Ice Coring
+# in Antarctica (EPICA), a joint European Science Foundation (ESF)/EC
+# scientific program, funded by the European Commission and by national
+# contributions from Belgium, Denmark, France, Germany, Italy, the
+# Netherlands, Norway, Sweden, Switzerland, and the United Kingdom.
+# The main logistic support was provided by IPEV and PNRA (at Dome C).
+# A.L. was funded by the European Research Training and Mobility Network
+# GREENCYCLES. Additional funding support was provided by the QUEST-INSU
+# project DESIRE, the FP6 STREP EPICAMIS, and the French ANR PICC
+# (ANR-05-BLAN-0312-01). Long-term support for the mass spectrometry work
+# at LGGE was provided by the Fondation de France and the Balzan Price.
+#
+#
+#
+# DESCRIPTION:
+# High resolution record of CO2 and d13CO2 across Termination I
+# from the European Project for Ice Coring in Antarctica (EPICA)
+# Dome C (EDC) ice core.  This record is compared to existing
+# lower-resolution EPICA Dome C CO2 data and d13CO2 from the
+# Taylor Dome Ice core, in order to evaluate mechanisms for
+# the Termination I CO2 rise.
+#
+# The experimental procedure of extraction of CO2 and its stable
+# isotopes, as well as the synchronization of EDC age scale to GICC05,
+# are described in the methods section of Lourantou et al. 2010.
+# An even more detailed description can be found in Lourantou, 2009
+# (PhD thesis, can be found online at:
+# http://tel.archives-ouvertes.fr/tel-00370658/fr/)
+#
+# Termination I is the transition from the Last Glacial Maximum
+# (~20 kyr B.P.) to the Early Holocene (~10 kyr B.P).
+#
+# EPICA Dome C ice core: 75�06'S, 123�21'E, 3233m above sea level
+#
+#
+#
+#
+# DATA:
+# 1. Lourantou et al. 2010 EPICA Dome C Termination 1 CO2 & d13CO2 Data
+#
+# Column A: Depth (m) of EDC
+# Column B: Gas age (EDC3_gas_a), according to 4th scenario of Loulergue et al., 2007 for the EDC core, in yr BP (BP=1950 AD)
+# Column C: Gas age of GICC05, done for this record and presented in methods section (Analyseries method, Paillard et al., 1996)
+# Column D: Mean CO2 data (ppmv) for every analyzed sample
+# Column E: Mean CO2 data (ppmv) corrected for gravitational fractionation (Etheridge et al., 1996)
+# Column F: 1 sigma uncertainties for atmospheric CO2 reconstructions
+# Column G: Mean delta13CO2 data (permil) for every single analyzed sample
+# Column H: Mean delta13CO2 data (permil) corrected for gravitational fractionation (Dreyfus et al., 2010)
+# Column I: 1 sigma uncertainties for atmospheric delta13CO2 reconstructions
+Depth(m) EDC3gasage GICC05gasage  CO2     CO2corr.   1sigma     d13CO2    d13CO2corr. 1sigma
+346.50   8756.45    9093.47    258.86     256.90     0.63       -6.211     -6.709     0.165
+346.50   8756.45    9093.47    263.57     261.57     1.27       -6.095     -6.593     0.097
+355.30   9072.05    9403.04    260.28     258.30     0.92       -6.189     -6.689     0.159
+376.75   9792.53    10116.05   267.54     265.55     0.01       -6.218     -6.708     0.100
+376.75   9792.53    10116.05   260.34     258.40     0.24       -6.286     -6.775     0.017
+389.95   10277.65   10595.98   270.11     268.00     2.18       -6.223     -6.737     0.062
+393.25   10401.05   10715.82   268.98     266.91     1.11       -6.236     -6.743     0.149
+393.25   10401.05   10715.82   270.29     268.21     NAN        -6.336     -6.844     NAN
+398.75   10603.80   10915.01   264.83     262.80     0.42       -6.316     -6.822     0.028
+410.85   11064.38   11371.88   263.39     261.39     NAN        -6.184     -6.684     NAN
+410.85   11064.38   11371.88   264.38     262.37     0.84       -6.299     -6.799     0.150
+412.50   11123.60   11438.15   265.25     263.23     1.34       -6.326     -6.826     0.030
+418.00   11323.90   11675.34   262.43     260.30     0.19       -6.215     -6.748     0.049
+418.00   11323.90   11675.34   260.57     258.46     1.57       -6.290     -6.823     0.133
+426.80   11612.36   11991.75   249.80     247.84     2.06       -6.564     -7.080     0.208
+426.80   11612.36   11991.75   254.25     252.26     2.12       -6.478     -6.994     0.037
+431.20   11796.04   12196.51   248.65     246.80     1.09       -6.431     -6.922     0.224
+431.20   11796.04   12196.51   252.33     250.44     1.66       -6.467     -6.958     0.037
+436.70   12028.80   12452.40   247.09     245.26     0.78       -6.443     -6.931     0.176
+436.70   12028.80   12452.40   246.51     244.68     0.22       -6.526     -7.013     0.112
+443.30   12346.39   12804.36   240.41     238.67     0.36       -6.297     -6.774     0.035
+447.70   12584.80   13067.80   237.67     236.02     1.48       -6.191     -6.650     0.142
+447.70   12584.80   13067.80   238.91     237.24     1.45       -6.384     -6.843     0.168
+448.25   12613.90   13100.00   238.64     236.96     1.28       NAN        NAN        NAN
+448.25   12613.90   13100.00   235.23     233.57     1.71       NAN        NAN        NAN
+450.45   12734.05   13233.23   240.60     238.90     1.01       -6.452     -6.919     0.137
+450.45   12734.05   13233.23   238.67     236.98     0.34       -6.085     -6.552     0.053
+453.20   12888.56   13403.81   239.73     238.02     0.25       -6.344     -6.814     0.126
+453.75   12918.15   13436.88   239.32     237.63     1.15       -6.322     -6.785     0.136
+455.40   13000.34   13533.38   239.74     238.02     1.88       -6.307     -6.780     0.079
+458.70   13173.75   13725.46   243.31     241.54     2.28       -6.156     -6.635     0.029
+458.70   13173.75   13725.46   243.74     241.97     0.57       -6.111     -6.590     0.083
+459.80   13235.22   13789.42   239.44     237.72     1.86       -6.123     -6.595     0.081
+464.75   13511.43   14087.65   240.05     238.32     0.78       -6.060     -6.535     0.153
+469.70   13779.71   14389.71   240.74     239.00     1.06       -6.234     -6.711     0.169
+473.00   13944.70   14572.54   240.81     239.03     0.68       -6.366     -6.851     0.076
+475.20   14066.32   14697.78   242.74     241.00     2.13       -6.525     -6.997     0.068
+475.20   14066.32   14697.78   238.69     236.98     0.33       -6.317     -6.789     0.077
+477.40   14176.32   14800.03   234.24     232.52     1.57       -6.305     -6.787     0.192
+480.70   14356.70   14951.57   230.48     228.76     0.49       -6.290     -6.781     0.018
+482.90   14472.94   15053.70   229.35     227.70     0.73       -6.274     -6.747     0.020
+486.75   14697.25   15231.42   229.87     228.24     1.38       -6.371     -6.837     0.135
+487.85   14756.44   15282.94   229.66     227.99     0.93       -6.213     -6.691     0.096
+491.70   14978.41   15461.23   227.05     225.44     0.59       -6.546     -7.010     0.101
+498.30   15368.56   15785.77   220.58     219.05     1.73       -6.473     -6.930     0.082
+501.05   15541.13   15926.07   222.61     221.08     0.22       -6.222     -6.674     0.175
+503.80   15718.18   16068.01   219.22     217.69     0.02       -6.310     -6.769     0.135
+504.90   15781.22   16125.37   216.99     215.50     NAN        -6.445     -6.897     NAN
+508.75   16040.60   16342.04   211.44     210.00     NAN        -6.431     -6.878     NAN
+514.25   16413.28   16647.75   202.47     201.12     0.45       -6.352     -6.790     0.266
+517.00   16610.90   16811.50   197.08     195.80     0.41       -6.159     -6.588     0.068
+519.75   16834.47   16996.29   195.29     194.05     2.03       -6.137     -6.557     0.149
+525.80   17334.84   17406.33   189.82     188.63     0.99       -6.094     -6.507     0.029
+530.75   17766.25   17769.62   188.79     187.61     1.95       -6.067     -6.477     0.082
+532.40   17906.18   17901.45   189.57     188.37     0.35       -6.005     -6.419     0.112
+536.25   18239.12   18230.82   189.45     188.26     1.13       -6.218     -6.629     0.034
+539.00   18502.20   18491.01   190.18     189.01     0.88       -6.040     -6.448     0.062
+542.85   18823.88   18810.82   190.56     189.39     1.11       -5.970     -6.375     0.088
+548.35   19300.40   19281.96   189.56     188.37     0.59       -6.263     -6.673     0.032
+552.75   19703.40   19676.27   190.17     188.96     0.56       -6.084     -6.502     0.230
+555.50   19949.85   19906.60   190.30     189.12     0.27       -6.390     -6.799     0.031
+557.70   20149.39   20098.13   190.94     189.74     NAN        -6.329     -6.740     NAN
+578.05   22008.84   21854.48   186.32     185.16     0.77       -6.190     -6.600     0.137
