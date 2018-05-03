@@ -1,4 +1,6 @@
-Run: `python process.py` to generate the .json file. The file is in the format:
+Run: `python process.py` to generate the .json file. This script creates a composite of four different data sets taking preference to more modern and higher resoslution data sets.
+
+The file is in the format:
 
 ```
 {
