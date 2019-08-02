@@ -6,7 +6,7 @@
 # will lead to greater understanding and new scientific insights.
 # The availability of these data does not constitute publication
 # of the data.  NOAA relies on the ethics and integrity of the user to
-# insure that ESRL receives fair credit for their work.  If the data
+# ensure that ESRL receives fair credit for their work.  If the data
 # are obtained for potential use in a publication or presentation,
 # ESRL should be informed at the outset of the nature of this work.
 # If the ESRL data are essential to the work, or if an important
@@ -14,12 +14,12 @@
 # may be appropriate.  This should be discussed at an early stage in
 # the work.  Manuscripts using the ESRL data should be sent to ESRL
 # for review before they are submitted for publication so we can
-# insure that the quality and limitations of the data are accurately
+# ensure that the quality and limitations of the data are accurately
 # represented.
 #
 # Contact:   Pieter Tans (303 497 6678; pieter.tans@noaa.gov)
 #
-# File Creation:  Mon Apr  9 08:57:27 2018
+# File Creation:  Mon Jul  8 09:30:56 2019
 #
 # RECIPROCITY
 #
@@ -112,5 +112,6 @@ year     mean      unc
 2013   396.52     0.12
 2014   398.65     0.12
 2015   400.83     0.12
-2016   404.21     0.12
-2017   406.53     0.12
+2016   404.24     0.12
+2017   406.55     0.12
+2018   408.52     0.12
